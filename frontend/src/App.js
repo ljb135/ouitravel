@@ -1,13 +1,17 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import logo from './logo.svg';
+import Navigation from './Navigation';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
+      <Navigation/>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Ooo look I am shiny
+          Oooo spinny thing
         </p>
         <a
           className="App-link"
