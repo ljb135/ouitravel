@@ -1,13 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import logo from './logo.svg';
-import Navigation from './Navigation';
 import './App.css';
 
-function App() {
+function Home() {
   return (
     <div className="App">
-      <Navigation/>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -26,4 +24,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

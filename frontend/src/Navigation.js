@@ -8,11 +8,11 @@ function Navigation(){
         <>
         <Navbar bg="light" variant="light">
             <Container>
-            <Navbar.Brand href="#home">OuiTravel</Navbar.Brand>
+            <Navbar.Brand href="/">OuiTravel</Navbar.Brand>
             <Nav className="me-auto">
-                <Nav.Link href="#home">Home</Nav.Link>
-                <Nav.Link href="#trips">Trips</Nav.Link>
-                <Nav.Link href="#history">History</Nav.Link>
+                <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href="trips">Trips</Nav.Link>
+                <Nav.Link href="history">History</Nav.Link>
             </Nav>
             <Nav>
                 <NavDropdown title="Account">
