@@ -17,14 +17,12 @@ mongoose.connect(
 );
 
 const userSchema = new mongoose.Schema({
-    user_id: {
-        type: Number,
-        require: true
-    },
-    first_name: String,
-    last_name: String,
-    email: String,
-    dob: Date
+    first_name: {type: String, required: true},
+    last_name: {type: String, required: true},
+    email:{type: String, unique: true, required : true},
+    password: {type: String, required: true},
+    dob: {type: Date, required: true},
+    is_mod: {type: Boolean, required: true}
 });
 
 const User = mongoose.model('User', userSchema);
@@ -33,7 +31,9 @@ const user = new User({
     first_name: 'Jiebin',
     last_name: 'Liang',
     email: 'jcl287@scarletmail.rutgers.edu',
-    dob: new Date()
+    password: 'admin123',
+    dob: new Date('Sept 8, 2001'),
+    is_mod: false
 });
 
-user.save();
+User.create(user);
