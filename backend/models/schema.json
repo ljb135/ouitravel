@@ -1,0 +1,69 @@
+{
+    "user": { 
+        "_id": "object_id",
+        "first_name": "string",
+        "last_name": "string",
+        "email": "string",
+        "dob": "date",
+        "password": "string",
+        "is_mod": "boolean"
+    },
+    "friends": {
+        "_id": "object_id",
+        "user1_email": "string",
+        "user2_email": "string",
+        "status": "string"
+    },
+    "credit_card": {
+        "_id": "object_id",
+        "card_number": "integer",
+        "card_holder_name": "string",
+		"owner_email": "string",
+		"expiration_date": "integer",
+		"cvv" : "integer"
+    },
+    "flight": {
+		"_id": "object_id",
+		"duration": "integer",
+		"airline_Rating": "integer",
+		"price": "float",
+		"class": "string",
+		"num_of_stops": "integer",
+		"start_location": "string",
+		"destination_location": "string"
+    },
+    "activity": {
+        "_id": "object_id",
+		"name": "string",
+		"rating": "integer",
+		"price": "float",
+		"is_indoor": "boolean"
+	},
+    "trip": {
+        "_id": "object_id",
+		"status": "string",
+        "start_date": "date",
+		"end_date": "date",
+		"price": "int",
+        "destination_id": "object_id",
+        "flight_ids": "object_id array",
+        "hotel_ids": "object_id array",
+        "activity_ids": "object_id array",
+        "creator_id": "object_id",
+        "collaborator_ids": "object_id array"
+	},	
+    "photos": {
+        "_id": "object_id",
+        "creator_id": "object_id",
+		"photo_data": "binarydata",
+        "trip_id": "integer"
+	},
+    "hotel": {
+		"_id": "object_id",
+        "hotel_name": "string",
+		"price": "integer",
+		"rating": "integer",
+        "check_in": "date",
+        "check_out": "date"
+	}
+}
