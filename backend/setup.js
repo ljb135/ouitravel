@@ -1,8 +1,8 @@
 require("dotenv").config();
 const mongoose = require('mongoose')
 
-const username = process.env.USER_NAME;
-const password = process.env.PASSWORD;
+const username = process.env.mongoDB_username;
+const password = process.env.mongoDB_password;
 const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
@@ -16,24 +16,10 @@ mongoose.connect(
     }
 );
 
-const userSchema = new mongoose.Schema({
-    first_name: {type: String, required: true},
-    last_name: {type: String, required: true},
-    email:{type: String, unique: true, required : true},
-    password: {type: String, required: true},
-    dob: {type: Date, required: true},
-    is_mod: {type: Boolean, required: true}
+const Trip = require('./models/trip');
+
+const trip = new Trip({
+    status: "Pending"
 });
 
-const User = mongoose.model('User', userSchema);
-
-const user = new User({
-    first_name: 'Jiebin',
-    last_name: 'Liang',
-    email: 'jcl287@scarletmail.rutgers.edu',
-    password: 'admin123',
-    dob: new Date('Sept 8, 2001'),
-    is_mod: false
-});
-
-User.create(user);
+Trip.create(trip);

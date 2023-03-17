@@ -4,8 +4,31 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
 function Navigation(){
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow',
+        credentials: "include"
+    };
+
+    var ret;
+
+    fetch("http://localhost:3001/user", requestOptions)
+    .then(response => {
+        if(response.ok){
+            return(
+                <Navbar bg="light" variant="light">
+                    <Container>
+                    <Navbar.Brand href="/">OuiTravel</Navbar.Brand>
+                    <Nav>
+                        <Nav.Link href="/login">Login</Nav.Link>
+                    </Nav>
+                    </Container>
+                </Navbar>
+            );
+        }
+    });
+
     return(
-        <>
         <Navbar bg="light" variant="light">
             <Container>
             <Navbar.Brand href="/">OuiTravel</Navbar.Brand>
@@ -23,7 +46,6 @@ function Navigation(){
             </Nav>
             </Container>
         </Navbar>
-        </>
     );
 }
 

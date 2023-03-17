@@ -6,8 +6,11 @@ import Navigation from './Navigation';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import Home from './subpages/Home';
-import Trips from './subpages/Trips'
+import Trips from './subpages/Trips';
+import Login from './subpages/Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,7 +18,8 @@ root.render(
     <BrowserRouter>
       <Navigation/>
       <Routes>
-        <Route path='/' element={< Home />}></Route>
+        <Route path='/' element={<Home/>}></Route>
+        <Route path='/login' element={<Login/>}></Route>
         <Route path="/trips" element={<Trips/>}></Route>
       </Routes>
     </BrowserRouter>
