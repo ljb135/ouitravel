@@ -14,6 +14,7 @@ const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
 const User = require('./models/user');
+const Friends = require('./models/friends');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -33,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
+passport.serializeUser(User.serializeUser()); 
 passport.deserializeUser(User.deserializeUser()); 
 
 app.get('/user', (req, res) => {
@@ -79,6 +80,38 @@ app.post('/logout', function(req, res) {
     if (err) res.send(err);
     else res.send("Logged Out");
   });
+});
+
+//Friend system API calls
+app.get('/friendslist', (req, res) => {
+  //show list of friends of user
+  res.send("Friends");
+});
+
+app.post('/addfriend', async (req, res) => {
+  const { user1_email, user2_email, status } = req.body;
+  try{
+    Friends.create({
+      user1_email,
+      user2_email,
+      status
+    })
+  } catch(error){
+      console.log(error)
+      return res.json({ status: 'error' })
+  }
+  res.send("Friend request sent");
+});
+
+app.put('/acceptfriend', (req, res) => {
+  //update status to "friends"
+  Friends.find({_id: req._id})
+  res.send("Friend request accepted");
+});
+
+app.delete('/deletefriend', (req, res) => {
+  //delete corresponding data 
+  res.send("Friend removed");
 });
 
 app.listen(port, () => {
