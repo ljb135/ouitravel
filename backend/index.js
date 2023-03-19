@@ -14,6 +14,8 @@ const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
 const User = require('./models/user');
+const Payment = require('./models/payment'); 
+const { createStrategy } = require("./models/payment");
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -79,6 +81,32 @@ app.post('/logout', function(req, res) {
     if (err) res.send(err);
     else res.send("Logged Out");
   });
+});
+
+// payment system API call functions
+app.get('/get_method', async(req, res) => {
+  // showing all the payment method
+  res.send("Payment");
+
+})
+
+app.post('/add_method', async(req, res) => {
+  Payment.add_method = new Payment ({
+    card_number: req.body.card_number,
+    card_holder_name: req.body.card_holder_name,
+    owner_email: req.body.email,
+    expiration_date: req.body.exp_date,
+    cvv: req.body.cvv
+  });
+
+  // set up the error cases
+  if(error);
+
+});
+
+app.delete('/delete_method', async(req, res) => {
+  // sending it have successfully deleter
+  res.send("Successfully Deleted");
 });
 
 app.listen(port, () => {
