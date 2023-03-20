@@ -21,6 +21,7 @@ const Activity = require('./models/activity');
 const Location = require('./models/location');
 const Flight = require('./models/flight');
 const Hotel = require('./models/hotel');
+const Post = require('./models/post');
 
 // Location.insertMany([
 //     {
@@ -78,3 +79,11 @@ const trip = new Trip({
 });
 
 Trip.create(trip);
+
+const post = new Post({
+    trip_id: mongoose.Types.ObjectId("6416f5eed9c0268aff676c11"),
+    creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
+    comment: "Test Post"
+})
+
+Post.create(post);
