@@ -92,3 +92,13 @@ app.post('/logout', function(req, res) {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+app.post('/post', (req, res) =>{
+  res.send('POST LOADING')
+});
+app.delete('/delete', (req, res) =>{
+  res.send('DELETE INCOMING')
+});
+app.put('/create', (req, res) =>{
+  res.send('Caption Creating')
+});
