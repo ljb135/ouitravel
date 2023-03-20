@@ -5,7 +5,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { Link } from 'react-router-dom';
 
 function Navigation(props){
-    // fetch("localhost:3001/users")
+    // fetch("localhost:3000/users")
 
     if(props.name !== null){
         return(
@@ -15,7 +15,8 @@ function Navigation(props){
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="trips">Trips</Nav.Link>
-                    <Nav.Link as={Link} to="history">History</Nav.Link>
+                    <Nav.Link as={Link} to="Payment History">Payment History</Nav.Link>
+                    <Nav.Link as={Link} to="Trip History">Trip History</Nav.Link>
                 </Nav>
                 <Nav>
                     <NavDropdown title={"Hi, " + props.name}>
