@@ -2,6 +2,7 @@ require("dotenv").config();
 const mongoose = require('mongoose')
 const passport = require('passport')
 const bodyParser = require("body-parser")
+const cors = require("cors")
 
 const express = require('express');
 const e = require("express");
@@ -13,7 +14,13 @@ const password = process.env.mongoDB_password;
 const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}))
+
 const User = require('./models/user');
+const Trip = require('./models/trip');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -41,15 +48,16 @@ app.get('/user', (req, res) => {
     User.find({email: req.user.email}).then(user => res.status(200).json(user));
   }
   else{
-    User.find({}, (err, found) => {
-      if (!err) {
-        res.json(found);
-      }
-      else{
-        console.log(err);
-        res.send("Some error occured!")
-      }
-    });
+    // User.find({}, (err, found) => {
+    //   if (!err) {
+    //     res.json(found);
+    //   }
+    //   else{
+    //     console.log(err);
+    //     res.send("Some error occured!")
+    //   }
+    // });
+    res.redirect(401, "http://localhost:3000/login");
   }
 });
 
@@ -65,13 +73,13 @@ app.post('/register', (req, res) => {
       return res.status(409).send(err.message)
     }
     passport.authenticate('local')(req, res, function () {
-      res.send('Logged In')
+      res.send('Logged In');
     });
   });
 });
 
 app.post('/login', passport.authenticate('local'), function(req, res) {
-  res.send('Logged In');
+  res.send(req.user.first_name);
 });
 
 app.post('/logout', function(req, res) {
