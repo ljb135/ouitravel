@@ -21,6 +21,17 @@ const Activity = require('./models/activity');
 const Location = require('./models/location');
 const Flight = require('./models/flight');
 const Hotel = require('./models/hotel');
+const PaymentHistory = require('./models/Payhistory');
+
+const Payhistory = new PaymentHistory({
+    Payment_date: "4/20/2023",
+    price: 629,
+    destination_id: mongoose.Types.ObjectId("6416f47360181ea99065035b"),
+    hotel_ids: [mongoose.Types.ObjectId("6416f47360181ea99065035c")],
+    creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
+});
+
+PaymentHistory.create(Payhistory);
 
 // Location.insertMany([
 //     {
@@ -65,16 +76,16 @@ const Hotel = require('./models/hotel');
 //     }
 // ])
 
-const trip = new Trip({
-    status: "Pending",
-    start_date: "4/20/2023",
-    end_date: "5/16/2023",
-    price: 1500,
-    destination_id: mongoose.Types.ObjectId("6416f47360181ea99065035b"),
-    hotel_ids: [mongoose.Types.ObjectId("6416f47360181ea99065035c")],
-    activity_ids: [mongoose.Types.ObjectId("6416ce4bdad2fae420807c7d"), mongoose.Types.ObjectId("6416f2c0d187b8f01efd5acd")],
-    creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
-    collaborator_ids: [mongoose.Types.ObjectId("64152eb6a874c4e143d5b840")]
-});
+//const trip = new Trip({
+  //  status: "Pending",
+   // start_date: "4/20/2023",
+    //end_date: "5/16/2023",
+    //price: 1500,
+    //destination_id: mongoose.Types.ObjectId("6416f47360181ea99065035b"),
+    //hotel_ids: [mongoose.Types.ObjectId("6416f47360181ea99065035c")],
+    //activity_ids: [mongoose.Types.ObjectId("6416ce4bdad2fae420807c7d"), mongoose.Types.ObjectId("6416f2c0d187b8f01efd5acd")],
+    //creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
+    //collaborator_ids: [mongoose.Types.ObjectId("64152eb6a874c4e143d5b840")]
+//});
 
-Trip.create(trip);
+//Trip.create(trip);
