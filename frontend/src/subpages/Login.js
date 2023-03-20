@@ -1,9 +1,11 @@
 import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap'
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function Login(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     function handleSubmit(e){
         e.preventDefault();
@@ -23,8 +25,8 @@ function Login() {
         fetch("http://localhost:3001/login", requestOptions)
         .then(response => {
             if(response.ok){
-                console.log(response.text());
-                // window.location.href = "http://localhost:3000";
+                response.text().then(name => props.setName(name));
+                navigate('/', { replace: true });
             }
             else{
                 alert(response.text());
