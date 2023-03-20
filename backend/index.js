@@ -14,8 +14,11 @@ const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
 const User = require('./models/user');
-const Payment = require('./models/payment'); 
+const Payment = require('./models/payments'); 
 const { createStrategy } = require("./models/payment");
+
+const Friends = require('./models/friends');
+
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -35,7 +38,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
+passport.serializeUser(User.serializeUser()); 
 passport.deserializeUser(User.deserializeUser()); 
 
 app.get('/user', (req, res) => {
@@ -88,25 +91,57 @@ app.get('/get_method', async(req, res) => {
   // showing all the payment method
   res.send("Payment");
 
-})
+});
 
 app.post('/add_method', async(req, res) => {
+  try{
   Payment.add_method = new Payment ({
     card_number: req.body.card_number,
     card_holder_name: req.body.card_holder_name,
     owner_email: req.body.email,
     expiration_date: req.body.exp_date,
     cvv: req.body.cvv
-  });
-
-  // set up the error cases
-  if(error);
-
+  })
+}
+catch(err){
+  return res.send(err.message)
+}
 });
 
 app.delete('/delete_method', async(req, res) => {
   // sending it have successfully deleter
   res.send("Successfully Deleted");
+
+//Friend system API calls
+app.get('/friendslist', (req, res) => {
+  //show list of friends of user
+  res.send("Friends");
+});
+
+app.post('/addfriend', async (req, res) => {
+  const { user1_email, user2_email, status } = req.body;
+  try{
+    Friends.create({
+      user1_email,
+      user2_email,
+      status
+    })
+  } catch(error){
+      console.log(error)
+      return res.json({ status: 'error' })
+  }
+  res.send("Friend request sent");
+});
+
+app.put('/acceptfriend', (req, res) => {
+  //update status to "friends"
+  Friends.find({_id: req._id})
+  res.send("Friend request accepted");
+});
+
+app.delete('/deletefriend', (req, res) => {
+  //delete corresponding data 
+  res.send("Friend removed");
 });
 
 app.listen(port, () => {
