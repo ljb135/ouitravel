@@ -14,11 +14,8 @@ const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
 const User = require('./models/user');
-const Payment = require('./models/payments'); 
-const { createStrategy } = require("./models/payment");
-
 const Friends = require('./models/friends');
-
+const Payment = require('./models/payemnts');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -111,6 +108,7 @@ catch(err){
 app.delete('/delete_method', async(req, res) => {
   // sending it have successfully deleter
   res.send("Successfully Deleted");
+});
 
 //Friend system API calls
 app.get('/friendslist', (req, res) => {
