@@ -21,6 +21,7 @@ app.use(cors({
 
 const User = require('./models/user');
 const Trip = require('./models/trip');
+const Post = require('./models/post');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 

@@ -64,7 +64,7 @@
         "creator_id": "object_id",
         "trip_id": "object_id",
         "photo_id": "object_id",
-        "comment": "string"
+        "caption": "string"
     },
 
     "hotel": {

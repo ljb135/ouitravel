@@ -66,6 +66,15 @@ const Post = require('./models/post');
 //     }
 // ])
 
+Post.insertMany([
+    {
+        trip_id: mongoose.Types.ObjectId('6416f5eed9c0268aff676c11'),
+        creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
+        photo_id: {type: mongoose.Types.ObjectId},
+        caption: "Test Post Caption"
+    }
+])
+
 const trip = new Trip({
     status: "Pending",
     start_date: "4/20/2023",
@@ -79,11 +88,4 @@ const trip = new Trip({
 });
 
 Trip.create(trip);
-
-const post = new Post({
-    trip_id: mongoose.Types.ObjectId("6416f5eed9c0268aff676c11"),
-    creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
-    comment: "Test Post"
-})
-
 Post.create(post);
