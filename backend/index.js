@@ -91,8 +91,25 @@ app.post('/logout', function(req, res) {
   });
 });
 
+//Edit profile information given email as identifier
+app.put('/editprofile', async (req, res) => {
+  const { email, first_name, last_name, dob } = req.body;
+  User.findOneAndUpdate(
+    {email: email},
+    {$set: {first_name: first_name, last_name: last_name, dob: dob} }, 
+    {new: true},
+    (err,data) => {
+      if(data==null){
+          res.send("nothing found") ; 
+      } else{
+          res.send(data) ; 
+      }
+    }
+  ); 
+});
+
 //FRIEND SYSTEM API CALLS
-//Show list of friends of user given email
+//Show list of friends of user given email as identifier
 app.get('/friendslist', async (req, res) => {
   const {email} = req.body;
   Friends.find( {$and: [{"status": "friends"},  {$or: [{"user1_email": email}, {"user2_email": email}] }] })
