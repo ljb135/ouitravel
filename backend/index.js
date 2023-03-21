@@ -15,7 +15,6 @@ const dbname = "Account";
 
 const User = require('./models/user');
 const Friends = require('./models/friends');
-const Payment = require('./models/payemnts');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -35,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser()); 
+passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 app.get('/user', (req, res) => {
@@ -83,41 +82,24 @@ app.post('/logout', function(req, res) {
   });
 });
 
-// payment system API call functions
-app.get('/get_method', async(req, res) => {
-  // showing all the payment method
-  res.send("Payment");
-
-});
-
-app.post('/add_method', async(req, res) => {
-  try{
-  Payment.add_method = new Payment ({
-    card_number: req.body.card_number,
-    card_holder_name: req.body.card_holder_name,
-    owner_email: req.body.email,
-    expiration_date: req.body.exp_date,
-    cvv: req.body.cvv
-  })
-}
-catch(err){
-  return res.send(err.message)
-}
-});
-
-app.delete('/delete_method', async(req, res) => {
-  // sending it have successfully deleter
-  res.send("Successfully Deleted");
-});
-
-//Friend system API calls
+//FRIEND SYSTEM API CALLS
+//Show list of friends of user
 app.get('/friendslist', (req, res) => {
-  //show list of friends of user
-  res.send("Friends");
+  /*
+  Friends.find({user1_email: req.body.email}), (err,data) => {
+    res.send(data);
+  }
+  
+  Friends.find(request.params.id)
+    .then(data => response.json(data))
+    .catch(error => response.json(error))
+  res.send("Friends");*/
 });
 
+//Add a new pending friend request
 app.post('/addfriend', async (req, res) => {
-  const { user1_email, user2_email, status } = req.body;
+  const { user1_email, user2_email } = req.body;
+  const status = "pending";
   try{
     Friends.create({
       user1_email,
@@ -131,10 +113,34 @@ app.post('/addfriend', async (req, res) => {
   res.send("Friend request sent");
 });
 
-app.put('/acceptfriend', (req, res) => {
-  //update status to "friends"
-  Friends.find({_id: req._id})
-  res.send("Friend request accepted");
+//Update status of friend request to "friends"
+app.put('/acceptfriend/:id', async (req, res) => {
+  const friends_id = req.params.id;   
+  Friends.findByIdAndUpdate(
+    friends_id,
+    {$set: {status: "friends"} }, 
+    {new: true},
+    (err,data) => {
+        if(data==null){
+            res.send("nothing found") ; 
+        } else{
+            res.send("Friend request accepted") ; 
+        }
+    }); 
+});
+
+//Delete corresponding friends document
+app.delete('/removefriend/:id', async (req, res) => {
+  const friends_id = req.params.id;   
+  Friends.findByIdAndDelete(
+    friends_id,
+    (err,data) => {
+        if(data==null){
+            res.send("nothing found") ; 
+        } else{
+            res.send("Friend removed") ; 
+        }
+    }); 
 });
 
 app.delete('/deletefriend', (req, res) => {
