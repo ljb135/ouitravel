@@ -1,5 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 function Trips() {
   return (
     <div className="Trips">
