@@ -73,7 +73,7 @@ app.post('/register', (req, res) => {
       return res.status(409).send(err.message)
     }
     passport.authenticate('local')(req, res, function () {
-      res.send('Logged In');
+      res.send(req.user.first_name);
     });
   });
 });
