@@ -23,14 +23,22 @@ const Flight = require('./models/flight');
 const Hotel = require('./models/hotel');
 const PaymentHistory = require('./models/Payhistory');
 const triphistory = require('./models/TripHistory');
+const Payment = require('./models/payment');
 
 const TripHistory = new triphistory({
-    Start_date: "4/20/2023",
-    End_date: "5/2/2023",
+    Start_date: "1/20/2023",
+    End_date: "4/2/2023",
     destination_id: mongoose.Types.ObjectId("6416f47360181ea99065035b"),
     hotel_ids: [mongoose.Types.ObjectId("6416f47360181ea99065035c")],
+    creator_id: mongoose.Types.ObjectId("6418afaf1ad2f921c0e13092"),
+});
+
+const payment = new Payment({
+    price: 30,
     creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
 });
+
+Payment.create(payment);  
 
 triphistory.create(TripHistory);
 
@@ -90,3 +98,11 @@ triphistory.create(TripHistory);
 //});
 
 //Trip.create(trip);
+triphistory.find({creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c")}, (err, found) => {   //63ffcb2f520f04fce809870c needs to become general
+  if (!err) {
+      console.log(found);
+  }
+  else{
+      console.log(err);
+  }
+});
