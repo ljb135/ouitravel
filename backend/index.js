@@ -167,3 +167,28 @@ app.delete('/removefriend/:id', async (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+//Fake info to check for payment history
+const Payment = require('./models/payment');
+
+function getPaymentHistory(userId) {
+  // Find all payments with the given user ID
+  return Payment.find({ creator_id: userId }).exec();
+}
+
+
+app.get('/payment-history', (req, res) => {
+  if(req.user){
+    // Assuming that the backend has a function for getting a user's payment history
+    // and that it returns an array of payment objects
+    getPaymentHistory(req.user._id).then(paymentHistory => {
+      res.status(200).json(paymentHistory);
+    }).catch(err => {
+      console.log(err);
+      res.status(500).send("Error getting payment history");
+    });
+  }
+  else{
+    res.redirect(401, "http://localhost:3000/login");
+  }
+});

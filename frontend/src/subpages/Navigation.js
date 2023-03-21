@@ -15,14 +15,14 @@ function Navigation(props){
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="trips">Trips</Nav.Link>
-                    <Nav.Link as={Link} to="Payment History">Payment History</Nav.Link>
-                    <Nav.Link as={Link} to="Trip History">Trip History</Nav.Link>
                 </Nav>
                 <Nav>
                     <NavDropdown title={"Hi, " + props.name}>
                         <NavDropdown.Item href="#account">Profile</NavDropdown.Item>
                         <NavDropdown.Item href="#account">Friends</NavDropdown.Item>
                         <NavDropdown.Item href="#account">Payment</NavDropdown.Item>
+                        <NavDropdown.Item href="#account">Payment History</NavDropdown.Item>
+                        <NavDropdown.Item href="#account">Trip History</NavDropdown.Item>
                     </NavDropdown>
                 </Nav>
                 </Container>
