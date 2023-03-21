@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
-const postScema = new mongoose.Schema({
+const postSchema = new mongoose.Schema({
     _id: mongoose.Types.ObjectId,
-    trip_id: [mongoose.Types.ObjectId],
+    trip_id: {type: mongoose.Types.ObjectId},
     creator_id: {type: mongoose.Types.ObjectId, required: true},
     photo_id: {type: mongoose.Types.ObjectId},
-    comment: String
+    comment: {type: String}
 });
 
 module.exports = mongoose.model('Post', postSchema);
