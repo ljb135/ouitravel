@@ -1,12 +1,12 @@
 require("dotenv").config();
-const mongoose = require('mongoose')
-const passport = require('passport')
-const bodyParser = require("body-parser")
-const cors = require("cors")
+const mongoose = require('mongoose');
+const passport = require('passport');
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const express = require('express');
 const e = require("express");
-const app = express()
+const app = express();
 const port = 3001
 
 const username = process.env.mongoDB_username;
@@ -22,7 +22,10 @@ app.use(cors({
 const User = require('./models/user');
 const Trip = require('./models/trip');
 const Post = require('./models/post');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 88a71efb34e3b6480a91ae6f0bdb474d5bc75c2f
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
   {
@@ -94,8 +97,17 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-app.post('/post', (req, res) =>{
-  res.send('POST LOADING')
+app.post('/add_post', async(req, res) =>{
+    new Post({
+      trip_id: req.body.trip_id,
+      creator_id: req.body.creator_id,
+      photo_id: req.body.photo_id,
+      comment: req.body.comment
+    })
+  return res.send("Done")
+});
+app.get('/tripList', (req, res) =>{
+  res.send('Trip List')
 });
 app.delete('/delete', (req, res) =>{
   res.send('DELETE INCOMING')
