@@ -1,21 +1,30 @@
 require("dotenv").config();
-const mongoose = require('mongoose')
-const passport = require('passport')
-const bodyParser = require("body-parser")
+const mongoose = require('mongoose');
+const passport = require('passport');
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const express = require('express');
 const e = require("express");
-const app = express()
-const port = 3001
+const app = express();
+const port = 3001;
 
 const username = process.env.MONGODB_USERNAME;
 const password = process.env.MONGODB_PASSWORD;
 const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}))
+
 const User = require('./models/user');
 const Friends = require('./models/friends');
-const Paymethod = require('./models/pay_methods');
+const Trip = require('./models/trip');
+const PayMethod = require('./models/paymethods');
+const { db } = require("./models/user");
+
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -35,7 +44,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser()); 
+passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 app.get('/user', (req, res) => {
@@ -43,15 +52,16 @@ app.get('/user', (req, res) => {
     User.find({email: req.user.email}).then(user => res.status(200).json(user));
   }
   else{
-    User.find({}, (err, found) => {
-      if (!err) {
-        res.json(found);
-      }
-      else{
-        console.log(err);
-        res.send("Some error occured!")
-      }
-    });
+    // User.find({}, (err, found) => {
+    //   if (!err) {
+    //     res.json(found);
+    //   }
+    //   else{
+    //     console.log(err);
+    //     res.send("Some error occured!")
+    //   }
+    // });
+    res.redirect(401, "http://localhost:3000/login");
   }
 });
 
@@ -67,13 +77,13 @@ app.post('/register', (req, res) => {
       return res.status(409).send(err.message)
     }
     passport.authenticate('local')(req, res, function () {
-      res.send('Logged In')
+      res.send('Logged In');
     });
   });
 });
 
 app.post('/login', passport.authenticate('local'), function(req, res) {
-  res.send('Logged In');
+  res.send(req.user.first_name);
 });
 
 app.post('/logout', function(req, res) {
@@ -83,49 +93,65 @@ app.post('/logout', function(req, res) {
   });
 });
 
-// payment system API call functions
-/*
-// id is whatever we want from parameter
-
-app.get('get_method/:id', function(req, res) {
-  res.send('Payment' + req.params.id);
-})
-*/
-app.get('/get_method', async(req, res) => {
-  // showing all the payment method
-  res.send("Payment");
-
+//Edit profile information given email as identifier
+app.put('/editprofile', async (req, res) => {
+  const { email, first_name, last_name, dob } = req.body;
+  User.findOneAndUpdate(
+    {email: email},
+    {$set: {first_name: first_name, last_name: last_name, dob: dob} }, 
+    {new: true},
+    (err,data) => {
+      if(data==null){
+          res.send("nothing found") ; 
+      } else{
+          res.send(data) ; 
+      }
+    }
+  ); 
 });
 
-app.post('/add_method', async(req, res) => {
-  try {
-  Paymethod.create({
-    card_number: req.body.card_number,
-    card_holder_name: req.body.card_holder_name,
-    owner_email: req.body.email,
-    expiration_date: req.body.exp_date,
-    cvv: req.body.cvv
-  })
-} catch(error) {
-    console.log(error);
-    return res.json({ status: 'error' })
-}
-  res.send("Your payment method successfully added");
+// PAYMETHODS API CALLS
+
+app.get('/getmethod', async(req, res) => {
+  res.send('paymethods');
 });
 
-app.delete('/delete_method', async(req, res) => {
-  // sending it have successfully deleter
-  res.send("Successfully Deleted");
+app.post('/addmethod', async(req, res) => {
+    const new_pay_method = new PayMethod({
+      card_number: req.body.card_number,
+      card_holder_name: req.body.card_holder_name,
+      owner_email: req.body.owner_email,
+      expiration_date: req.body.expiration_date,
+      // getting only the month and year for the date
+      cvv: req.body.cvv
+    })
+
+    new_pay_method.save()
+      .then(item => {
+        res.send("item saved to database");
+      })
+      .catch(err => {
+        res.status(400).send("unable to save to database");
+      })
 });
 
-//Friend system API calls
-app.get('/friendslist', (req, res) => {
-  //show list of friends of user
-  res.send("Friends");
+app.delete('/deletemethod', async(req, res) => {
+  res.send('Deleted');
 });
 
+//FRIEND SYSTEM API CALLS
+//Show list of friends of user given email as identifier
+app.get('/friendslist', async (req, res) => {
+  const {email} = req.body;
+  Friends.find( {$and: [{"status": "friends"},  {$or: [{"user1_email": email}, {"user2_email": email}] }] })
+  .then(data => res.json(data))
+  .catch(error => res.json(error))
+});
+
+//Add a new pending friend request between two users
 app.post('/addfriend', async (req, res) => {
-  const { user1_email, user2_email, status } = req.body;
+  const { user1_email, user2_email } = req.body;
+  const status = "pending";
   try{
     Friends.create({
       user1_email,
@@ -139,15 +165,34 @@ app.post('/addfriend', async (req, res) => {
   res.send("Friend request sent");
 });
 
-app.put('/acceptfriend', (req, res) => {
-  //update status to "friends"
-  Friends.find({_id: req._id})
-  res.send("Friend request accepted");
+//Update status of friend request to "friends" given objectId
+app.put('/acceptfriend/:id', async (req, res) => {
+  const friends_id = req.params.id;   
+  Friends.findByIdAndUpdate(
+    friends_id,
+    {$set: {status: "friends"} }, 
+    {new: true},
+    (err,data) => {
+        if(data==null){
+            res.send("nothing found") ; 
+        } else{
+            res.send("Friend request accepted") ; 
+        }
+    }); 
 });
 
-app.delete('/deletefriend', (req, res) => {
-  //delete corresponding data 
-  res.send("Friend removed");
+//Delete corresponding friends document given objectId
+app.delete('/removefriend/:id', async (req, res) => {
+  const friends_id = req.params.id;   
+  Friends.findByIdAndDelete(
+    friends_id,
+    (err,data) => {
+        if(data==null){
+            res.send("nothing found") ; 
+        } else{
+            res.send("Friend removed") ; 
+        }
+    }); 
 });
 
 app.listen(port, () => {
