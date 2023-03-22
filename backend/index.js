@@ -179,8 +179,6 @@ function getPaymentHistory(userId) {
 
 app.get('/payment-history', (req, res) => {
   if(req.user){
-    // Assuming that the backend has a function for getting a user's payment history
-    // and that it returns an array of payment objects
     getPaymentHistory(req.user._id).then(paymentHistory => {
       res.status(200).json(paymentHistory);
     }).catch(err => {
@@ -192,3 +190,24 @@ app.get('/payment-history', (req, res) => {
     res.redirect(401, "http://localhost:3000/login");
   }
 });
+
+function getTripHistory(userId) {
+  // Find all trips with the given user ID
+  return Trip.find({ creator_id: userId }).exec();
+}
+
+app.get('/trip-history', (req, res) => {
+  if (req.user) {
+    getTripHistory(req.user._id)
+      .then(tripHistory => {
+        res.status(200).json(tripHistory);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).send("Error getting trip history");
+      });
+  } else {
+    res.status(401).redirect("http://localhost:3000/login");
+  }
+});
+
