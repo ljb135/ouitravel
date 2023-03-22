@@ -8,14 +8,14 @@ const e = require("express");
 const app = express()
 const port = 3001
 
-const username = process.env.mongoDB_username;
-const password = process.env.mongoDB_password;
+const username = process.env.MONGODB_USERNAME;
+const password = process.env.MONGODB_PASSWORD;
 const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
 const User = require('./models/user');
 const Friends = require('./models/friends');
-const Payment = require('./models/payemnts');
+const Payment = require('./models/payments');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -99,6 +99,7 @@ app.post('/add_method', async(req, res) => {
     expiration_date: req.body.exp_date,
     cvv: req.body.cvv
   })
+  return res.send()
 }
 catch(err){
   return res.send(err.message)
