@@ -15,7 +15,7 @@ const dbname = "Account";
 
 const User = require('./models/user');
 const Friends = require('./models/friends');
-const Payment = require('./models/payments');
+const Paymethod = require('./models/pay_methods');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -84,6 +84,13 @@ app.post('/logout', function(req, res) {
 });
 
 // payment system API call functions
+/*
+// id is whatever we want from parameter
+
+app.get('get_method/:id', function(req, res) {
+  res.send('Payment' + req.params.id);
+})
+*/
 app.get('/get_method', async(req, res) => {
   // showing all the payment method
   res.send("Payment");
@@ -91,19 +98,19 @@ app.get('/get_method', async(req, res) => {
 });
 
 app.post('/add_method', async(req, res) => {
-  try{
-  Payment.add_method = new Payment ({
+  try {
+  Paymethod.create({
     card_number: req.body.card_number,
     card_holder_name: req.body.card_holder_name,
     owner_email: req.body.email,
     expiration_date: req.body.exp_date,
     cvv: req.body.cvv
   })
-  return res.send()
+} catch(error) {
+    console.log(error);
+    return res.json({ status: 'error' })
 }
-catch(err){
-  return res.send(err.message)
-}
+  res.send("Your payment method successfully added");
 });
 
 app.delete('/delete_method', async(req, res) => {
