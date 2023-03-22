@@ -35,7 +35,10 @@ const Post = require('./models/post');
     console.log(err);
   })
  }
-
+ app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+  makeConnection();
+})
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require("express-session")({
   secret: "Rusty is a dog",
@@ -95,10 +98,7 @@ app.post('/logout', function(req, res) {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-  makeConnection();
-})
+
 
 app.post('/add_post', async(req, res) =>{
   var dbo = client.db(dbname);
@@ -109,9 +109,10 @@ app.post('/add_post', async(req, res) =>{
       comment: req.body.comment
     }, function(err,res2){
       if(err){
-        res.send(JSON.stringify(err));
+        res.send('did not work');
       }
-      else{res.send('inserted')}
+      else{console.log(req.body);
+      res.send(req.body);}
     })
 });
 app.get('/tripList', (req, res) =>{
