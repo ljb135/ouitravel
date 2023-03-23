@@ -77,8 +77,8 @@ const Payment = require('./models/payment');
 // ])
 
 const trip = new Trip({
-    status: "Complete",
-    visibility: "Public",
+    status: "Duplicate",
+    visibility: "Delete API Test",
     start_date: "1/21/2023",
     end_date: "5/16/2023",
     price: 1500,
