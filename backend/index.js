@@ -55,6 +55,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 var tripRoutes = require("./routes/trips");
+var postRoutes = require("./routes/posts");
 
 app.get('/user', (req, res) => {
   if(req.user){
@@ -176,64 +177,12 @@ app.delete('/removefriend/:id', async (req, res) => {
 });
 
 app.use("/", tripRoutes);
+app.use("/", postRoutes);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-  makeConnection();
-})
 
-//creates new post
-app.post('/add_post', async(req, res) =>{
-  var dbo = client.db(dbname);
-    dbo.collection("Posts").insertOne({
-      trip_id: req.body.trip_id,
-      creator_id: req.body.creator_id,
-      photo_id: req.body.photo_id,
-      comment: req.body.comment
-    }, function(err,res2){
-      if(err){
-        res.send('did not work');
-      }
-      else{console.log(req.body);
-      res.send(req.body);}
-    })
-});
 
-//returns list of posts given the creator's id
-app.get('/postList', async (req, res) =>{
-  var dbo = client.db(dbname);
-    dbo.collection("Posts").find({"creator_id": req.body.creator_id}).toArray((err, docs) => {
-      if (err){
-        console.error(err);
-        return res.status(500).send('Error querying database');
-      }
-      console.log(docs)
+//app.listen(port, () => {
+//  console.log(`Example app listening on port ${port}`)
+//  makeConnection();
+//})
 
-      res.send(docs);
-    })
-});
-
-//deletes existing post given post id
-app.delete('/delete/:id', (req, res) =>{
-  var dbo = client.db(dbname);
-  const id = new ObjectId(req.params.id);
-  dbo.collection("Posts").deleteOne({"_id": id}, function(err, obj){
-    if(err){
-      res.send(err);
-    }
-    res.send("1 Document Deleted")
-  })});
-
-//edits the comment of a post
-app.put('/editcaption/:id', async(req, res)=>{
-  var dbo = client.db(dbname);
-  const id = new ObjectId(req.params.id);
-  const new_caption = req.body.comment;
-  dbo.collection("Posts").updateOne({"_id": id}, {$set:{"comment": new_caption}}, function(err, obj){
-    if(err){
-      res.send(err);
-    }else{
-      res.send(req.body);
-    }
-  })
-});
