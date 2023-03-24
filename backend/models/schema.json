@@ -67,6 +67,11 @@
         "caption": "string"
     },
 
+    "photo":{
+        "_id": "object_id",
+        "creator_id":"object_id"
+    },
+
     "hotel": {
 		"_id": "object_id",
         "hotel_name": "string",

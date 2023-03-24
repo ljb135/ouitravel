@@ -1,5 +1,5 @@
 require("dotenv").config();
-const {MongoClient} = require('mongodb');
+const {MongoClient, ObjectId} = require('mongodb');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const bodyParser = require("body-parser");
@@ -26,16 +26,6 @@ const User = require('./models/user');
 const Trip = require('./models/trip');
 const Post = require('./models/post');
 
-
-
-mongoose.connect(
-  `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }
-);
-
  const uri = `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`;
  function makeConnection(){
   client = new MongoClient(uri);
@@ -45,6 +35,10 @@ mongoose.connect(
     console.log(err);
   })
  }
+ app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+  makeConnection();
+})
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require("express-session")({
   secret: "Rusty is a dog",
@@ -104,11 +98,8 @@ app.post('/logout', function(req, res) {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-  makeConnection();
-})
 
+//creates new post
 app.post('/add_post', async(req, res) =>{
   var dbo = client.db(dbname);
     dbo.collection("Posts").insertOne({
@@ -118,17 +109,48 @@ app.post('/add_post', async(req, res) =>{
       comment: req.body.comment
     }, function(err,res2){
       if(err){
-        res.send(JSON.stringify(err));
+        res.send('did not work');
       }
-      else{res.send('inserted')}
+      else{console.log(req.body);
+      res.send(req.body);}
     })
 });
-app.get('/tripList', (req, res) =>{
-  res.send('Trip List')
+
+//returns list of posts given the creator's id
+app.get('/postList', async (req, res) =>{
+  var dbo = client.db(dbname);
+    dbo.collection("Posts").find({"creator_id": req.body.creator_id}).toArray((err, docs) => {
+      if (err){
+        console.error(err);
+        return res.status(500).send('Error querying database');
+      }
+      console.log(docs)
+
+      res.send(docs);
+    })
 });
-app.delete('/delete', (req, res) =>{
-  res.send('DELETE INCOMING')
-});
-app.put('/create', (req, res) =>{
-  res.send('Caption Creating')
+
+//deletes existing post given post id
+app.delete('/delete/:id', (req, res) =>{
+  var dbo = client.db(dbname);
+  const id = new ObjectId(req.params.id);
+  dbo.collection("Posts").deleteOne({"_id": id}, function(err, obj){
+    if(err){
+      res.send(err);
+    }
+    res.send("1 Document Deleted")
+  })});
+
+//edits the comment of a post
+app.put('/editcaption/:id', async(req, res)=>{
+  var dbo = client.db(dbname);
+  const id = new ObjectId(req.params.id);
+  const new_caption = req.body.comment;
+  dbo.collection("Posts").updateOne({"_id": id}, {$set:{"comment": new_caption}}, function(err, obj){
+    if(err){
+      res.send(err);
+    }else{
+      res.send(req.body);
+    }
+  })
 });
