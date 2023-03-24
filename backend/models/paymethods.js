@@ -9,4 +9,4 @@ const paymentSchema = new mongoose.Schema({
     cvv: {type: Number, required: true}
 });
 
-module.exports = mongoose.model('Payment', paymentSchema);
+module.exports = mongoose.model('PayMethod', paymentSchema);
