@@ -140,59 +140,80 @@ app.delete('/deletemethod', async(req, res) => {
 });
 
 //FRIEND SYSTEM API CALLS
+
 //Show list of friends of user given email as identifier
-app.get('/friendslist', async (req, res) => {
-  const {email} = req.body;
-  Friends.find( {$and: [{"status": "friends"},  {$or: [{"user1_email": email}, {"user2_email": email}] }] })
-  .then(data => res.json(data))
-  .catch(error => res.json(error))
+app.get('/friend', async (req, res) => {
+  if(req.user) {
+    const {email} = req.body;
+    Friends.find( {$and: [{"status": "friends"},  {$or: [{"user1_email": email}, {"user2_email": email}] }] })
+    .then(data => res.json(data))
+    .catch(error => res.json(error))
+  } 
+  else{
+    res.status(401).send('Not logged in');
+  }
 });
 
 //Add a new pending friend request between two users
-app.post('/addfriend', async (req, res) => {
-  const { user1_email, user2_email } = req.body;
-  const status = "pending";
-  try{
-    Friends.create({
-      user1_email,
-      user2_email,
-      status
-    })
-  } catch(error){
-      console.log(error)
-      return res.json({ status: 'error' })
+app.post('/friend', async (req, res) => {
+  if(req.user) {
+    const { user1_email, user2_email } = req.body;
+    const status = "pending";
+    try{
+      Friends.create({
+        user1_email,
+        user2_email,
+        status
+      })
+    } catch(error){
+        console.log(error)
+        return res.json({ status: 'error' })
+    }
+    res.send("Friend request sent");
   }
-  res.send("Friend request sent");
+  else{
+    res.status(401).send('Not logged in');
+  }
 });
 
 //Update status of friend request to "friends" given objectId
-app.put('/acceptfriend/:id', async (req, res) => {
-  const friends_id = req.params.id;   
-  Friends.findByIdAndUpdate(
-    friends_id,
-    {$set: {status: "friends"} }, 
-    {new: true},
-    (err,data) => {
+app.put('/friend/:id', async (req, res) => {
+  if(req.user) { 
+    const friends_id = req.params.id;   
+    Friends.findByIdAndUpdate(
+      friends_id,
+      {$set: {status: "friends"} }, 
+      {new: true},
+      (err,data) => {
         if(data==null){
             res.send("nothing found") ; 
         } else{
             res.send("Friend request accepted") ; 
         }
-    }); 
+    })
+  }  
+  else{
+    res.status(401).send('Not logged in');
+  }
 });
 
 //Delete corresponding friends document given objectId
-app.delete('/removefriend/:id', async (req, res) => {
-  const friends_id = req.params.id;   
-  Friends.findByIdAndDelete(
-    friends_id,
-    (err,data) => {
+app.delete('/friend/:id', async (req, res) => {
+  if(req.user) { 
+    const friends_id = req.params.id;   
+    Friends.findByIdAndDelete(
+      friends_id,
+      (err,data) => {
         if(data==null){
-            res.send("nothing found") ; 
+          res.send("nothing found") ; 
         } else{
-            res.send("Friend removed") ; 
+          res.send("Friend removed") ; 
         }
     }); 
+  }
+  else{
+    res.status(401).send('Not logged in');
+  }
 });
 
 app.listen(port, () => {
