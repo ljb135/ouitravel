@@ -46,6 +46,8 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 var tripRoutes = require("./routes/trips");
+var TripHisRoutes = require("./routes/tripHistory");
+var PayHisRoutes = require("./routes/PayHistory");
 
 app.get('/user', (req, res) => {
   if(req.user){
@@ -167,67 +169,9 @@ app.delete('/removefriend/:id', async (req, res) => {
 });
 
 app.use("/", tripRoutes);
+app.use("/", TripHisRoutes);
+app.use("/", PayHisRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
-
-//Fake info to check for payment history
-const Payment = require('./models/payment');
-
-function getPaymentHistory(userId) {
-  // Find all payments with the given user ID
-  return Payment.find({ creator_id: userId }).exec();
-}
-
-
-app.get('/payment-history', (req, res) => {
-  if(req.user){
-    getPaymentHistory(req.user._id).then(paymentHistory => {
-      res.status(200).json(paymentHistory);
-    }).catch(err => {
-      console.log(err);
-      res.status(500).send("Error getting payment history");
-    });
-  }
-  else{
-    res.redirect(401, "http://localhost:3000/login");
-  }
-});
-
-function getTripHistory(userId) {
-  // Find all trips with the given user ID
-  return Trip.find({ creator_id: userId }).exec();
-}
-
-app.get('/trip-history', (req, res) => {
-  if (req.user) {
-    getTripHistory(req.user._id)
-      .then(tripHistory => {
-        res.status(200).json(tripHistory);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send("Error getting trip history");
-      });
-  } else {
-    res.status(401).redirect("http://localhost:3000/login");
-  }
-});
-
-app.delete('/trip/:id', (req, res) => {
-  if (req.user) {
-    Trip.deleteOne({ _id: req.params.id, creator_id: req.user._id })
-      .then(() => {
-        res.status(200).send("Trip deleted successfully");
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send("Error deleting trip");
-      });
-  } else {
-    res.status(401).redirect("http://localhost:3000/login");
-  }
-});
-
-
