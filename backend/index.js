@@ -25,7 +25,6 @@ const Trip = require('./models/trip');
 const PayMethod = require('./models/paymethods');
 const { db } = require("./models/user");
 
-
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
   {
@@ -51,6 +50,7 @@ const tripRoutes = require("./routes/trips");
 const friendRoutes = require("./routes/friends");
 const TripHisRoutes = require("./routes/tripHistory");
 const PayHisRoutes = require("./routes/PayHistory");
+const postRoutes = require("./routes/posts")
 
 app.get('/user', (req, res) => {
   if(req.user){
@@ -148,6 +148,7 @@ app.use("/", tripRoutes);
 app.use("/", friendRoutes);
 app.use("/", TripHisRoutes);
 app.use("/", PayHisRoutes);
+app.use("/", postRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
