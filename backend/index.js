@@ -98,6 +98,10 @@ app.post('/logout', function(req, res) {
   });
 });
 
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+  makeConnection();
+})
 
 //creates new post
 app.post('/add_post', async(req, res) =>{
