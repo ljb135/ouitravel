@@ -1,24 +1,23 @@
-var express = require('express'), router = express.Router();
-const {ObjectId} = require('mongodb');
-var Post = require('../models/post');
+const express = require('express'), router = express.Router();
+const mongoose = require('mongoose')
+const Post = require('../models/post');
 let client;
 
-    //creates new post
-    router.post('/add_post', async(req, res) =>{
-        Post.create({
-            trip_id: req.body.trip_id,
-            creator_id: req.body.creator_id,
-            photo_id: req.body.photo_id,
-            comment: req.body.comment
-        }, function(err,res2){
-            if(err){
-            res.send('did not work');
-            console.log(err);
-            }
-            else{console.log(req.body);
-            res.send(req.body);}
-        })
+//creates new post
+router.post('/post', async(req, res) =>{
+  if(req.user){
+    Post.create({
+      trip_id: mongoose.Types.ObjectId(req.body.trip_id),
+      creator_id: req.user._id,
+      photo_id: mongoose.Types.ObjectId(req.body.photo_id),
+      comment: req.body.comment
     });
+    res.status(201).send("Successful");
+  }
+  else{
+    res.status(401).send('Not logged in');
+  }
+});
   
   //returns list of posts given the creator's id
   router.get('/postList', async (req, res) =>{

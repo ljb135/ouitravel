@@ -25,7 +25,6 @@ const Trip = require('./models/trip');
 const PayMethod = require('./models/paymethods');
 const { db } = require("./models/user");
 
-
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
   {
