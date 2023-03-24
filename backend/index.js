@@ -49,6 +49,8 @@ passport.deserializeUser(User.deserializeUser());
 
 const tripRoutes = require("./routes/trips");
 const friendRoutes = require("./routes/friends");
+const TripHisRoutes = require("./routes/tripHistory");
+const PayHisRoutes = require("./routes/PayHistory");
 
 app.get('/user', (req, res) => {
   if(req.user){
@@ -144,6 +146,8 @@ app.delete('/deletemethod', async(req, res) => {
 
 app.use("/", tripRoutes);
 app.use("/", friendRoutes);
+app.use("/", TripHisRoutes);
+app.use("/", PayHisRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
