@@ -46,6 +46,8 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 var tripRoutes = require("./routes/trips");
+var TripHisRoutes = require("./routes/tripHistory");
+var PayHisRoutes = require("./routes/PayHistory");
 
 app.get('/user', (req, res) => {
   if(req.user){
@@ -167,6 +169,8 @@ app.delete('/removefriend/:id', async (req, res) => {
 });
 
 app.use("/", tripRoutes);
+app.use("/", TripHisRoutes);
+app.use("/", PayHisRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
