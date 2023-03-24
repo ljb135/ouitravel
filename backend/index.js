@@ -45,6 +45,8 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
+var tripRoutes = require("./routes/trips");
+
 app.get('/user', (req, res) => {
   if(req.user){
     User.find({email: req.user.email}).then(user => res.status(200).json(user));
@@ -164,41 +166,7 @@ app.delete('/removefriend/:id', async (req, res) => {
     }); 
 });
 
-// Create Trip
-app.post('/trip', (req, res) => {
-  if(req.user){
-    Trip.create({
-      status: "Pending",
-      visibility: "Private",
-      start_date: req.body.start_date,
-      end_date: req.body.end_date,
-      creator_id: req.user._id
-    })
-    res.status(201).send("Successful");
-  }
-  else{
-    res.status(400).send('Not logged in');
-  }
-})
-
-//Delete Trip
-app.delete('/trip/:id', (req, res) => {
-  if(req.user){
-    Trip.findByIdAndDelete(
-      req.params.id,
-      (err,data) => {
-          if(data==null){
-              res.send("nothing found") ; 
-          } else{
-              res.send("Friend removed") ; 
-          }
-      });
-    res.status(200).send("Deleted");
-  }
-  else{
-    res.send("Not logged in")
-  }
-});
+app.use("/", tripRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
