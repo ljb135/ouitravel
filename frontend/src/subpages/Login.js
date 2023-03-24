@@ -1,6 +1,6 @@
-import { Form, Button, Container, Card, Row, Col } from 'react-bootstrap'
+import { Form, Button, Container, Card, Row, Col, Nav } from 'react-bootstrap'
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login(props) {
     const [email, setEmail] = useState("");
@@ -29,19 +29,19 @@ function Login(props) {
                 navigate('/', { replace: true });
             }
             else{
-                alert(response.text());
+                response.text().then(body => {alert(body)}).catch(e => alert(e));
             }
         });
     }
 
     return (
         <Container>
-            <Row>
-                <Col md={{span: 8, offset: 2}}>
+            <Row className='py-5'>
+                <Col md={{span: 6, offset: 3}}>
                     <Card>
                         <Card.Header>Login</Card.Header>
                         <Card.Body>
-                            <Form action='https://localhost:3001/login' method='POST' onSubmit={(e) => handleSubmit(e)}>
+                            <Form onSubmit={(e) => handleSubmit(e)}>
                                 <Form.Group className="mb-3" controlId="formBasicEmail">
                                     <Form.Label>Email address</Form.Label>
                                     <Form.Control
@@ -58,8 +58,12 @@ function Login(props) {
                                         onChange={(e) => setPassword(e.target.value)}/>
                                 </Form.Group>
 
+                                <Nav className="mb-2">
+                                        <Nav.Link className='px-1' as={Link} to="/register">Don't have an account?</Nav.Link>
+                                </Nav>
+
                                 <Button variant="primary" type="submit" onClick={(e) => handleSubmit(e)}>
-                                Submit
+                                    Submit
                                 </Button>
                             </Form>
                         </Card.Body>
