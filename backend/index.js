@@ -47,6 +47,8 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
+var tripRoutes = require("./routes/trips");
+
 app.get('/user', (req, res) => {
   if(req.user){
     User.find({email: req.user.email}).then(user => res.status(200).json(user));
@@ -77,7 +79,7 @@ app.post('/register', (req, res) => {
       return res.status(409).send(err.message)
     }
     passport.authenticate('local')(req, res, function () {
-      res.send('Logged In');
+      res.send(req.user.first_name);
     });
   });
 });
@@ -215,6 +217,8 @@ app.delete('/friend/:id', async (req, res) => {
     res.status(401).send('Not logged in');
   }
 });
+
+app.use("/", tripRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
