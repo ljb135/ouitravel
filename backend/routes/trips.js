@@ -2,7 +2,7 @@ const express = require('express'), router = express.Router();
 const Trip = require('../models/trip');
 
 // Create Trip
-router.post('/trip', (req, res) => {
+function createTrip(req, res){
     if(req.user){
         Trip.create({
             status: "Pending",
@@ -16,10 +16,10 @@ router.post('/trip', (req, res) => {
     else{
         res.status(401).send('Not logged in');
     }
-})
+}
 
 // Edit Trip
-router.put('/trip/:id', (req, res) => {
+function editTrip(req, res){
     // Fields which can be changed
     const keys = ["visibility", "start_date", "end_date", "destination_id", "flight_ids", "hotel_ids", "activity_ids", "collaborator_ids"]
 
@@ -47,11 +47,10 @@ router.put('/trip/:id', (req, res) => {
     else{
         res.status(401).send('Not logged in');
     }
-})
-
+}
 
 //Delete Trip
-router.delete('/trip/:id', (req, res) => {
+function deleteTrip(req, res){
     if(req.user){
         Trip.findOneAndDelete({
             _id: req.params.id,
@@ -72,6 +71,10 @@ router.delete('/trip/:id', (req, res) => {
     else{
         res.status(401).send("Not logged in")
     }
-});
- 
+}
+
+router.delete('/trip/:id', deleteTrip);
+router.put('/trip/:id', editTrip);
+router.post('/trip', createTrip); 
+
 module.exports = router;
