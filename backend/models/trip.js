@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//test
 const tripSchema = new mongoose.Schema({
     status: {type: String, required: true},
     visibility: {type: String, required: true},

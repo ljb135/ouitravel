@@ -48,6 +48,11 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
+const tripRoutes = require("./routes/trips");
+const friendRoutes = require("./routes/friends");
+const TripHisRoutes = require("./routes/tripHistory");
+const PayHisRoutes = require("./routes/PayHistory");
+
 app.get('/user', (req, res) => {
   if(req.user){
     User.find({email: req.user.email}).then(user => res.status(200).json(user));
@@ -78,7 +83,7 @@ app.post('/register', (req, res) => {
       return res.status(409).send(err.message)
     }
     passport.authenticate('local')(req, res, function () {
-      res.send('Logged In');
+      res.send(req.user.first_name);
     });
   });
 });
@@ -171,61 +176,10 @@ app.delete('/method/:id', async(req, res) => {
   })
 });
 
-//FRIEND SYSTEM API CALLS
-//Show list of friends of user given email as identifier
-app.get('/friendslist', async (req, res) => {
-  const {email} = req.body;
-  Friends.find( {$and: [{"status": "friends"},  {$or: [{"user1_email": email}, {"user2_email": email}] }] })
-  .then(data => res.json(data))
-  .catch(error => res.json(error))
-});
-
-//Add a new pending friend request between two users
-app.post('/addfriend', async (req, res) => {
-  const { user1_email, user2_email } = req.body;
-  const status = "pending";
-  try{
-    Friends.create({
-      user1_email,
-      user2_email,
-      status
-    })
-  } catch(error){
-      console.log(error)
-      return res.json({ status: 'error' })
-  }
-  res.send("Friend request sent");
-});
-
-//Update status of friend request to "friends" given objectId
-app.put('/acceptfriend/:id', async (req, res) => {
-  const friends_id = req.params.id;   
-  Friends.findByIdAndUpdate(
-    friends_id,
-    {$set: {status: "friends"} }, 
-    {new: true},
-    (err,data) => {
-        if(data==null){
-            res.send("nothing found") ; 
-        } else{
-            res.send("Friend request accepted") ; 
-        }
-    }); 
-});
-
-//Delete corresponding friends document given objectId
-app.delete('/removefriend/:id', async (req, res) => {
-  const friends_id = req.params.id;   
-  Friends.findByIdAndDelete(
-    friends_id,
-    (err,data) => {
-        if(data==null){
-            res.send("nothing found") ; 
-        } else{
-            res.send("Friend removed") ; 
-        }
-    }); 
-});
+app.use("/", tripRoutes);
+app.use("/", friendRoutes);
+app.use("/", TripHisRoutes);
+app.use("/", PayHisRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
