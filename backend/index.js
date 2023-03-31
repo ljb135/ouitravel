@@ -1,5 +1,4 @@
 require("dotenv").config();
-const {MongoClient, ObjectId} = require('mongodb');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const bodyParser = require("body-parser");
@@ -8,12 +7,10 @@ const cors = require("cors");
 const express = require('express');
 const e = require("express");
 const app = express();
-const port = 3001
+const port = 3001;
 
-let client;
-
-const username = process.env.mongoDB_username;
-const password = process.env.mongoDB_password;
+const username = process.env.MONGODB_USERNAME;
+const password = process.env.MONGODB_PASSWORD;
 const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
@@ -25,22 +22,18 @@ app.use(cors({
 const User = require('./models/user');
 const Friends = require('./models/friends');
 const Trip = require('./models/trip');
+//const PayMethod = require('./models/paymethods');
 const Post = require('./models/post');
 const { db } = require("./models/user");
 
- const uri = `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`;
- function makeConnection(){
-  client = new MongoClient(uri);
-  client.connect().then((con) => {
-    console.log("mongodb connected");
-  }, (err) => {
-    console.log(err);
-  })
- }
- app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-  makeConnection();
-})
+mongoose.connect(
+  `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
+);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require("express-session")({
   secret: "Rusty is a dog",
@@ -54,8 +47,11 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
-var tripRoutes = require("./routes/trips");
-var postRoutes = require("./routes/posts");
+const tripRoutes = require("./routes/trips");
+//const friendRoutes = require("./routes/friends");
+//const TripHisRoutes = require("./routes/tripHistory");
+//const PayHisRoutes = require("./routes/PayHistory");
+const postRoutes = require("./routes/posts")
 
 app.get('/user', (req, res) => {
   if(req.user){
@@ -120,69 +116,41 @@ app.put('/editprofile', async (req, res) => {
   ); 
 });
 
-//FRIEND SYSTEM API CALLS
-//Show list of friends of user given email as identifier
-app.get('/friendslist', async (req, res) => {
-  const {email} = req.body;
-  Friends.find( {$and: [{"status": "friends"},  {$or: [{"user1_email": email}, {"user2_email": email}] }] })
-  .then(data => res.json(data))
-  .catch(error => res.json(error))
+// PAYMETHODS API CALLS
+
+app.get('/getmethod', async(req, res) => {
+  res.send('paymethods');
 });
 
-//Add a new pending friend request between two users
-app.post('/addfriend', async (req, res) => {
-  const { user1_email, user2_email } = req.body;
-  const status = "pending";
-  try{
-    Friends.create({
-      user1_email,
-      user2_email,
-      status
+app.post('/addmethod', async(req, res) => {
+    const new_pay_method = new PayMethod({
+      card_number: req.body.card_number,
+      card_holder_name: req.body.card_holder_name,
+      owner_email: req.body.owner_email,
+      expiration_date: req.body.expiration_date,
+      // getting only the month and year for the date
+      cvv: req.body.cvv
     })
-  } catch(error){
-      console.log(error)
-      return res.json({ status: 'error' })
-  }
-  res.send("Friend request sent");
+
+    new_pay_method.save()
+      .then(item => {
+        res.send("item saved to database");
+      })
+      .catch(err => {
+        res.status(400).send("unable to save to database");
+      })
 });
 
-//Update status of friend request to "friends" given objectId
-app.put('/acceptfriend/:id', async (req, res) => {
-  const friends_id = req.params.id;   
-  Friends.findByIdAndUpdate(
-    friends_id,
-    {$set: {status: "friends"} }, 
-    {new: true},
-    (err,data) => {
-        if(data==null){
-            res.send("nothing found") ; 
-        } else{
-            res.send("Friend request accepted") ; 
-        }
-    }); 
-});
-
-//Delete corresponding friends document given objectId
-app.delete('/removefriend/:id', async (req, res) => {
-  const friends_id = req.params.id;   
-  Friends.findByIdAndDelete(
-    friends_id,
-    (err,data) => {
-        if(data==null){
-            res.send("nothing found") ; 
-        } else{
-            res.send("Friend removed") ; 
-        }
-    }); 
+app.delete('/deletemethod', async(req, res) => {
+  res.send('Deleted');
 });
 
 app.use("/", tripRoutes);
+//app.use("/", friendRoutes);
+//app.use("/", TripHisRoutes);
+//app.use("/", PayHisRoutes);
 app.use("/", postRoutes);
 
-
-
-//app.listen(port, () => {
-//  console.log(`Example app listening on port ${port}`)
-//  makeConnection();
-//})
-
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})

@@ -1,61 +1,92 @@
-var express = require('express'), router = express.Router();
-const {ObjectId} = require('mongodb');
-var Post = require('../models/post');
+const express = require('express'), router = express.Router();
+const mongoose = require('mongoose')
+const Post = require('../models/post');
 let client;
 
-    //creates new post
-    router.post('/add_post', async(req, res) =>{
-        Post.create({
-            trip_id: req.body.trip_id,
-            creator_id: req.body.creator_id,
-            photo_id: req.body.photo_id,
-            comment: req.body.comment
-        }, function(err,res2){
-            if(err){
-            res.send('did not work');
-            console.log(err);
-            }
-            else{console.log(req.body);
-            res.send(req.body);}
-        })
-    });
+//creates new post
+async function createPost(req, res) {
+  if(req.user){
+    try{
+      Post.create({
+        _id: new mongoose.Types.ObjectId(),
+        trip_id: mongoose.Types.ObjectId(req.body.trip_id),
+        creator_id: req.user._id,
+        photo_id: mongoose.Types.ObjectId(req.body.photo_id),
+        comment: req.body.comment
+      });
+      res.status(201).send("Successful");
+    }catch{res.send("Error")}
+    }
+    else{
+      res.status(401).send('Not logged in');
+    }
+}
   
-  //returns list of posts given the creator's id
-  router.get('/postList', async (req, res) =>{
-    Post.find({"creator_id": req.body.creator_id}).toArray((err, docs) => {
-        if (err){
+//returns list of posts given the creator's id
+async function returnPosts(req, res){
+  if(req.user){
+    try{
+      Post.find({creator_id: req.body.creator_id}, (err, docs) =>{
+        if(err){
           console.error(err);
-          return res.status(500).send('Error querying database');
+          res.status(500).send(err);
+        }else{
+          res.status(201).send(docs);
         }
-        console.log(docs)
-  
-        res.send(docs);
       })
-  });
+    }catch{res.send("Error")}
+  }
+  else{
+    res.status(401).send('Not logged in');
+  }
+}
+
+//deletes existing post given post id
+async function deletePost(req, res){
+  if(req.user){
+    try{
+      Post.findByIdAndDelete(req.params.id, (err, deletedDoc) =>{
+        if(err){
+          console.error(err);
+          res.status(500).send(err);
+        }else if(!deletedDoc){
+          res.status(404).send('Document not found');
+        }else{
+          res.status(204).send("Document Deleted");
+        }
+      })
+    }catch{res.send("Error")}
+    }
+    else{
+      res.status(401).send('Not logged in');
+    }
+}
   
-  //deletes existing post given post id
-  router.delete('/delete/:id', (req, res) =>{
-    // const id = new ObjectId(req.params.id);
-    console.log(req.params.id);
-    console.log(Post.findById(req.params.id));
-    Post.findByIdAndDelete(req.params.id, function(err, obj){
-      if(err){
-        res.send(err);
-      }
-      res.send("1 Document Deleted")
-    })});
+//edits element(caption, photos) of an existing post
+async function editPost(req, res){
+  if(req.user){
+    try{
+      const updatedPost = {};
+      updatedPost[req.body.keyToUpdate] = req.body.valueToUpdate;
+      Post.findByIdAndUpdate(req.params.id, updatedObj, {new:true}, (err, updatedDoc) => {
+        if(err){
+          console.error(err);
+          res.status(500).send(err);
+        }else if(!updatedDoc){
+          res.status(404).send('Document not found');
+        }else{
+          res.status(200).send(updatedDoc);
+        }
+      })
+    }catch{res.send("Error")}
+    }
+    else{
+      res.status(401).send('Not logged in');
+    }
+}  
   
-  //edits the comment of a post
-  router.put('/editcaption/:id', async(req, res)=>{
-    var dbo = client.db(dbname);
-    const id = new ObjectId(req.params.id);
-    const new_caption = req.body.comment;
-    dbo.collection("Posts").updateOne({"_id": id}, {$set:{"comment": new_caption}}, function(err, obj){
-      if(err){
-        res.send(err);
-      }else{
-        res.send(req.body);
-      }
-    })
-  });
+router.post('/post', createPost);
+router.get('/postList', returnPosts);
+router.put('/editcaption/:id', editPost);
+router.delete('/delete/:id', deletePost);
 module.exports = router;
