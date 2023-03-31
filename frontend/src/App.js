@@ -6,6 +6,7 @@ import Home from './subpages/Home';
 import Trips from './subpages/Trips';
 import Login from './subpages/Login';
 import Register from "./subpages/Register";
+import PaymentList from "./subpages/Payments";
 
 // const name = window.localStorage.getItem("Name");
 
@@ -48,6 +49,7 @@ function App() {
           <Route path='/login' element={<Login setName={setName}/>}></Route>
           <Route path="/register" element={<Register setName={setName}/>}></Route>
           <Route path="/trips" element={<Trips/>} onEnter={checkAuthentication}></Route>
+          <Route path="/paymentList" element={<PaymentList/>} onEnter={checkAuthentication}></Route>
         </Routes>
     </BrowserRouter>
   );

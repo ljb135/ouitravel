@@ -35,6 +35,7 @@ function Navigation(props){
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="/trips">Trips</Nav.Link>
+                    <Nav.Link as={Link} to="/paymentList">PaymentList</Nav.Link>
                     <Nav.Link as={Link} to="/history">History</Nav.Link>
                 </Nav>
                 <Nav>
@@ -55,6 +56,7 @@ function Navigation(props){
                 <Navbar.Brand as={Link} to="/">OuiTravel</Navbar.Brand>
                 <Nav>
                     <Nav.Link as={Link} to="/login">Login</Nav.Link>
+                    <Nav.Link as={Link} to="/paymentList">PaymentList</Nav.Link>
                 </Nav>
                 </Container>
             </Navbar>
