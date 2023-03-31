@@ -22,8 +22,7 @@ app.use(cors({
 const User = require('./models/user');
 const Friends = require('./models/friends');
 const Trip = require('./models/trip');
-//const PayMethod = require('./models/paymethods');
-const Post = require('./models/post');
+const PayMethod = require('./models/paymethods');
 const { db } = require("./models/user");
 
 mongoose.connect(
@@ -48,9 +47,9 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 const tripRoutes = require("./routes/trips");
-//const friendRoutes = require("./routes/friends");
-//const TripHisRoutes = require("./routes/tripHistory");
-//const PayHisRoutes = require("./routes/PayHistory");
+const friendRoutes = require("./routes/friends");
+const TripHisRoutes = require("./routes/tripHistory");
+const PayHisRoutes = require("./routes/PayHistory");
 const postRoutes = require("./routes/posts")
 
 app.get('/user', (req, res) => {
@@ -146,9 +145,9 @@ app.delete('/deletemethod', async(req, res) => {
 });
 
 app.use("/", tripRoutes);
-//app.use("/", friendRoutes);
-//app.use("/", TripHisRoutes);
-//app.use("/", PayHisRoutes);
+app.use("/", friendRoutes);
+app.use("/", TripHisRoutes);
+app.use("/", PayHisRoutes);
 app.use("/", postRoutes);
 
 app.listen(port, () => {

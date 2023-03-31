@@ -21,8 +21,18 @@ const Activity = require('./models/activity');
 const Location = require('./models/location');
 const Flight = require('./models/flight');
 const Hotel = require('./models/hotel');
-const Post = require('./models/post');
-const Photo = require('./models/photo');
+const Payment = require('./models/payment');
+
+
+const payment = new Payment({
+    price: 1234,
+    creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
+    trip_id: mongoose.Types.ObjectId("6416f5eed9c0268aff676c11"),
+    date : new Date().toJSON().slice(0,10)
+});
+
+Payment.create(payment);  
+
 
 // Location.insertMany([
 //     {
