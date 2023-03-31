@@ -1,5 +1,5 @@
-var express = require('express'), router = express.Router();
-var Trip = require('../models/trip');
+const express = require('express'), router = express.Router();
+const Trip = require('../models/trip');
 
 function getTripHistory(userId) {
     // Find all trips with the given user ID
