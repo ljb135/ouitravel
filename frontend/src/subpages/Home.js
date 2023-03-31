@@ -1,24 +1,34 @@
 import logo from './logo.svg';
 import './App.css';
+import { Card, Container, Row, Col, Stack, ListGroup, Badge } from 'react-bootstrap';
 
 function Home() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Oooo spinny thing
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <h1 className='m-3'>Your trips</h1>
+      <Stack direction="horizontal" gap={3}>
+        <Card>
+          <Card.Body>
+            <Card.Title>Trip to New York City</Card.Title>
+            <Card.Subtitle className='mb-2 text-muted'>8/12/2023 - 3/30/2024</Card.Subtitle>
+          </Card.Body>
+          <ListGroup className="list-group-flush">
+            <ListGroup.Item>Flights
+            <Badge bg="secondary">New</Badge>
+            </ListGroup.Item>
+            <ListGroup.Item>Hotels ✖</ListGroup.Item>
+            <ListGroup.Item>Attractions ✖</ListGroup.Item>
+          </ListGroup>
+          <Card.Footer>Created by User1</Card.Footer>
+        </Card>
+        <Card>
+          <Card.Body>
+            <Card.Title>Trip2</Card.Title>
+          </Card.Body>
+          <Card.Footer>Created by User2</Card.Footer>
+        </Card>
+      </Stack>
+    </Container>
   );
 }
 

@@ -42,7 +42,7 @@ const userRoutes = require("./routes/users");
 const tripRoutes = require("./routes/trips");
 const friendRoutes = require("./routes/friends");
 const TripHisRoutes = require("./routes/tripHistory");
-const PayHisRoutes = require("./routes/PayHistory");
+const PayHisRoutes = require("./routes/payHistory");
 const postRoutes = require("./routes/posts");
 
 // PAYMETHODS API CALLS
@@ -79,7 +79,7 @@ app.use("/", tripRoutes);
 app.use("/", friendRoutes);
 app.use("/", TripHisRoutes);
 app.use("/", PayHisRoutes);
-app.use("/", hotelRoutes);
+// app.use("/", hotelRoutes);
 app.use("/", postRoutes);
 
 app.listen(port, () => {

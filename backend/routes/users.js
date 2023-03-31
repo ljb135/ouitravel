@@ -11,15 +11,6 @@ router.get('/user', (req, res) => {
         User.find({email: req.user.email}).then(user => res.status(200).json(user));
     }
     else{
-      // User.find({}, (err, found) => {
-      //   if (!err) {
-      //     res.json(found);
-      //   }
-      //   else{
-      //     console.log(err);
-      //     res.send("Some error occured!")
-      //   }
-      // });
         res.redirect(401, "http://localhost:3000/login");
     }
 });
