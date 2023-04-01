@@ -58,6 +58,15 @@ function Login(props) {
                                         onChange={(e) => setPassword(e.target.value)}/>
                                 </Form.Group>
 
+                                <Row>
+                                    <Col>
+                                        <Button href="http://localhost:3001/auth/google" variant="outline-dark" role="button" style={{"textTransform":"none"}}>
+                                        <img width="20px" style={{"marginBottom":3, "marginRight":5}} alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                                        Login with Google
+                                        </Button>
+                                    </Col>
+                                </Row>
+
                                 <Nav className="mb-2">
                                         <Nav.Link className='px-1' as={Link} to="/register">Don't have an account?</Nav.Link>
                                 </Nav>
