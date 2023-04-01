@@ -6,15 +6,28 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
-router.get('/user', (req, res) => {
+function getUserInfo(req, res){
     if(req.user){
         User.find({email: req.user.email}).then(user => res.status(200).json(user));
     }
     else{
         res.redirect(401, "http://localhost:3000/login");
     }
-});
-  
+}
+
+function getUserInfoByID(req, res){
+    if(req.user){
+        User.findById(req.params.id).then(user => {
+            res.json(user);
+        });
+    }
+    else{
+        res.status(401).send("Not logged in")
+    }
+}
+
+router.get('/user', getUserInfo);
+router.get('/user/:id', getUserInfoByID);
 router.post('/register', (req, res) => {
     User.register(new User({
         first_name: req.body.first_name,
