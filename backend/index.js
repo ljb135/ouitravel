@@ -14,10 +14,6 @@ const password = process.env.MONGODB_PASSWORD;
 const cluster = "cluster0.qsv7dx5";
 const dbname = "Account";
 
-const GOOGLE_CLIENT_ID = 
-"725360672576-l2tbm1qm7l13lbmp17bohletvvr5f2fh.apps.googleusercontent.com"
-const GOOGLE_CLIENT_SECRET="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"
-
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true
