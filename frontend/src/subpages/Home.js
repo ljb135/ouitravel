@@ -1,42 +1,84 @@
-import logo from './logo.svg';
 import './App.css';
-import { Card, Container, Row, Col, Stack, ListGroup, Badge } from 'react-bootstrap';
+import { Card, Container, Row, ListGroup, Badge, Button } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+
+function format_date(date){
+  date = new Date(date);
+  return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
+}
+
+function tripCard(trip) {
+  return(
+    <Card style={{'min-width': 280}}>
+      <Card.Body>
+        <Card.Title className="d-flex justify-content-between">
+          Trip to New York City
+          <Badge className='ms-2' as={Button}>🖉</Badge>
+        </Card.Title>
+        <Card.Subtitle className='mb-2 text-muted'>
+          {format_date(trip.start_date)} - {format_date(trip.end_date)}
+        </Card.Subtitle>
+      </Card.Body>
+      <ListGroup className="list-group-flush">
+        <ListGroup.Item className="d-flex justify-content-between">
+          Flights
+          <Badge bg="success">✓</Badge>
+        </ListGroup.Item>
+        <ListGroup.Item className="d-flex justify-content-between">
+          Hotels
+          <Badge bg="danger">✕</Badge>
+        </ListGroup.Item>
+        <ListGroup.Item className="d-flex justify-content-between">
+          Activities
+          <Badge bg="secondary">0</Badge>
+        </ListGroup.Item>
+      </ListGroup>
+      <Card.Footer>Created by User1</Card.Footer>
+    </Card>
+  );
+}
+
+function UserTrips(){
+  const[trips, setTrips] = useState(null);
+
+  function getTrips(){
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow',
+      credentials: "include"
+    };
+    
+    fetch("http://localhost:3001/trip/user", requestOptions)
+    .then(response => response.json())
+    .then(json => setTrips(json))
+    .catch(() => setTrips(null));
+  }
+
+  useEffect(() => {
+    getTrips();
+  }, []);
+
+  let cards;
+  if(trips){
+    cards = trips.map(trip => <ListGroup.Item className='border-0'>{tripCard(trip)}</ListGroup.Item>);
+  }
+
+  return (
+    <Row>
+      <h2 className='my-3 mx-2'>Your trips</h2>
+      <ListGroup horizontal='sm' style={{'overflow-y': 'auto'}}>
+        {cards}
+      </ListGroup>
+    </Row>
+  );
+}
 
 function Home() {
-  return (
+  return(
     <Container>
-      <h1 className='my-4'>Your trips</h1>
-      <Stack direction="horizontal" gap={3}>
-        <Card>
-          <Card.Body>
-            <Card.Title>Trip to New York City</Card.Title>
-            <Card.Subtitle className='mb-2 text-muted'>8/12/2023 - 3/30/2024</Card.Subtitle>
-          </Card.Body>
-          <ListGroup className="list-group-flush">
-            <ListGroup.Item className="d-flex justify-content-between">
-              Flights
-              <Badge bg="success">✓</Badge>
-            </ListGroup.Item>
-            <ListGroup.Item className="d-flex justify-content-between">
-              Hotels
-              <Badge bg="danger">✕</Badge>
-            </ListGroup.Item>
-            <ListGroup.Item className="d-flex justify-content-between">
-              Activities
-              <Badge bg="secondary">0</Badge>
-            </ListGroup.Item>
-          </ListGroup>
-          <Card.Footer>Created by User1</Card.Footer>
-        </Card>
-        <Card>
-          <Card.Body>
-            <Card.Title>Trip2</Card.Title>
-          </Card.Body>
-          <Card.Footer>Created by User2</Card.Footer>
-        </Card>
-      </Stack>
+      {UserTrips()}
     </Container>
-  );
+  )
 }
 
 export default Home;

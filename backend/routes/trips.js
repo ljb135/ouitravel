@@ -18,6 +18,25 @@ function createTrip(req, res){
     }
 }
 
+function getTripbyUser(req, res){
+    if(req.user){
+        Trip.find({creator_id: req.user._id}).then(trip => res.status(200).json(trip));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
+
+// Get Trip by User ID
+function getTripbyUserID(req, res){
+    if(req.user){
+        Trip.find({creator_id: req.user._id}).then(trip => res.status(200).send(json(trip)));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
+
 // Edit Trip
 function editTrip(req, res){
     // Fields which can be changed
@@ -73,6 +92,8 @@ function deleteTrip(req, res){
     }
 }
 
+router.get('/trip/user', getTripbyUser);
+router.get('/trip/user/:id', getTripbyUserID);
 router.delete('/trip/:id', deleteTrip);
 router.put('/trip/:id', editTrip);
 router.post('/trip', createTrip); 

@@ -17,15 +17,13 @@ function Navigation(props){
         fetch("http://localhost:3001/logout", requestOptions)
         .then(response => {
             if(response.ok){
-                props.setName(null);
-                navigate('/', { replace: true });
+                navigate(0);
             }
             else{
                 alert(response.text());
             }
         });
     }
-    // fetch("localhost:3001/users")
 
     if(props.name !== null){
         return(
@@ -53,9 +51,9 @@ function Navigation(props){
             <Navbar bg="light" variant="light">
                 <Container>
                 <Navbar.Brand as={Link} to="/">OuiTravel</Navbar.Brand>
-                <Nav>
+                {/* <Nav>
                     <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                </Nav>
+                </Nav> */}
                 </Container>
             </Navbar>
         );

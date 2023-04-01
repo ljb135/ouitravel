@@ -34,7 +34,7 @@ function checkAuthentication(nextState, replace, next){
 }
 
 function App() {
-  const [name, setName] = useState(null)
+  const [name, setName] = useState(null);
 
   useEffect(() => {
     isloggedIn(setName);
@@ -42,10 +42,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navigation name={name} setName={setName}/>
+      <Navigation name={name}/>
         <Routes>
-          <Route path='/' element={<Home/>}></Route>
-          <Route path='/login' element={<Login setName={setName}/>}></Route>
+          <Route path='/' element={(name !== null) ? <Home/> : <Login setName={setName}/>}></Route>
+          {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
           <Route path="/trips" element={<Trips/>} onEnter={checkAuthentication}></Route>
         </Routes>
