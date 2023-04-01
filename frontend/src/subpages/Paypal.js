@@ -1,9 +1,11 @@
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+
 function Paypal() {
     return (
-      <div className="Paypal">
-        <h1>This is a new page</h1>
-      </div>
+        <PayPalScriptProvider options={{ "client-id": "AYvk_kMZLe9ZaOrBQSKBVpH3mA8zD2A7GRwWAaf9CqK6OEnL9bzu_x_N7F-2699ylU3skfWKgyX2ZugP" }}>
+            <PayPalButtons style={{ layout: "vertical" }} />
+        </PayPalScriptProvider>
     );
-  }
+}
   
-  export default Paypal;
+export default Paypal;
