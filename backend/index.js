@@ -52,6 +52,7 @@ const tripRoutes = require("./routes/trips");
 const friendRoutes = require("./routes/friends");
 const TripHisRoutes = require("./routes/tripHistory");
 const PayHisRoutes = require("./routes/PayHistory");
+const PayMethodRoutes = require("./routes/PayMethod");
 
 app.get('/user', (req, res) => {
   if(req.user){
@@ -180,6 +181,7 @@ app.use("/", tripRoutes);
 app.use("/", friendRoutes);
 app.use("/", TripHisRoutes);
 app.use("/", PayHisRoutes);
+app.use("/", PayMethodRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
