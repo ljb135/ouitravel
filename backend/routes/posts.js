@@ -1,21 +1,31 @@
 const express = require('express'), router = express.Router();
 const mongoose = require('mongoose')
+const fs = require('fs')
+const path = require('path')
 const Post = require('../models/post');
 let client;
 
 //creates new post
 async function createPost(req, res) {
   if(req.user){
-    try{
+    
       Post.create({
         _id: new mongoose.Types.ObjectId(),
         trip_id: mongoose.Types.ObjectId(req.body.trip_id),
         creator_id: req.user._id,
-        photo_id: mongoose.Types.ObjectId(req.body.photo_id),
         comment: req.body.comment
-      });
+      }).then ((err, item) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            // item.save();
+            res.redirect('/');
+        }
+    });
+      
       res.status(201).send("Successful");
-    }catch{res.send("Error")}
+    
     }
     else{
       res.status(401).send('Not logged in');
