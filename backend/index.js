@@ -19,9 +19,6 @@ app.use(cors({
   credentials: true
 }))
 
-const User = require('./models/user');
-const Friends = require('./models/friends');
-const Trip = require('./models/trip');
 const PayMethod = require('./models/paymethods');
 const { db } = require("./models/user");
 const valid_or_not = require("./models/valid_card");
@@ -44,84 +41,51 @@ app.use(require("express-session")({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser()); 
-
+const userRoutes = require("./routes/users");
 const tripRoutes = require("./routes/trips");
 const friendRoutes = require("./routes/friends");
 const TripHisRoutes = require("./routes/tripHistory");
 const PayHisRoutes = require("./routes/PayHistory");
 const PaypalRoutes = require("./routes/paypal-api")
+const postRoutes = require("./routes/posts");
 
-app.get('/user', (req, res) => {
-  if(req.user){
-    User.find({email: req.user.email}).then(user => res.status(200).json(user));
-  }
-  else{
-    // User.find({}, (err, found) => {
-    //   if (!err) {
-    //     res.json(found);
-    //   }
-    //   else{
-    //     console.log(err);
-    //     res.send("Some error occured!")
-    //   }
-    // });
-    res.redirect(401, "http://localhost:3000/login");
-  }
+// PAYMETHODS API CALLS
+
+app.get('/getmethod', async(req, res) => {
+  res.send('paymethods');
 });
 
-app.post('/register', (req, res) => {
-  User.register(new User({
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email,
-    dob: req.body.dob,
-    is_mod: req.body.is_mod
-  }), req.body.password, err => {
-    if(err){
-      return res.status(409).send(err.message)
-    }
-    passport.authenticate('local')(req, res, function () {
-      res.send(req.user.first_name);
-    });
-  });
+app.post('/addmethod', async(req, res) => {
+    const new_pay_method = new PayMethod({
+      card_number: req.body.card_number,
+      card_holder_name: req.body.card_holder_name,
+      owner_email: req.body.owner_email,
+      expiration_date: req.body.expiration_date,
+      // getting only the month and year for the date
+      cvv: req.body.cvv
+    })
+
+    new_pay_method.save()
+      .then(item => {
+        res.send("item saved to database");
+      })
+      .catch(err => {
+        res.status(400).send("unable to save to database");
+      })
 });
 
-app.post('/login', passport.authenticate('local'), function(req, res) {
-  res.send(req.user.first_name);
+app.delete('/deletemethod', async(req, res) => {
+  res.send('Deleted');
 });
 
-app.post('/logout', function(req, res) {
-  req.logout(function(err){
-    if (err) res.send(err);
-    else res.send("Logged Out");
-  });
-});
-
-//Edit profile information given email as identifier
-app.put('/editprofile', async (req, res) => {
-  const { email, first_name, last_name, dob } = req.body;
-  User.findOneAndUpdate(
-    {email: email},
-    {$set: {first_name: first_name, last_name: last_name, dob: dob} }, 
-    {new: true},
-    (err,data) => {
-      if(data==null){
-          res.send("nothing found") ; 
-      } else{
-          res.send(data) ; 
-      }
-    }
-  ); 
-});
-
+app.use("/", userRoutes);
 app.use("/", tripRoutes);
 app.use("/", friendRoutes);
 app.use("/", TripHisRoutes);
 app.use("/", PayHisRoutes);
 app.use("/", PaypalRoutes);
+// app.use("/", hotelRoutes);
+app.use("/", postRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
