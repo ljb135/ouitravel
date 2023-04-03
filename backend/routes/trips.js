@@ -96,6 +96,6 @@ router.get('/trip/user', getTripbyUser);
 router.get('/trip/user/:id', getTripbyUserID);
 router.delete('/trip/:id', deleteTrip);
 router.put('/trip/:id', editTrip);
-router.post('/trip', createTrip); 
+router.post('/trip', createTrip);
 
 module.exports = router;

@@ -42,15 +42,6 @@ passport.use(new GoogleStrategy({
     }
 ));
 
-router.get("/auth/google", passport.authenticate("google", { scope: ["email", "profile"] }));
-
-router.get("/auth/google/callback",
-    passport.authenticate("google"),
-    (req, res) => {
-        res.redirect("http://localhost:3000/");
-    }
-);
-
 function getUserInfo(req, res){
     if(req.user){
         User.find({email: req.user.email}).then(user => res.status(200).json(user));
@@ -71,9 +62,7 @@ function getUserInfoByID(req, res){
     }
 }
 
-router.get('/user', getUserInfo);
-router.get('/user/:id', getUserInfoByID);
-router.post('/register', (req, res) => {
+function registerUser(req, res){
     User.register(new User({
         first_name: req.body.first_name,
         last_name: req.body.last_name,
@@ -88,21 +77,21 @@ router.post('/register', (req, res) => {
             res.send(req.user.first_name);
         });
     });
-});
-  
-router.post('/login', passport.authenticate('local'), function(req, res) {
+}
+
+function login(req, res){
     res.send(req.user.first_name);
-});
-  
-router.post('/logout', function(req, res) {
+}
+
+function logout(req, res){
     req.logout(function(err){
         if (err) res.send(err);
         else res.send("Logged Out");
     });
-});
+}
 
 //Edit profile information given email as identifier
-router.put('/user', async (req, res) => {
+function editUser(req, res){
     const { email, first_name, last_name, dob } = req.body;
     User.findOneAndUpdate(
         {email: email},
@@ -116,6 +105,20 @@ router.put('/user', async (req, res) => {
             }
         }
     ); 
-});
+}
+
+function redirect(req, res){
+    res.redirect("http://localhost:3000/");
+}
+
+router.get('/user', getUserInfo);
+router.get('/user/:id', getUserInfoByID);
+router.post('/user', registerUser);
+router.put('/user', editUser);
+router.post('/login', passport.authenticate('local'), login);
+router.post('/logout', logout);
+
+router.get("/auth/google", passport.authenticate("google", { scope: ["email", "profile"] }));
+router.get("/auth/google/callback", passport.authenticate("google"), redirect);
 
 module.exports = router;
