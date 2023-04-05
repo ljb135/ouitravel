@@ -9,12 +9,12 @@ function Navigation(props){
     
     function signOut(){
         var requestOptions = {
-            method: 'POST',
+            method: 'DELETE',
             redirect: 'follow',
             'credentials': 'include'
         };
 
-        fetch("http://localhost:3001/logout", requestOptions)
+        fetch("http://localhost:3001/session", requestOptions)
         .then(response => {
             if(response.ok){
                 navigate(0);
@@ -32,7 +32,7 @@ function Navigation(props){
                 <Navbar.Brand as={Link} to="/">OuiTravel</Navbar.Brand>
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
-                    <Nav.Link as={Link} to="/trips">Trips</Nav.Link>
+                    <Nav.Link as={Link} to="/explore">Explore</Nav.Link>
                     <Nav.Link as={Link} to="/history">History</Nav.Link>
                 </Nav>
                 <Nav>

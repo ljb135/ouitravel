@@ -2,8 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import Navigation from './subpages/Navigation';
-import Home from './subpages/Home';
-import Trips from './subpages/Trips';
+import Dashboard from './subpages/Dashboard';
+import Trip from './subpages/Trip';
 import Login from './subpages/Login';
 import Register from "./subpages/Register";
 
@@ -26,7 +26,7 @@ function checkAuthentication(nextState, replace, next){
   console.log("Checking authentication")
   if(!isloggedIn()){
     replace({
-      pathname: "/login",
+      pathname: "/session",
       state: {nextPathname: nextState.location.pathname}
     });
   }
@@ -44,10 +44,10 @@ function App() {
     <BrowserRouter>
       <Navigation name={name}/>
         <Routes>
-          <Route path='/' element={(name !== null) ? <Home/> : <Login setName={setName}/>}></Route>
+          <Route path='/' element={(name !== null) ? <Dashboard/> : <Login setName={setName}/>}></Route>
           {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
-          <Route path="/trips" element={<Trips/>} onEnter={checkAuthentication}></Route>
+          <Route path="/trip/:id" element={<Trip/>} onEnter={checkAuthentication}></Route>
         </Routes>
     </BrowserRouter>
   );

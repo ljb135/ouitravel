@@ -22,7 +22,7 @@ function Login(props) {
             'credentials': 'include'
         };
 
-        fetch("http://localhost:3001/login", requestOptions)
+        fetch("http://localhost:3001/session", requestOptions)
         .then(response => {
             if(response.ok){
                 response.text().then(name => props.setName(name));

@@ -41,9 +41,10 @@ app.use(passport.session());
 const userRoutes = require("./routes/users");
 const tripRoutes = require("./routes/trips");
 const friendRoutes = require("./routes/friends");
-const TripHisRoutes = require("./routes/tripHistory");
-const PayHisRoutes = require("./routes/payHistory");
+const tripHisRoutes = require("./routes/tripHistory");
+const payHisRoutes = require("./routes/payHistory");
 const postRoutes = require("./routes/posts");
+const amadeusRoutes = require("./routes/amadeus")
 
 // PAYMETHODS API CALLS
 
@@ -77,10 +78,11 @@ app.delete('/deletemethod', async(req, res) => {
 app.use("/", userRoutes);
 app.use("/", tripRoutes);
 app.use("/", friendRoutes);
-app.use("/", TripHisRoutes);
-app.use("/", PayHisRoutes);
+app.use("/", tripHisRoutes);
+app.use("/", payHisRoutes);
 // app.use("/", hotelRoutes);
 app.use("/", postRoutes);
+app.use("/", amadeusRoutes)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

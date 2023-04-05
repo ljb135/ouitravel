@@ -2,9 +2,6 @@ const express = require('express'), router = express.Router();
 const passport = require('passport');
 const User = require('../models/user');
 
-const GOOGLE_CLIENT_ID = "725360672576-l2tbm1qm7l13lbmp17bohletvvr5f2fh.apps.googleusercontent.com";
-const GOOGLE_CLIENT_SECRET = "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";
-
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
@@ -12,10 +9,10 @@ passport.deserializeUser(User.deserializeUser());
 //Google Login
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
 
-
+// console.log(process.env.GOOGLE_CLIENT_ID)
 passport.use(new GoogleStrategy({
-        clientID: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: "http://localhost:3001/auth/google/callback",
         passReqToCallback : true
     },
@@ -115,8 +112,8 @@ router.get('/user', getUserInfo);
 router.get('/user/:id', getUserInfoByID);
 router.post('/user', registerUser);
 router.put('/user', editUser);
-router.post('/login', passport.authenticate('local'), login);
-router.post('/logout', logout);
+router.post('/session', passport.authenticate('local'), login);
+router.delete('/session', logout);
 
 router.get("/auth/google", passport.authenticate("google", { scope: ["email", "profile"] }));
 router.get("/auth/google/callback", passport.authenticate("google"), redirect);
