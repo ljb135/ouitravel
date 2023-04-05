@@ -1,7 +1,14 @@
 const mongoose = require('mongoose');
 
 const photoSchema = new mongoose.Schema({
-    creator_id: {type: mongoose.Types.ObjectId, required: true},
+    name :{
+        type: String,
+        required:true
+    },
+    img:{
+        data:Buffer,
+        contentType: String
+    }
 });
 
 module.exports = mongoose.model('Photo', photoSchema);
