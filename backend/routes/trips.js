@@ -6,15 +6,45 @@ function createTrip(req, res){
     if(req.user){
         Trip.create({
             status: "Pending",
-            visibility: "Private",
+            visibility: req.body.visibility,
             start_date: req.body.start_date,
             end_date: req.body.end_date,
+            destination_id: req.body.destination_id,
             creator_id: req.user._id
         })
         res.status(201).send("Successful");
     }
     else{
         res.status(401).send('Not logged in');
+    }
+}
+
+function getTripbyUser(req, res){
+    if(req.user){
+        Trip.find({creator_id: req.user._id}).then(trip => res.status(200).json(trip));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
+
+// Get Trip by Trip ID
+function getTripbyID(req, res){
+    if(req.user){
+        Trip.findOne({_id: req.params.id, creator_id: req.user._id}).then(trip => res.status(200).json(trip));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
+
+// Get Trip by User ID
+function getTripbyUserID(req, res){
+    if(req.user){
+        Trip.find({creator_id: req.user._id}).then(trip => res.status(200).send(json(trip)));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
     }
 }
 
@@ -73,8 +103,11 @@ function deleteTrip(req, res){
     }
 }
 
-router.delete('/trip/:id', deleteTrip);
-router.put('/trip/:id', editTrip);
-router.post('/trip', createTrip); 
+router.get('/trip/id/:id', getTripbyID);
+router.get('/trip/user', getTripbyUser);
+router.get('/trip/user/:id', getTripbyUserID);
+router.delete('/trip/id/:id', deleteTrip);
+router.put('/trip/id/:id', editTrip);
+router.post('/trip', createTrip);
 
 module.exports = router;

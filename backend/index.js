@@ -20,9 +20,6 @@ app.use(cors({
 }))
 
 const PayMethod = require('./models/paymethods');
-const { db } = require("./models/user");
-const valid_or_not = require("./models/valid_card");
-
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
@@ -44,48 +41,21 @@ app.use(passport.session());
 const userRoutes = require("./routes/users");
 const tripRoutes = require("./routes/trips");
 const friendRoutes = require("./routes/friends");
-const TripHisRoutes = require("./routes/tripHistory");
-const PayHisRoutes = require("./routes/PayHistory");
-const PaypalRoutes = require("./routes/paypal-api")
+const tripHisRoutes = require("./routes/tripHistory");
+const payHisRoutes = require("./routes/payHistory");
 const postRoutes = require("./routes/posts");
-
-// PAYMETHODS API CALLS
-
-app.get('/getmethod', async(req, res) => {
-  res.send('paymethods');
-});
-
-app.post('/addmethod', async(req, res) => {
-    const new_pay_method = new PayMethod({
-      card_number: req.body.card_number,
-      card_holder_name: req.body.card_holder_name,
-      owner_email: req.body.owner_email,
-      expiration_date: req.body.expiration_date,
-      // getting only the month and year for the date
-      cvv: req.body.cvv
-    })
-
-    new_pay_method.save()
-      .then(item => {
-        res.send("item saved to database");
-      })
-      .catch(err => {
-        res.status(400).send("unable to save to database");
-      })
-});
-
-app.delete('/deletemethod', async(req, res) => {
-  res.send('Deleted');
-});
+const amadeusRoutes = require("./routes/amadeus");
+const payMethodRoutes = require("./routes/PayMethod")
 
 app.use("/", userRoutes);
 app.use("/", tripRoutes);
 app.use("/", friendRoutes);
-app.use("/", TripHisRoutes);
-app.use("/", PayHisRoutes);
+app.use("/", tripHisRoutes);
+app.use("/", payHisRoutes);
+app.use("/", PayMethodRoutes);
 app.use("/", PaypalRoutes);
-// app.use("/", hotelRoutes);
 app.use("/", postRoutes);
+app.use("/", amadeusRoutes)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
