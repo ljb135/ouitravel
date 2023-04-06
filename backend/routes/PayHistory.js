@@ -1,5 +1,5 @@
-var express = require('express'), router = express.Router();
-var Payment = require('../models/payment');
+const express = require('express'), router = express.Router();
+const Payment = require('../models/payment');
 
 function getPaymentHistory(userId) {
   // Find all payments with the given user ID

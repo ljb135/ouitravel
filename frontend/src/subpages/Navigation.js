@@ -9,23 +9,21 @@ function Navigation(props){
     
     function signOut(){
         var requestOptions = {
-            method: 'POST',
+            method: 'DELETE',
             redirect: 'follow',
             'credentials': 'include'
         };
 
-        fetch("http://localhost:3001/logout", requestOptions)
+        fetch("http://localhost:3001/session", requestOptions)
         .then(response => {
             if(response.ok){
-                props.setName(null);
-                navigate('/', { replace: true });
+                navigate(0);
             }
             else{
                 alert(response.text());
             }
         });
     }
-    // fetch("localhost:3001/users")
 
     if(props.name !== null){
         return(
@@ -34,8 +32,7 @@ function Navigation(props){
                 <Navbar.Brand as={Link} to="/">OuiTravel</Navbar.Brand>
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
-                    <Nav.Link as={Link} to="/trips">Trips</Nav.Link>
-                    <Nav.Link as={Link} to="/paymentList">PaymentList</Nav.Link>
+                    <Nav.Link as={Link} to="/explore">Explore</Nav.Link>
                     <Nav.Link as={Link} to="/history">History</Nav.Link>
                 </Nav>
                 <Nav>
@@ -54,10 +51,9 @@ function Navigation(props){
             <Navbar bg="light" variant="light">
                 <Container>
                 <Navbar.Brand as={Link} to="/">OuiTravel</Navbar.Brand>
-                <Nav>
+                {/* <Nav>
                     <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                    <Nav.Link as={Link} to="/paymentList">PaymentList</Nav.Link>
-                </Nav>
+                </Nav> */}
                 </Container>
             </Navbar>
         );

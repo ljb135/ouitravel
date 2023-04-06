@@ -6,7 +6,7 @@ const tripSchema = new mongoose.Schema({
     visibility: {type: String, required: true},
     start_date: {type: Date, required: true},
     end_date: {type: Date, required: true},
-    destination_id: [mongoose.Types.ObjectId],
+    destination_id: {type: String,  required: true},
     flight_ids: [mongoose.Types.ObjectId],
     hotel_ids: [mongoose.Types.ObjectId],
     activity_ids: [mongoose.Types.ObjectId],
