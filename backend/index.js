@@ -19,7 +19,6 @@ app.use(cors({
   credentials: true
 }))
 
-const PayMethod = require('./models/paymethods');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 
