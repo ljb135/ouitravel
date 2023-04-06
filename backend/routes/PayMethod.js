@@ -1,17 +1,9 @@
-// PAYMETHODS API CALLS
+const express = require('express'), router = express.Router();
+const PayMethod = require('../models/paymethods');
+const valid_or_not = require("../models/valid_card");
 
-// app.get('/method/:id', async(req, res) => {
-//   get_id = req.params.id;
-//   PayMethod.find({ id: get_id}, async(err, docs) => {
-//     if (err){
-//         console.log(err);
-//     }
-//     else{
 
-//     }
-// });
-
-app.post('/addmethod', (req, res) => {
+router.post('/addmethod', (req, res) => {
     if(req.user) {
       const is_valid = valid_or_not.valid_credit_card(req.body.card_number);
   
@@ -42,7 +34,7 @@ app.post('/addmethod', (req, res) => {
       }
   });
   
-  app.delete('/method/:id', async(req, res) => {
+  router.delete('/method/:id', async(req, res) => {
     // deletes the first data in the collection why?
     const method_id = req.params.id;
   
