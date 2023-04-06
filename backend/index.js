@@ -45,15 +45,16 @@ const tripHisRoutes = require("./routes/tripHistory");
 const payHisRoutes = require("./routes/payHistory");
 const postRoutes = require("./routes/posts");
 const amadeusRoutes = require("./routes/amadeus");
-const payMethodRoutes = require("./routes/PayMethod")
+const payMethodRoutes = require("./routes/PayMethod");
+const paypalRoutes = require("./routes/paypal-api");
 
 app.use("/", userRoutes);
 app.use("/", tripRoutes);
 app.use("/", friendRoutes);
 app.use("/", tripHisRoutes);
 app.use("/", payHisRoutes);
-app.use("/", PayMethodRoutes);
-app.use("/", PaypalRoutes);
+app.use("/", payMethodRoutes);
+app.use("/", paypalRoutes);
 app.use("/", postRoutes);
 app.use("/", amadeusRoutes)
 
