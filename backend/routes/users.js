@@ -6,16 +6,60 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
-router.get('/user', (req, res) => {
+//Google Login
+const GoogleStrategy = require("passport-google-oauth2").Strategy;
+
+// console.log(process.env.GOOGLE_CLIENT_ID)
+passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "http://localhost:3001/auth/google/callback",
+        passReqToCallback : true
+    },
+    async (request, accessToken, refreshToken, profile, done) => {
+        try {
+            // console.log(profile)
+            let existingUser = await User.findOne({ 'email': profile.email });
+            if (existingUser) {
+                return done(null, existingUser);
+            }
+            console.log('Creating new user...');
+            const newUser = new User({
+                first_name: profile.given_name,
+                last_name: profile.family_name,
+                email: profile.email,
+                dob: Date(),
+                is_mod: false
+            });
+            await newUser.save();
+            return done(null, newUser);
+        } catch (error) {
+            return done(error, false)
+        }
+    }
+));
+
+function getUserInfo(req, res){
     if(req.user){
         User.find({email: req.user.email}).then(user => res.status(200).json(user));
     }
     else{
         res.redirect(401, "http://localhost:3000/login");
     }
-});
-  
-router.post('/register', (req, res) => {
+}
+
+function getUserInfoByID(req, res){
+    if(req.user){
+        User.findById(req.params.id).then(user => {
+            res.json(user);
+        });
+    }
+    else{
+        res.status(401).send("Not logged in")
+    }
+}
+
+function registerUser(req, res){
     User.register(new User({
         first_name: req.body.first_name,
         last_name: req.body.last_name,
@@ -30,21 +74,21 @@ router.post('/register', (req, res) => {
             res.send(req.user.first_name);
         });
     });
-});
-  
-router.post('/login', passport.authenticate('local'), function(req, res) {
+}
+
+function login(req, res){
     res.send(req.user.first_name);
-});
-  
-router.post('/logout', function(req, res) {
+}
+
+function logout(req, res){
     req.logout(function(err){
         if (err) res.send(err);
         else res.send("Logged Out");
     });
-});
+}
 
 //Edit profile information given email as identifier
-router.put('/user', async (req, res) => {
+function editUser(req, res){
     const { email, first_name, last_name, dob } = req.body;
     User.findOneAndUpdate(
         {email: email},
@@ -58,6 +102,20 @@ router.put('/user', async (req, res) => {
             }
         }
     ); 
-});
+}
+
+function redirect(req, res){
+    res.redirect("http://localhost:3000/");
+}
+
+router.get('/user', getUserInfo);
+router.get('/user/:id', getUserInfoByID);
+router.post('/user', registerUser);
+router.put('/user', editUser);
+router.post('/session', passport.authenticate('local'), login);
+router.delete('/session', logout);
+
+router.get("/auth/google", passport.authenticate("google", { scope: ["email", "profile"] }));
+router.get("/auth/google/callback", passport.authenticate("google"), redirect);
 
 module.exports = router;
