@@ -77,17 +77,30 @@ Payment.create(payment);
 //     }
 // ])
 
-//const trip = new Trip({
-  //  status: "Duplicate",
-    //visibility: "Delete API Test",
-    //start_date: "1/21/2023",
-    //end_date: "5/16/2023",
-    //price: 1500,
-    //destination_id: mongoose.Types.ObjectId("6416f47360181ea99065035b"),
-    //hotel_ids: [mongoose.Types.ObjectId("6416f47360181ea99065035c")],
-    //activity_ids: [mongoose.Types.ObjectId("6416ce4bdad2fae420807c7d"), mongoose.Types.ObjectId("6416f2c0d187b8f01efd5acd")],
-    //creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
-    //collaborator_ids: [mongoose.Types.ObjectId("64152eb6a874c4e143d5b840")]
-//});
+Post.insertMany([
+    {
+        trip_id: mongoose.Types.ObjectId('6416f5eed9c0268aff676c11'),
+        creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
+        photo_id: {type: mongoose.Types.ObjectId},
+        caption: "Test Post Caption"
+    }
+])
 
-//Trip.create(trip);
+const trip = new Trip({
+    status: "Pending",
+    start_date: "4/20/2023",
+    end_date: "5/16/2023",
+    price: 1500,
+    destination_id: mongoose.Types.ObjectId("6416f47360181ea99065035b"),
+    hotel_ids: [mongoose.Types.ObjectId("6416f47360181ea99065035c")],
+    activity_ids: [mongoose.Types.ObjectId("6416ce4bdad2fae420807c7d"), mongoose.Types.ObjectId("6416f2c0d187b8f01efd5acd")],
+    creator_id: mongoose.Types.ObjectId("63ffcb2f520f04fce809870c"),
+    collaborator_ids: [mongoose.Types.ObjectId("64152eb6a874c4e143d5b840")]
+});
+
+const photo = new Photo({
+    creator_id: "1234"
+})
+Trip.create(trip);
+//Photo.create(photo);
+//Post.create(post);
