@@ -46,7 +46,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 var tripRoutes = require("./routes/trips");
-var TripHisRoutes = require("./routes/tripHistory");
+var TripHisRoutes = require("./routes/TripHistory");
 var PayHisRoutes = require("./routes/PayHistory");
 
 app.get('/user', (req, res) => {
