@@ -1,4 +1,4 @@
-import './Home.css';
+import './Dashboard.css';
 import { Card, Container, Row, ListGroup, Badge, Button, Modal, Form } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -46,12 +46,12 @@ function TripCard(props) {
       <Card.Body>
         <Card.Title className="d-flex justify-content-between">
           Trip to {props.trip.destination_id}
-          <Badge className='ms-2' as={Button} onClick={redirectToTrip}>🖉</Badge>
+          <Badge className="edit-button" as={Button} onClick={redirectToTrip}>🖉</Badge>
         </Card.Title>
         <Card.Subtitle className='mb-2 text-muted'>
           {format_date(props.trip.start_date)} - {format_date(props.trip.end_date)}
         </Card.Subtitle>
-        <Card.Subtitle className='mb-2 text-muted'>
+        <Card.Subtitle className='mb-1 text-muted'>
           {countPeople()}
         </Card.Subtitle>
       </Card.Body>
