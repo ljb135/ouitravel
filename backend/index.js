@@ -86,7 +86,6 @@ app.use("/", TripHisRoutes);
 app.use("/", PayHisRoutes);
 // app.use("/", hotelRoutes);
 app.use("/", postRoutes);
-app.use("/", photoRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
