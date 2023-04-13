@@ -88,7 +88,7 @@ function NewTripModal(props){
     fetch(`http://localhost:3001/amadeus/search?keyword=${query}`)
     .then((resp) => resp.json())
     .then((locations) => {
-      console.log(locations.data.map(location => location));
+      console.log(locations.data);
       setLocations(locations.data);
       setIsLoading(false);
     });
