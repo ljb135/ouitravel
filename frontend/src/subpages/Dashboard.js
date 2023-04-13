@@ -1,5 +1,5 @@
 import './Dashboard.css';
-import { Card, Container, Row, ListGroup, Badge, Button, Modal, Form } from 'react-bootstrap';
+import { Card, Container, Row, ListGroup, Badge, Button, Modal, Form, Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
@@ -7,7 +7,7 @@ import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 function format_date(date){
   date = new Date(date);
-  return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
+  return (date.getMonth()+1) + "/" + (date.getDate()+1) + "/" + date.getFullYear();
 }
 
 function TripCard(props) {
@@ -151,18 +151,26 @@ function NewTripModal(props){
           onChange={(selected) => setDestination(selected[0].id)}
         />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formStartDate">
-        <Form.Label>Start Date</Form.Label>
-        <Form.Control
-          type="date"
-          onChange={(e) => setStartDate(e.target.value)}/>
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="formEndDates">
-        <Form.Label>End Date</Form.Label>
-        <Form.Control
-          type="date"
-          onChange={(e) => setEndDate(e.target.value)}/>
-      </Form.Group>
+
+      <Row>
+        <Col>
+          <Form.Group className="mb-3" controlId="formStartDate">
+            <Form.Label>Start Date</Form.Label>
+            <Form.Control
+              type="date"
+              onChange={(e) => setStartDate(e.target.value)}/>
+          </Form.Group>
+        </Col>
+        <Col>
+          <Form.Group className="mb-3" controlId="formEndDates">
+            <Form.Label>End Date</Form.Label>
+            <Form.Control
+              type="date"
+              onChange={(e) => setEndDate(e.target.value)}/>
+          </Form.Group>
+        </Col>
+      </Row>
+      
       <Form.Group  className="mb-3" controlId="formVisibility">
         <Form.Switch
           label="Set Visible to Friends"
