@@ -44,43 +44,17 @@ const friendRoutes = require("./routes/friends");
 const tripHisRoutes = require("./routes/tripHistory");
 const payHisRoutes = require("./routes/payHistory");
 const postRoutes = require("./routes/posts");
-const amadeusRoutes = require("./routes/amadeus")
-
-// PAYMETHODS API CALLS
-
-app.get('/getmethod', async(req, res) => {
-  res.send('paymethods');
-});
-
-app.post('/addmethod', async(req, res) => {
-    const new_pay_method = new PayMethod({
-      card_number: req.body.card_number,
-      card_holder_name: req.body.card_holder_name,
-      owner_email: req.body.owner_email,
-      expiration_date: req.body.expiration_date,
-      // getting only the month and year for the date
-      cvv: req.body.cvv
-    })
-
-    new_pay_method.save()
-      .then(item => {
-        res.send("item saved to database");
-      })
-      .catch(err => {
-        res.status(400).send("unable to save to database");
-      })
-});
-
-app.delete('/deletemethod', async(req, res) => {
-  res.send('Deleted');
-});
+const amadeusRoutes = require("./routes/amadeus");
+const payMethodRoutes = require("./routes/PayMethod");
+const paypalRoutes = require("./routes/paypal-api");
 
 app.use("/", userRoutes);
 app.use("/", tripRoutes);
 app.use("/", friendRoutes);
 app.use("/", tripHisRoutes);
 app.use("/", payHisRoutes);
-// app.use("/", hotelRoutes);
+app.use("/", payMethodRoutes);
+app.use("/", paypalRoutes);
 app.use("/", postRoutes);
 app.use("/", amadeusRoutes)
 
