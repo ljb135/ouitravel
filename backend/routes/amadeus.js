@@ -27,7 +27,7 @@ router.get(`/${API}/search`, async (req, res) => {
 
 // Querying hotels
 router.get(`/${API}/hotels`, async (req, res) => {
-  const { cityCode, checkInDate, checkOutDate } = req.query;
+  const { cityCode } = req.query;
   amadeus.referenceData.locations.hotels.byCity.get({
     cityCode
   }).then(response => res.json(JSON.parse(response.body)))

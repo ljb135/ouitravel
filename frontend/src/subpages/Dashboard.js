@@ -148,7 +148,7 @@ function NewTripModal(props){
           renderMenuItemChildren={(option) => (
             <span>{`${option.name}, ${option.address.countryName}`}</span>
           )}
-          onChange={(selected) => setDestination(selected[0].id)}
+          onChange={(selected) => setDestination(selected[0].iataCode)}
         />
       </Form.Group>
 
