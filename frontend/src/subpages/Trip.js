@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import HotelsDisplay from './HotelDisplay';
+import FlightsDisplay from './FlightsDisplay';
 
 function CollaboratorsDisplay(props){
   const[collaborators, setCollaborators] = useState([]);
@@ -61,10 +62,6 @@ function CollaboratorsDisplay(props){
   )
 }
 
-function FlightsDisplay(props){
-
-}
-
 function AttractionsDisplay(props){
 
 }
@@ -115,7 +112,7 @@ function TripInfo(props){
         </Col>
       </Row>
         <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
-        <FlightsDisplay flights={props.trip.flight_ids}/>
+        <FlightsDisplay trip={props.trip}/>
         <HotelsDisplay trip={props.trip}/>
         <AttractionsDisplay activities={props.trip.activity_ids}/>
       </Card.Body>
