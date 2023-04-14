@@ -1,5 +1,5 @@
 import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Badge, Modal } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import HotelsDisplay from './HotelDisplay';
@@ -70,6 +70,44 @@ function TripInfo(props){
   const [creator, setCreator] = useState(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [visibility, setVisibility] = useState(false);
+  const [destination, setDestination] = useState("");
+  const[show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const navigate = useNavigate();
+
+  function handleDelete(e){
+    e.preventDefault();
+  
+    const body = new URLSearchParams({
+      start_date: startDate,
+      end_date: endDate,
+      destination_id: destination,
+      visibility: visibility
+    });
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+  
+    var requestOptions = {
+        method: 'DELETE',
+        headers: myHeaders,
+        body: body,
+        redirect: 'follow',
+        'credentials': 'include'
+    };
+  
+    fetch("http://localhost:3001/trip/" + props.trip._id, requestOptions)
+    .then(response => {
+        if(response.ok){
+          navigate("/");
+        }
+        else{
+          alert(response.text());
+        }
+    });
+  }
 
   useEffect(() => {
     var requestOptions = {
@@ -88,7 +126,9 @@ function TripInfo(props){
     <Card className="mt-4">
       <Card.Header className="d-flex justify-content-between">
         <h3>Editing Trip to {props.trip.destination_id}</h3>
-        <Button variant='danger'>Delete Trip</Button>
+        <Button variant='danger' onClick={(e) => handleDelete(e)}>
+          Delete Trip
+        </Button>
       </Card.Header>
       <Card.Body>
       <Row className='mb-2'>
