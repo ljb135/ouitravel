@@ -46,9 +46,7 @@ const payHisRoutes = require("./routes/payHistory");
 const postRoutes = require("./routes/posts");
 const amadeusRoutes = require("./routes/amadeus")
 
-var tripRoutes = require("./routes/trips");
-var TripHisRoutes = require("./routes/TripHistory");
-var PayHisRoutes = require("./routes/PayHistory");
+
 
 app.get('/getmethod', async(req, res) => {
   res.send('paymethods');

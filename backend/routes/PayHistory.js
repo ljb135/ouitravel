@@ -1,5 +1,6 @@
 const express = require('express'), router = express.Router();
 const Payment = require('../models/payment');
+const mongoose = require('mongoose');
 
 function getPaymentHistory(userId) {
   // Find all payments with the given user ID

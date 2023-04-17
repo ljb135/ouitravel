@@ -10,6 +10,7 @@ import PaymentList from "./subpages/Payments";
 
 // const name = window.localStorage.getItem("Name");
 
+
 function isloggedIn(setName){
   var requestOptions = {
     method: 'GET',
@@ -48,6 +49,7 @@ function App() {
           <Route path='/' element={(name !== null) ? <Dashboard/> : <Login setName={setName}/>}></Route>
           {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
+          <Route path="/paymentList" element={<PaymentList/>} onEnter={checkAuthentication}></Route>
           <Route path="/trip/:id" element={<Trip/>} onEnter={checkAuthentication}></Route>
         </Routes>
     </BrowserRouter>

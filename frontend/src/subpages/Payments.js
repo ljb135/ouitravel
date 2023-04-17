@@ -1,68 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Tag } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import moment from 'moment';
 
-const data = [
-  {
-    key: '1',
-    price: 100,
-    userName: 'John Brown',
-    tripId: 'T123456',
-    date: '2022-01-01',
-  },
-  {
-    key: '2',
-    price: 200,
-    userName: 'John Brown',
-    tripId: 'T234567',
-    date: '2022-01-02',
-  },
-  {
-    key: '3',
-    price: 300,
-    userName: 'John Brown',
-    tripId: 'T345678',
-    date: '2022-01-03',
-  },
-];
+function getPrice(setPrice){
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+    credentials: 'include'
+  };
+  fetch('http://localhost:3001/payment-history', requestOptions)
+  .then(response => response.json())
+  .then(json => setPrice(json[1].price))
+  .catch()
+}
 
-const columns = [
-  {
-    title: 'Trip ID',
-    dataIndex: 'tripId',
-    key: 'tripId',
-  },
-  {
-    title: 'User Name',
-    dataIndex: 'userName',
-    key: 'userName',
-  },
-  {
-    title: 'Date',
-    dataIndex: 'date',
-    key: 'date',
-    sorter: (a, b) => new Date(a.date) - new Date(b.date),
-  },
-  {
-    title: 'Price',
-    dataIndex: 'price',
-    key: 'price',
-    sorter: (a, b) => a.price - b.price,
-    render: (text) => <Tag color="blue">{text}</Tag>,
-  },
-];
+function getUserName(setData){
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+    credentials: 'include'
+  };
+  fetch('http://localhost:3001/user', requestOptions)
+    .then(response => response.json())
+    .then(json => setData(`${json[0].first_name} ${json[0].last_name}`))
+    .catch(() => setData(null));
+}
+
+function getTripHistory(setData, userName, price) {
+  var requestOptions = {
+    method: 'GET',
+    redirect: 'follow',
+    credentials: 'include'
+  };
+
+  fetch('http://localhost:3001/trip-history', requestOptions)
+    .then(response => response.json())
+    .then(json => {
+      const newData = json.map(trip => ({
+        key: trip._id,
+        tripId: trip._id,
+        userName: userName,
+        start_date: trip.start_date,
+        price: price
+      }));
+      setData(newData);
+    })
+    .catch(() => setData(null));
+}
 
 const PaymentList = () => {
   const [sortOrder, setSortOrder] = useState(null);
+  const [data, setData] = useState([]);
+  const [userName, setUserName] = useState('');
+  const [price, setPrice] = useState(0);
+
+  useEffect(() => {
+    getPrice(setPrice);
+    getUserName(setUserName);
+    getTripHistory(setData, userName, price);
+  }, [userName, price]);
 
   const handleTableChange = (pagination, filters, sorter) => {
     setSortOrder(sorter.order);
   };
 
+  const columns = [
+    {
+      title: 'Trip ID',
+      dataIndex: 'tripId',
+      key: 'tripId'
+    },
+    {
+      title: 'Creator',
+      dataIndex: 'userName',
+      key: 'userName'
+    },
+    {
+      title: 'Date',
+      dataIndex: 'start_date',
+      key: 'start_date',
+      sorter: (a, b) => new Date(a.start_date) - new Date(b.start_date),
+      render: text => moment(text).format('YYYY-MM-DD')
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+      sorter: (a, b) => a.price - b.price,
+      render: text => <Tag color="blue">{text}</Tag>
+    }
+  ];
+
   return (
     <Table
       dataSource={data}
-      columns={columns.map((column) => ({
+      columns={columns.map(column => ({
         ...column,
         sortOrder: sortOrder === column.dataIndex && sortOrder,
         sorter: sortOrder === column.dataIndex && column.sorter,
@@ -76,7 +109,7 @@ const PaymentList = () => {
                 <ArrowDownOutlined />
               ))}
           </div>
-        ),
+        )
       }))}
       onChange={handleTableChange}
     />
