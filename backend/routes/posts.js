@@ -8,35 +8,41 @@ const storage = multer.memoryStorage();
 const upload = multer({storage: storage}).single('image');    
 let client;
 
+
 //creates new post
 async function createPost(req, res) {
   if(req.user){
-    //try{
+    try{
       Post.create({
         _id: new mongoose.Types.ObjectId(),
         trip_id: mongoose.Types.ObjectId(req.body.trip_id),
-        creator_id: mongoose.Types.ObjectId(req.body.creator_id),
+        creator_id: mongoose.Types.ObjectId(req.user._id),
         comment: req.body.comment,
         image: req.file.buffer
       });
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
       res.status(201).send("Successful");
-    //}catch{res.send("Error")}
+    }catch{res.send("Error")}
     }
     else{
       res.status(401).send('Not logged in');
     }
 }
-  
+
+
 //returns list of posts given the creator's id
 async function returnPosts(req, res){
   if(req.user){
     try{
-      Post.find({creator_id: req.body.creator_id}, (err, docs) =>{
+      Post.find({creator_id: req.user._id}, (err, docs) =>{
         if(err){
           console.error(err);
           res.status(500).send(err);
         }else{
-          res.status(201).send(docs);
+          res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+          res.setHeader('Access-Control-Allow-Credentials', 'true');
+          res.json(docs);
         }
       })
     }catch{res.send("Error")}
@@ -45,7 +51,16 @@ async function returnPosts(req, res){
     res.status(401).send('Not logged in');
   }
 }
-
+/*
+function returnPosts(req, res){
+  if(req.user){
+      Post.find({creator_id: req.user._id}).then(post => res.status(200).send(json(post)));
+  }
+  else{
+      res.redirect(401, "http://localhost:3000/login");
+  }
+}
+*/
 //deletes existing post given post id
 async function deletePost(req, res){
   if(req.user){

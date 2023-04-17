@@ -7,6 +7,9 @@ import Trip from './subpages/Trip';
 import Login from './subpages/Login';
 import Register from "./subpages/Register";
 import Explore from "./subpages/Explore";
+import MyPostsContainer from "./subpages/MyPostsContainer";
+
+
 
 // const name = window.localStorage.getItem("Name");
 
@@ -47,6 +50,7 @@ function App() {
         <Routes>
           <Route path='/' element={(name !== null) ? <Dashboard/> : <Login setName={setName}/>}></Route>
           <Route path="/explore" element={<Explore/>}></Route>
+          <Route path="/mypostscontainer" element={<MyPostsContainer/>}></Route>
           {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
           <Route path="/trip/:id" element={<Trip/>} onEnter={checkAuthentication}></Route>
