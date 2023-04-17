@@ -41,11 +41,28 @@ function TripCard(props) {
     }
   }
 
+  let pill;
+  const startDate = new Date(props.trip.start_date);
+  const currentDate = new Date();
+  console.log(currentDate);
+  console.log(startDate);
+
+  if(props.trip.status === "Pending" && startDate > currentDate){
+    pill = <Badge pill bg="warning" text="dark"> Pending </Badge>; 
+  }
+  else if(props.trip.status === "Paid"){
+    pill = <Badge pill bg="success"> Paid </Badge>; 
+  }
+  else{
+    pill = <Badge pill bg="danger"> Expired </Badge>;
+  }
+
   return(
     <Card style={{'minWidth': 280}}>
       <Card.Body>
         <Card.Title className="d-flex justify-content-between">
           Trip to {props.trip.destination_id}
+          {pill}
           <Badge className="edit-button" as={Button} onClick={redirectToTrip}>🖉</Badge>
         </Card.Title>
         <Card.Subtitle className='mb-2 text-muted'>
@@ -58,11 +75,11 @@ function TripCard(props) {
       <ListGroup className="list-group-flush">
         <ListGroup.Item className="d-flex justify-content-between">
           Flights
-          <Badge bg="success">✓</Badge>
+          {props.trip.flight_ids.length > 0 ? <Badge bg="success">✓</Badge> : <Badge bg="danger">✕</Badge>}
         </ListGroup.Item>
         <ListGroup.Item className="d-flex justify-content-between">
           Hotels
-          <Badge bg="danger">✕</Badge>
+          {props.trip.hotel_ids.length > 0 ? <Badge bg="success">✓</Badge> : <Badge bg="danger">✕</Badge>}
         </ListGroup.Item>
         <ListGroup.Item className="d-flex justify-content-between">
           Activities
