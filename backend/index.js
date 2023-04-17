@@ -49,7 +49,7 @@ const tripHisRoutes = require("./routes/tripHistory");
 const payHisRoutes = require("./routes/payHistory");
 const postRoutes = require("./routes/posts");
 const amadeusRoutes = require("./routes/amadeus")
-const photoRoutes = require("./routes/photo");
+//const photoRoutes = require("./routes/photo");
 
 // PAYMETHODS API CALLS
 
