@@ -13,6 +13,9 @@ function format_date(date){
 function TripCard(props) {
   const navigate = useNavigate();
   const[creator, setCreator] = useState(null);
+  const [hovered, setHovered] = useState(false);
+  const hoverOn = () => setHovered(true);
+  const hoverOff = () => setHovered(false);
   // const[destination, setDestination] = useState(null);
 
   useEffect(() => {
@@ -58,12 +61,12 @@ function TripCard(props) {
   }
 
   return(
-    <Card style={{'minWidth': 280}}>
+    <Card tag="a" className={hovered ? 'shadow' : 'shadow'} style={{'minWidth': 280, cursor: "pointer"}} onClick={redirectToTrip} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
       <Card.Body>
         <Card.Title className="d-flex justify-content-between">
           Trip to {props.trip.destination_id}
           {pill}
-          <Badge className="edit-button" as={Button} onClick={redirectToTrip}>🖉</Badge>
+          {/* <Badge className="edit-button" as={Button} onClick={redirectToTrip}>🖉</Badge> */}
         </Card.Title>
         <Card.Subtitle className='mb-2 text-muted'>
           {format_date(props.trip.start_date)} - {format_date(props.trip.end_date)}
@@ -72,7 +75,7 @@ function TripCard(props) {
           {countPeople()}
         </Card.Subtitle>
       </Card.Body>
-      <ListGroup className="list-group-flush">
+      <ListGroup className="list-group-flush card-body p-0">
         <ListGroup.Item className="d-flex justify-content-between">
           Flights
           {props.trip.flight_ids.length > 0 ? <Badge bg="success">✓</Badge> : <Badge bg="danger">✕</Badge>}

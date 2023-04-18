@@ -38,7 +38,7 @@ function CollaboratorsDisplay(props){
   }
 
   return(
-    <Card>
+    <Card className="shadow mt-4">
       <Card.Body>
         <Card.Title>
           Collaborators
@@ -123,40 +123,42 @@ function TripInfo(props){
   }, [props]);
 
   return(
-    <Card className="mt-4">
-      <Card.Header className="d-flex justify-content-between">
-        <h3>Editing Trip to {props.trip.destination_id}</h3>
+    <>
+      <div className="my-3 d-flex justify-content-between">
+        <h2>Trip to {props.trip.destination_id}</h2>
         <Button variant='danger' onClick={(e) => handleDelete(e)}>
-          Delete Trip
+          Delete
         </Button>
-      </Card.Header>
-      <Card.Body>
-      <Row className='mb-2'>
-        <Col>
-          <Form.Group className="mb-3" controlId="formStartDate">
-            <Form.Label as="h5">Start Date</Form.Label>
-            <Form.Control
-              type="date"
-              defaultValue={props.trip.start_date.toString().substring(0,10)}
-              onChange={(e) => setStartDate(e.target.value)}/>
-          </Form.Group>
-        </Col>
-        <Col>
-          <Form.Group className="mb-3" controlId="formEndDates">
-            <Form.Label as="h5">End Date</Form.Label>
-            <Form.Control
-              type="date"
-              defaultValue={props.trip.end_date.toString().substring(0,10)}
-              onChange={(e) => setEndDate(e.target.value)}/>
-          </Form.Group>
-        </Col>
-      </Row>
-        <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
-        <FlightsDisplay trip={props.trip}/>
-        <HotelsDisplay trip={props.trip} update={props.update}/>
-        <AttractionsDisplay activities={props.trip.activity_ids}/>
-      </Card.Body>
-    </Card>
+      </div>
+      <Card className='shadow'>
+        <Card.Body>
+        <Row>
+          <Col>
+            <Form.Group className="" controlId="formStartDate">
+              <Form.Label as="h5">Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                defaultValue={props.trip.start_date.toString().substring(0,10)}
+                onChange={(e) => setStartDate(e.target.value)}/>
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group className="" controlId="formEndDates">
+              <Form.Label as="h5">End Date</Form.Label>
+              <Form.Control
+                type="date"
+                defaultValue={props.trip.end_date.toString().substring(0,10)}
+                onChange={(e) => setEndDate(e.target.value)}/>
+            </Form.Group>
+          </Col>
+        </Row>
+        </Card.Body>
+      </Card>
+      <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
+      <FlightsDisplay trip={props.trip}/>
+      <HotelsDisplay trip={props.trip} update={props.update}/>
+      <AttractionsDisplay activities={props.trip.activity_ids}/>
+    </>
   )
 }
 

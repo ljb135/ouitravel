@@ -10,7 +10,8 @@ function createTrip(req, res){
             start_date: req.body.start_date,
             end_date: req.body.end_date,
             destination_id: req.body.destination_id,
-            creator_id: req.user._id
+            creator_id: req.user._id,
+            price: 0
         })
         res.status(201).send("Successful");
     }

@@ -1,4 +1,4 @@
-import { Form, Card, Button, Col, Row, Badge, Modal, Accordion, ListGroup, CloseButton } from 'react-bootstrap';
+import { Form, Card, Button, Col, Row, Badge, Modal, Accordion, ListGroup, CloseButton, Spinner } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 function format_date(date){
@@ -15,6 +15,10 @@ function NewHotelModal(props){
     const [hotels, setHotels] = useState([]);
 
     function getHotels(){
+      if(!props.show){
+        return;
+      }
+      setLoading(true);
       fetch(`http://localhost:3001/amadeus/hotels?cityCode=${props.trip.destination_id}`)
       .then((resp) => resp.json())
       .then((hotels) => {
@@ -23,7 +27,6 @@ function NewHotelModal(props){
     }
 
     function getOffers(hotel_list){
-      setLoading(true);
       if(hotel_list.length !== 0){
         let ids = hotel_list.map(hotel => hotel.hotelId).slice(0, 150);
 
@@ -95,7 +98,11 @@ function NewHotelModal(props){
           </Form.Select>
         </Form.Group>
         <Accordion>
-          {loading ? <div>Loading...</div> : hotelItems}
+          {loading ? <div className='d-flex justify-content-center'>
+                        <Spinner animation="border" role="status">
+                          <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                      </div> : hotelItems}
         </Accordion>
         </Modal.Body>
       </Modal>
@@ -210,13 +217,13 @@ function HotelListItem(props){
   });
 
   return(
-    <ListGroup.Item className='my-2'>
-      <div className='my-0 d-flex justify-content-between'>
-        <h5>{hotelName}</h5><CloseButton className='ms-2'></CloseButton>
+    <ListGroup.Item className='my-1'>
+      <div className='d-flex justify-content-between'>
+        <h5 className='my-0'>{hotelName}</h5><CloseButton className='ms-2'></CloseButton>
       </div>
       <div className='mb-1'>{format_date(checkInDate)} - {format_date(checkOutDate)} • {numRooms} Rooms</div>
       <div>{description}</div>
-      <div>${price}</div>
+      <Badge className='mt-2' bg="success"><h6 className='m-0'>${price}</h6></Badge>
     </ListGroup.Item>
   )
 }
@@ -228,11 +235,11 @@ function HotelsDisplay(props){
     const handleShow = () => setShow(true);
 
     return(
-        <Card className='mt-4'>
+        <Card className='mt-4 shadow'>
         <Card.Body>
-          <Card.Title className='d-flex align-items-center'>Hotels
+          <h4 className='d-flex align-items-center card-title'>Hotels
               <Badge className='ms-2 mt-1 add-button' as={Button} onClick={handleShow}>+</Badge>
-          </Card.Title>
+          </h4>
           <NewHotelModal show={show} handleClose={handleClose} trip={props.trip} update={props.update} close={handleClose}/>
           <ListGroup variant='flush'>
             <hr className='my-0'/>
