@@ -11,7 +11,9 @@ const tripSchema = new mongoose.Schema({
     hotel_ids: [String],
     activity_ids: [String],
     creator_id: {type: mongoose.Types.ObjectId, required: true},
-    collaborator_ids: [mongoose.Types.ObjectId]
+    collaborator_ids: [mongoose.Types.ObjectId],
+    price: {type: Number, required: true},
+    paid_date: Date
 });
 
 module.exports = mongoose.model('Trip', tripSchema);
