@@ -7,7 +7,7 @@ import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 function format_date(date){
   date = new Date(date);
-  return (date.getMonth()+1) + "/" + (date.getDate()+1) + "/" + date.getFullYear();
+  return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
 }
 
 function TripCard(props) {
@@ -41,6 +41,8 @@ function TripCard(props) {
     }
   }
 
+  console.log(new Date(props.trip.start_date), props.trip.start_date);
+
   return(
     <Card style={{'minWidth': 280}}>
       <Card.Body>
@@ -58,7 +60,7 @@ function TripCard(props) {
       <ListGroup className="list-group-flush">
         <ListGroup.Item className="d-flex justify-content-between">
           Flights
-          <Badge bg="success">✓</Badge>
+          {props.trip.flight_ids.length > 0 ? <Badge bg="success">✓</Badge> : <Badge bg="danger">✕</Badge>}
         </ListGroup.Item>
         <ListGroup.Item className="d-flex justify-content-between">
           Hotels
@@ -91,7 +93,7 @@ function NewTripModal(props){
       console.log(locations.data);
       setLocations(locations.data);
       setIsLoading(false);
-    });
+    }).catch((err) => console.log(err));
   }
 
   function handleSubmit(e){

@@ -1,4 +1,4 @@
-import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Badge, Modal } from 'react-bootstrap';
+import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -153,7 +153,7 @@ function TripInfo(props){
       </Row>
         <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
         <FlightsDisplay trip={props.trip}/>
-        <HotelsDisplay trip={props.trip}/>
+        <HotelsDisplay trip={props.trip} update={props.update}/>
         <AttractionsDisplay activities={props.trip.activity_ids}/>
       </Card.Body>
     </Card>
@@ -164,7 +164,7 @@ function Trip() {
   const tripParams = useParams();
   const[trip, setTrip] = useState(null);
 
-  useEffect(() => {
+  function updateTrip(){
     var requestOptions = {
       method: 'GET',
       redirect: 'follow',
@@ -175,12 +175,16 @@ function Trip() {
     .then(response => response.json())
     .then(json => setTrip(json))
     .catch(() => setTrip(null));
+  }
+
+  useEffect(() => {
+    updateTrip();
   }, [tripParams]);
 
   let body;
 
   if(trip){
-    body = <TripInfo trip={trip}/>
+    body = <TripInfo trip={trip} update={updateTrip}/>
     console.log(trip);
   }
 

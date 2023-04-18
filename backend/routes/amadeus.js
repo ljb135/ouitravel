@@ -36,12 +36,17 @@ router.get(`/${API}/hotels`, async (req, res) => {
 
 // Querying hotel offers
 router.get(`/${API}/offers`, async (req, res) => {
-    const { hotelId } = req.query;
-    amadeus.shopping.hotelOffersByHotel.get({
-      hotelId,
-    }).then(response => res.json(JSON.parse(response.body)))
-    .catch(err => res.json(err));
-  });
+  const { hotelIds, checkIn, checkOut, rooms } = req.query;
+  amadeus.shopping.hotelOffersSearch.get({
+    hotelIds: hotelIds,
+    checkInDate: checkIn,
+    checkOutDate: checkOut,
+    roomQuantity: rooms,
+    currency: "USD",
+    bestRateOnly: false
+  }).then(response => res.json(JSON.parse(response.body)))
+  .catch(err => res.json(err));
+});
 
 // Confirming the offer
 router.get(`/${API}/offer`, async (req, res) => {
