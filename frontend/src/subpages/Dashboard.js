@@ -43,7 +43,8 @@ function TripCard(props) {
 
   let pill;
   const startDate = new Date(props.trip.start_date);
-  const currentDate = new Date();
+  const currentDate = new Date(new Date().getFullYear(),new Date().getMonth(), new Date().getDate());
+  console.log(props.trip.start_date.replaceAll('-','/'));
   console.log(currentDate);
   console.log(startDate);
 
@@ -83,7 +84,7 @@ function TripCard(props) {
         </ListGroup.Item>
         <ListGroup.Item className="d-flex justify-content-between">
           Activities
-          <Badge bg="secondary">0</Badge>
+          <Badge bg="secondary">{props.trip.activity_ids.length}</Badge>
         </ListGroup.Item>
       </ListGroup>
       <Card.Footer>Created by {creator}</Card.Footer>
