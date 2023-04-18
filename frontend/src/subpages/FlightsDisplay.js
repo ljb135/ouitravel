@@ -81,7 +81,7 @@ function NewFlightModal(props) {
             return;
         }
         setLoading(true);
-        fetch(`http://localhost:3001/amadeus/flights?origin=${"NYC"}&destination=${props.trip.destination_id}&departureDate=${props.trip.start_date.slice(0,10)}&returnDate=${props.trip.end_date.slice(0,10)}&adults=${1}`)
+        fetch(`http://localhost:3001/amadeus/flights?origin=${"NYC"}&destination=${props.trip.destination_id}&departureDate=${props.trip.start_date.slice(0,10)}&returnDate=${props.trip.end_date.slice(0,10)}&adults=${1}&travelClass=ECONOMY`)
         .then((resp) => resp.json())
         .then((flights) => {
           setFlights(flights.data);
