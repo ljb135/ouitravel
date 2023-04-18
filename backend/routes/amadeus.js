@@ -80,13 +80,16 @@ router.post(`/${API}/booking`, async (req, res) => {
 });
 
 router.get(`/${API}/flights`, async (req, res) => {
-  const { origin, destination, departureDate, returnDate, adults } = req.query;
+  const { origin, destination, departureDate, returnDate, adults, travelClass } = req.query;
   const response = await amadeus.shopping.flightOffersSearch.get({
     originLocationCode: origin,
     destinationLocationCode: destination,
     departureDate: departureDate,
     returnDate: returnDate,
-    adults: adults
+    adults: adults,
+    nonStop: true,
+    currencyCode: "USD",
+    travelClass: travelClass
   });
   try {
     res.json(JSON.parse(response.body));

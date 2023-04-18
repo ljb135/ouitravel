@@ -40,9 +40,9 @@ function CollaboratorsDisplay(props){
   return(
     <Card className="shadow mt-4">
       <Card.Body>
-        <Card.Title>
+        <h4 className='d-flex align-items-center card-title'>
           Collaborators
-        </Card.Title>
+        </h4>
         <ListGroup>
           {items}
         </ListGroup>
@@ -130,30 +130,34 @@ function TripInfo(props){
           Delete
         </Button>
       </div>
-      <Card className='shadow'>
-        <Card.Body>
-        <Row>
-          <Col>
+      <Row>
+        <Col>
+          <Card className='shadow'>
+            <Card.Body>
             <Form.Group className="" controlId="formStartDate">
-              <Form.Label as="h5">Start Date</Form.Label>
+              <Form.Label as="h4">Start Date</Form.Label>
               <Form.Control
                 type="date"
                 defaultValue={props.trip.start_date.toString().substring(0,10)}
                 onChange={(e) => setStartDate(e.target.value)}/>
             </Form.Group>
-          </Col>
-          <Col>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col>
+          <Card className='shadow'>
+            <Card.Body>
             <Form.Group className="" controlId="formEndDates">
-              <Form.Label as="h5">End Date</Form.Label>
+              <Form.Label as="h4">End Date</Form.Label>
               <Form.Control
                 type="date"
                 defaultValue={props.trip.end_date.toString().substring(0,10)}
                 onChange={(e) => setEndDate(e.target.value)}/>
             </Form.Group>
-          </Col>
-        </Row>
-        </Card.Body>
-      </Card>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
       <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
       <FlightsDisplay trip={props.trip}/>
       <HotelsDisplay trip={props.trip} update={props.update}/>

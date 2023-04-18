@@ -84,7 +84,9 @@ function NewFlightModal(props) {
         fetch(`http://localhost:3001/amadeus/flights?origin=${"NYC"}&destination=${props.trip.destination_id}&departureDate=${props.trip.start_date.slice(0,10)}&returnDate=${props.trip.end_date.slice(0,10)}&adults=${1}`)
         .then((resp) => resp.json())
         .then((flights) => {
-          console.log(flights);
+          setFlights(flights.data);
+          console.log(flights.data);
+          setLoading(false);
         });
     }
 
@@ -129,7 +131,7 @@ function NewFlightModal(props) {
     for(let i = 0; i < flights.length; i++){
       // console.log(hotels[i])
       flightItems.push(
-        // <FlightItem eventKey={i} flight={flights[i]} check_in={startDate} check_out={endDate} trip={props.trip._id} update={props.update} close={props.close}/>
+        <FlightItem eventKey={i} flight={flights[i]} update={props.update} close={props.close}/>
       )
     }
 
@@ -171,9 +173,18 @@ function NewFlightModal(props) {
     )
 }
 
-function FlightItem(){
+function FlightItem(props){
+    let departureFlight = props.flight.itineraries[0].segments[0];
+    let returnFlight = props.flight.itineraries[1].segments[0];
     return(
-        <></>
+        <ListGroup.Item>
+            <h5>{props.flight.validatingAirlineCodes}</h5>
+            <h6 className='my-1'>Departure:</h6>
+            <div>{departureFlight.departure.iataCode} ({departureFlight.departure.at}) → {departureFlight.arrival.iataCode} ({departureFlight.arrival.at})</div>
+            <h6 className='mt-2 mb-1'>Return:</h6>
+            <div>{returnFlight.departure.iataCode} ({returnFlight.departure.at}) → {returnFlight.arrival.iataCode} ({returnFlight.arrival.at})</div>
+            <Button className='mt-2' onClick={(e) => null}>{props.flight.price.total} {props.flight.price.currency}</Button>
+        </ListGroup.Item>
     )
 }
 

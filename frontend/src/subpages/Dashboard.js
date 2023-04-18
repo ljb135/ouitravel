@@ -60,8 +60,14 @@ function TripCard(props) {
     pill = <Badge pill bg="danger"> Expired </Badge>;
   }
 
+  const cardStyle = {
+    transform: hovered ? 'scale(1.05)' : 'none',
+    transition: 'all 0.3s ease-in-out',
+    'minWidth': 280, cursor: "pointer"
+  };
+
   return(
-    <Card tag="a" className={hovered ? 'shadow' : 'shadow'} style={{'minWidth': 280, cursor: "pointer"}} onClick={redirectToTrip} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
+    <Card tag="a" className={hovered ? 'shadow' : 'shadow'} style={cardStyle} onClick={redirectToTrip} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
       <Card.Body>
         <Card.Title className="d-flex justify-content-between">
           Trip to {props.trip.destination_id}
