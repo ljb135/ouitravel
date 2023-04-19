@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const Post = require('../models/post');
 const Friend = require('../models/friends');
+const User = require('../models/user');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({storage: storage}).single('image');    
@@ -55,8 +56,16 @@ async function returnPosts(req, res){
 async function returnFriendsPosts(req, res){
   
   if(req.user){
+    var myFriend = Friend.find({$and: [{"status": "friends"},  {$or: [{"user1_email": req.user.email}, {"user2_email": req.user.email}] }] });
+    if (myFriend.user1_email == req.user.email){
+      const friendEmail = myFriend.user2_email;
+    }
+    else{
+      const friendEmail = myFriend.user1_email;
+    }
+    myFriend = User.find({"email" : friendEmail});
     try{
-      Post.find({creator_id: req.friends._id}, (err, docs) =>{
+      Post.find({creator_id: myFriend._id}, (err, docs) =>{
         if(err){
           console.error(err);
           res.status(500).send(err);
