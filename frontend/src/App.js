@@ -7,6 +7,7 @@ import Trip from './subpages/Trip';
 import Login from './subpages/Login';
 import Register from "./subpages/Register";
 import PaymentList from "./subpages/Payments";
+import History from './subpages/History';
 
 // const name = window.localStorage.getItem("Name");
 
@@ -41,7 +42,7 @@ function App() {
   useEffect(() => {
     isloggedIn(setName);
   }, []);
-
+  
   return (
     <BrowserRouter>
       <Navigation name={name}/>
@@ -49,11 +50,14 @@ function App() {
           <Route path='/' element={(name !== null) ? <Dashboard/> : <Login setName={setName}/>}></Route>
           {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
-          <Route path="/paymentList" element={<PaymentList/>} onEnter={checkAuthentication}></Route>
+          <Route path="/Payments" element={<PaymentList/>} onEnter={checkAuthentication}></Route>
           <Route path="/trip/:id" element={<Trip/>} onEnter={checkAuthentication}></Route>
+          <Route path="/history" element={<History />} />
         </Routes>
     </BrowserRouter>
   );
 }
+
+
 
 export default App;

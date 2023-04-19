@@ -3,19 +3,8 @@ import { Table, Tag } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-function getPrice(setPrice){
-  var requestOptions = {
-    method: 'GET',
-    redirect: 'follow',
-    credentials: 'include'
-  };
-  fetch('http://localhost:3001/payment-history', requestOptions)
-  .then(response => response.json())
-  .then(json => setPrice(json[1].price))
-  .catch()
-}
 
-function getUserName(setData){
+function getUserName(setData) {
   var requestOptions = {
     method: 'GET',
     redirect: 'follow',
@@ -27,7 +16,8 @@ function getUserName(setData){
     .catch(() => setData(null));
 }
 
-function getTripHistory(setData, userName, price) {
+
+function getTripHistory(setData, userName) {
   var requestOptions = {
     method: 'GET',
     redirect: 'follow',
@@ -42,24 +32,23 @@ function getTripHistory(setData, userName, price) {
         tripId: trip._id,
         userName: userName,
         start_date: trip.start_date,
-        price: price
+        price: trip.price
       }));
       setData(newData);
     })
     .catch(() => setData(null));
 }
 
+
 const PaymentList = () => {
   const [sortOrder, setSortOrder] = useState(null);
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState('');
-  const [price, setPrice] = useState(0);
 
   useEffect(() => {
-    getPrice(setPrice);
     getUserName(setUserName);
-    getTripHistory(setData, userName, price);
-  }, [userName, price]);
+    getTripHistory(setData, userName);
+  }, [userName]);
 
   const handleTableChange = (pagination, filters, sorter) => {
     setSortOrder(sorter.order);
@@ -77,7 +66,7 @@ const PaymentList = () => {
       key: 'userName'
     },
     {
-      title: 'Date',
+      title: 'Start Date',
       dataIndex: 'start_date',
       key: 'start_date',
       sorter: (a, b) => new Date(a.start_date) - new Date(b.start_date),
@@ -88,7 +77,13 @@ const PaymentList = () => {
       dataIndex: 'price',
       key: 'price',
       sorter: (a, b) => a.price - b.price,
-      render: text => <Tag color="blue">{text}</Tag>
+      render: text => {
+        if (text === 0) {
+          return <Tag color="orange">Pending</Tag>;
+        } else {
+          return <Tag color="blue">{`$${text}`}</Tag>;
+        }
+      }
     }
   ];
 
