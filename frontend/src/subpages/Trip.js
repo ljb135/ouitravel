@@ -68,8 +68,8 @@ function AttractionsDisplay(props){
 
 function TripInfo(props){
   const [creator, setCreator] = useState(null);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  let startDate = props.trip.start_date;
+  let endDate = props.trip.end_date;
   const [visibility, setVisibility] = useState(false);
   const [destination, setDestination] = useState("");
   const[show, setShow] = useState(false);
@@ -122,6 +122,34 @@ function TripInfo(props){
     .catch(() => setCreator(null));
   }, [props]);
 
+  function editDate(){
+
+    const body = new URLSearchParams({
+      start_date: startDate,
+      end_date: endDate
+    });
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    var requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        body: body,
+        redirect: 'follow',
+        'credentials': 'include'
+    };
+
+    fetch("http://localhost:3001/trip/id/" + props.trip._id, requestOptions)
+    .then(response => {
+        if(response.ok){
+          props.update();
+        }
+        else{
+          alert(response.text());
+        }
+    });
+  }
+
   return(
     <>
       <div className="my-3 d-flex justify-content-between">
@@ -139,7 +167,10 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.start_date.toString().substring(0,10)}
-                onChange={(e) => setStartDate(e.target.value)}/>
+                onChange={(e) => {startDate = e.target.value;
+                  console.log(startDate);
+                  editDate();
+                }}/>
             </Form.Group>
             </Card.Body>
           </Card>
@@ -152,7 +183,9 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.end_date.toString().substring(0,10)}
-                onChange={(e) => setEndDate(e.target.value)}/>
+                onChange={(e) => {endDate = e.target.value;
+                  editDate();
+                }}/>
             </Form.Group>
             </Card.Body>
           </Card>
