@@ -1,4 +1,4 @@
-import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Badge, Modal, CloseButton, Spinner } from 'react-bootstrap';
+import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Badge, Modal, CloseButton, Spinner, FormGroup } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -69,11 +69,8 @@ function FlightListItem(props) {
 }
 
 function NewFlightModal(props) {
-
-    const [destination, setDestination] = useState("");
-    const [visibility, setVisibility] = useState(false);
-
     const [loading, setLoading] = useState(false);
+    const [travelClass, setTravelClass] = useState("ECONOMY");
     const [flights, setFlights] = useState([]);
 
     function getFlights(){
@@ -81,7 +78,7 @@ function NewFlightModal(props) {
             return;
         }
         setLoading(true);
-        fetch(`http://localhost:3001/amadeus/flights?origin=${"NYC"}&destination=${props.trip.destination_id}&departureDate=${props.trip.start_date.slice(0,10)}&returnDate=${props.trip.end_date.slice(0,10)}&adults=${1}&travelClass=ECONOMY`)
+        fetch(`http://localhost:3001/amadeus/flights?origin=${"NYC"}&destination=${props.trip.destination_id}&departureDate=${props.trip.start_date.slice(0,10)}&returnDate=${props.trip.end_date.slice(0,10)}&adults=${1}&travelClass=${travelClass}`)
         .then((resp) => resp.json())
         .then((flights) => {
           setFlights(flights.data);
@@ -124,12 +121,11 @@ function NewFlightModal(props) {
 
     useEffect(() => {
         getFlights();
-      }, [props]);
+      }, [props, travelClass]);
 
     let flightItems = [];
 
     for(let i = 0; i < flights.length; i++){
-      // console.log(hotels[i])
       flightItems.push(
         <FlightItem eventKey={i} flight={flights[i]} update={props.update} close={props.close}/>
       )
@@ -141,26 +137,17 @@ function NewFlightModal(props) {
                 <Modal.Title>Book a Flight</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {/* <Row>
-                    <Col>
-                        <Form.Group className="mb-3" controlId="formStartDate">
-                            <Form.Label>Departure Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                defaultValue={props.trip.start_date.toString().substring(0, 10)}
-                                onChange={(e) => setStartDate(e.target.value)} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="mb-3" controlId="formEndDates">
-                            <Form.Label>Return Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                defaultValue={props.trip.end_date.toString().substring(0, 10)}
-                                onChange={(e) => setEndDate(e.target.value)} />
-                        </Form.Group>
-                    </Col>
-                </Row> */}
+                <Form.Group className='mb-3' controlId='formTravelClass'>
+                    <Form.Label>Travel Class</Form.Label>
+                    <Form.Select
+                        defaultValue={"ECONOMY"}
+                        onChange={(e) => setTravelClass(e.target.value)}>
+                        <option value={"ECONOMY"}>Economy</option>
+                        <option value={"PREMIUM_ECONOMY"}>Premium Economy</option>
+                        <option value={"BUSINESS"}>Business</option>
+                        <option value={"FIRST"}>First</option>
+                    </Form.Select>
+                </Form.Group>
                 <ListGroup>
                     {loading ? <div className='d-flex justify-content-center'>
                                     <Spinner animation="border" role="status">
@@ -177,78 +164,24 @@ function FlightItem(props){
     let departureFlight = props.flight.itineraries[0].segments[0];
     let returnFlight = props.flight.itineraries[1].segments[0];
 
-    // var departureTime = departureFlight.departure.at.substring(11);
-    // var departureDate = departureFlight.departure.at.substring(0,10);
-    // var departureHour = Number(departureTime.substring(0,2));
-    // var departureMin = departureTime.substring(3,5);
+    function formatTime(str){
+        let departureTime = str.substring(11,16);
+        let departureHour = Number(departureTime.substring(0,2));
 
-    // var arrivalTime = departureFlight.arrival.at.substring(11);
-    // var arrivalDate = departureFlight.arrival.at.substring(0,10);
-    // var arrivalHour = Number(arrivalTime.substring(0,2));
-    // var arrivalMin = arrivalTime.substring(3,5);
-
-    // var returnDepartureTime = returnFlight.departure.at.substring(11);
-    // var returnDepartureDate = returnFlight.departure.at.substring(0,10);
-    // var returnDepartureHour = Number(returnDepartureTime.substring(0,2));
-    // var returnDepartureMin = returnDepartureTime.substring(3,5);
-
-    // var returnArrivalTime = returnFlight.arrival.at.substring(11);
-    // var returnArrivalDate = returnFlight.arrival.at.substring(0,10);
-    // var returnArrivalHour = Number(returnArrivalTime.substring(0,2));
-    // var returnArrivalMin = returnArrivalTime.substring(3,5);
-    var departureTime;
-    var departureDate;
-    var departureHour;
-    var departureMin;
-
-    function format(str){
-        departureTime = str.substring(11);
-        departureDate = str.substring(0,10);
-        departureHour = Number(departureTime.substring(0,2));
-        departureMin = departureTime.substring(3,5);
-
-        if(Number(departureHour > 12)){
-            departureTime = departureHour - 12 + ":" + departureMin + "PM";
+        if(departureHour > 12){
+            departureTime = departureHour - 12 + departureTime.substring(2) + " PM";
         }
-        else
-            departureTime = departureHour + ":" + departureMin + "AM";
+        else departureTime = departureHour + departureTime.substring(2) + " AM";
+        return departureTime
     }
-
-    //am or pm
-    // if(Number(departureHour > 12)){
-    //     departureTime = departureHour - 12 + ":" + departureMin + "PM";
-    // }
-    // else
-    //     departureTime = departureHour + ":" + departureMin + "AM";
-    
-    // if(Number(arrivalHour > 12)){
-    //     arrivalTime = arrivalHour - 12 + ":" + arrivalMin + "PM";
-    // }
-    // else
-    //    arrivalTime = arrivalHour + ":" + arrivalMin + "AM";
-    
-    // if(Number(returnDepartureHour > 12)){
-    //     returnDepartureTime = returnDepartureHour - 12 + ":" + returnDepartureMin + "PM";
-    // }
-    // else
-    //     returnDepartureTime = returnDepartureHour + ":" + returnDepartureMin + "AM";
-    
-    // if(Number(returnArrivalHour > 12)){
-    //     returnArrivalTime = returnArrivalHour - 12 + ":" + returnArrivalMin + "PM";
-    // }
-    // else
-    //    returnArrivalTime = returnArrivalHour + ":" + returnArrivalMin + "AM";
-        
 
     return(
         <ListGroup.Item>
             <h5>{props.flight.validatingAirlineCodes}</h5>
             <h6 className='my-1'>Departure:</h6>
-            {format(departureFlight.departure.at)}
-            <div>{departureFlight.departure.iataCode} ({departureDate} at {departureTime}) → {format(...)}{departureFlight.arrival.iataCode} ({arrivalDate} at {arrivalTime})</div>
+            <div>{departureFlight.departure.iataCode} ({departureFlight.departure.at.substring(0, 10)} {formatTime(departureFlight.departure.at)}) → {departureFlight.arrival.iataCode} ({departureFlight.arrival.at.substring(0, 10)} {formatTime(departureFlight.arrival.at)})</div>
             <h6 className='mt-2 mb-1'>Return:</h6>
-            {format(...)}
-            <div>{returnFlight.departure.iataCode} ({returnDepartureDate} at {returnDepartureTime}) → {format(...)}{returnFlight.arrival.iataCode} ({returnArrivalDate} at {returnArrivalTime})</div>
+            <div>{returnFlight.departure.iataCode} ({returnFlight.departure.at.substring(0, 10)} {formatTime(returnFlight.departure.at)}) → {returnFlight.arrival.iataCode} ({returnFlight.arrival.at.substring(0, 10)} {formatTime(returnFlight.arrival.at)})</div>
             <Button className='mt-2' onClick={(e) => null}>{props.flight.price.total} {props.flight.price.currency}</Button>
         </ListGroup.Item>
     )
