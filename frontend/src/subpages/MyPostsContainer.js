@@ -7,6 +7,7 @@ function MyPostsContainer(){
         <div>
             <MyPosts />
             <MyPosts2 />
+         
         </div>
     );
 }
