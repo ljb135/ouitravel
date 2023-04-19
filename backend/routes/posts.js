@@ -123,8 +123,31 @@ async function editPost(req, res){
     res.status(401).send('Not logged in');
   }
 }
+
+async function getAllPosts(req, res){
+  if (!req.user) {
+    return res.status(401).send('Not logged in');
+  }
+
+  // Query the database for all posts
+  Post.find({}, (err, posts) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send(err);
+    }
+
+    // Set CORS headers to allow cross-origin requests
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    // Return the posts as a JSON response
+    return res.json(posts);
+  });
+
+}
 router.post('/post',upload, createPost);
 router.get('/postList', returnPosts);
 router.put('/editcaption/:id', editPost);
 router.delete('/delete/:id', deletePost);
+router.get('/returnallposts', getAllPosts);
 module.exports = router;
