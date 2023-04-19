@@ -6,7 +6,7 @@ import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 function format_date(date){
-  date = new Date(date);
+  date = new Date(date.slice(0,10).split("-"));
   return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
 }
 
@@ -45,11 +45,8 @@ function TripCard(props) {
   }
 
   let pill;
-  const startDate = new Date(props.trip.start_date);
-  const currentDate = new Date(new Date().getFullYear(),new Date().getMonth(), new Date().getDate());
-  console.log(props.trip.start_date.replaceAll('-','/'));
-  console.log(currentDate);
-  console.log(startDate);
+  const startDate = new Date(props.trip.start_date.slice(0,10).split("-"));
+  const currentDate = new Date();
 
   if(props.trip.status === "Pending" && startDate > currentDate){
     pill = <Badge pill bg="warning" text="dark"> Pending </Badge>; 
@@ -64,14 +61,14 @@ function TripCard(props) {
   const cardStyle = {
     transform: hovered ? 'scale(1.05)' : 'none',
     transition: 'all 0.3s ease-in-out',
-    'minWidth': 280, cursor: "pointer"
+    'width': 300, cursor: "pointer"
   };
 
   return(
     <Card tag="a" className={hovered ? 'shadow' : 'shadow'} style={cardStyle} onClick={redirectToTrip} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
       <Card.Body>
         <Card.Title className="d-flex justify-content-between">
-          Trip to {props.trip.destination_id}
+          <div style={{overflow: 'hidden', whiteSpace: "nowrap"}}>Trip to {props.trip.destination_name}</div>
           {pill}
           {/* <Badge className="edit-button" as={Button} onClick={redirectToTrip}>🖉</Badge> */}
         </Card.Title>
@@ -101,11 +98,18 @@ function TripCard(props) {
   );
 }
 
+function toTitleCase(str) {
+  return str.toLowerCase().split(' ').map(function (word) {
+    return (word.charAt(0).toUpperCase() + word.slice(1));
+  }).join(' ');
+}
+
 function NewTripModal(props){
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [destination, setDestination] = useState("");
+  const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [visibility, setVisibility] = useState(false);
@@ -128,6 +132,7 @@ function NewTripModal(props){
       start_date: startDate,
       end_date: endDate,
       destination_id: destination,
+      destination_name: toTitleCase(name),
       visibility: visibility
     });
     var myHeaders = new Headers();
@@ -175,7 +180,7 @@ function NewTripModal(props){
           renderMenuItemChildren={(option) => (
             <span>{`${option.name}, ${option.address.countryName}`}</span>
           )}
-          onChange={(selected) => setDestination(selected[0].iataCode)}
+          onChange={(selected) => {setDestination(selected[0].iataCode); setName(selected[0].name)}}
         />
       </Form.Group>
 

@@ -10,6 +10,7 @@ function createTrip(req, res){
             start_date: req.body.start_date,
             end_date: req.body.end_date,
             destination_id: req.body.destination_id,
+            destination_name: req.body.destination_name,
             creator_id: req.user._id,
             price: 0
         })

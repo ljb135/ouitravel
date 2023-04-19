@@ -9,7 +9,7 @@ function ActivitiesDisplay(props) {
     const handleShow = () => setShow(true);
 
     return (
-        <Card className='mt-4 shadow'>
+        <Card className='my-4 shadow'>
             <Card.Body>
                 <h4 className='d-flex align-items-center card-title'>Activities
                     <Badge className='ms-2 add-button' as={Button}>+</Badge>    
