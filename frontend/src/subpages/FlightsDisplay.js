@@ -176,13 +176,63 @@ function NewFlightModal(props) {
 function FlightItem(props){
     let departureFlight = props.flight.itineraries[0].segments[0];
     let returnFlight = props.flight.itineraries[1].segments[0];
+
+    var departureTime = departureFlight.departure.at.substring(11);
+    var departureDate = departureFlight.departure.at.substring(0,10);
+    var departureHour = Number(departureTime.substring(0,2));
+    var departureMin = departureTime.substring(3,5);
+
+    var arrivalTime = departureFlight.arrival.at.substring(11);
+    var arrivalDate = departureFlight.arrival.at.substring(0,10);
+    var arrivalHour = Number(arrivalTime.substring(0,2));
+    var arrivalMin = arrivalTime.substring(3,5);
+
+    var returnDepartureTime = returnFlight.departure.at.substring(11);
+    var returnDepartureDate = returnFlight.departure.at.substring(0,10);
+    var returnDepartureHour = Number(returnDepartureTime.substring(0,2));
+    var returnDepartureMin = returnDepartureTime.substring(3,5);
+
+    var returnArrivalTime = returnFlight.arrival.at.substring(11);
+    var returnArrivalDate = returnFlight.arrival.at.substring(0,10);
+    var returnArrivalHour = Number(returnArrivalTime.substring(0,2));
+    var returnArrivalMin = returnArrivalTime.substring(3,5);
+
+    //notes
+    //(2023-04-20T09:04:00)
+
+    //am or pm
+    if(Number(departureHour > 12)){
+        departureTime = departureHour - 12 + ":" + departureMin + "PM";
+    }
+    else
+        departureTime = departureHour + ":" + departureMin + "AM";
+    
+    if(Number(arrivalHour > 12)){
+        arrivalTime = arrivalHour - 12 + ":" + arrivalMin + "PM";
+    }
+    else
+       arrivalTime = arrivalHour + ":" + arrivalMin + "AM";
+    
+    if(Number(returnDepartureHour > 12)){
+        returnDepartureTime = returnDepartureHour - 12 + ":" + returnDepartureMin + "PM";
+    }
+    else
+        returnDepartureTime = returnDepartureHour + ":" + returnDepartureMin + "AM";
+    
+    if(Number(returnArrivalHour > 12)){
+        returnArrivalTime = returnArrivalHour - 12 + ":" + returnArrivalMin + "PM";
+    }
+    else
+       returnArrivalTime = returnArrivalHour + ":" + returnArrivalMin + "AM";
+        
+
     return(
         <ListGroup.Item>
             <h5>{props.flight.validatingAirlineCodes}</h5>
             <h6 className='my-1'>Departure:</h6>
-            <div>{departureFlight.departure.iataCode} ({departureFlight.departure.at}) → {departureFlight.arrival.iataCode} ({departureFlight.arrival.at})</div>
+            <div>{departureFlight.departure.iataCode} ({departureDate} at {departureTime}) → {departureFlight.arrival.iataCode} ({arrivalDate} at {arrivalTime})</div>
             <h6 className='mt-2 mb-1'>Return:</h6>
-            <div>{returnFlight.departure.iataCode} ({returnFlight.departure.at}) → {returnFlight.arrival.iataCode} ({returnFlight.arrival.at})</div>
+            <div>{returnFlight.departure.iataCode} ({returnDepartureDate} at {returnDepartureTime}) → {returnFlight.arrival.iataCode} ({returnArrivalDate} at {returnArrivalTime})</div>
             <Button className='mt-2' onClick={(e) => null}>{props.flight.price.total} {props.flight.price.currency}</Button>
         </ListGroup.Item>
     )
