@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const fs = require('fs')
 const path = require('path')
 const Post = require('../models/post');
+const Friend = require('../models/friends');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({storage: storage}).single('image');    
@@ -51,16 +52,29 @@ async function returnPosts(req, res){
     res.status(401).send('Not logged in');
   }
 }
-/*
-function returnPosts(req, res){
+async function returnFriendsPosts(req, res){
+  
   if(req.user){
-      Post.find({creator_id: req.user._id}).then(post => res.status(200).send(json(post)));
+    try{
+      Post.find({creator_id: req.friends._id}, (err, docs) =>{
+        if(err){
+          console.error(err);
+          res.status(500).send(err);
+        }else{
+          res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+          res.setHeader('Access-Control-Allow-Credentials', 'true');
+          res.json(docs);
+        }
+      })
+    }catch{res.send("Error")}
   }
   else{
-      res.redirect(401, "http://localhost:3000/login");
+    res.status(401).send('Not logged in');
   }
 }
-*/
+
+
+
 //deletes existing post given post id
 async function deletePost(req, res){
   if(req.user){
@@ -124,7 +138,8 @@ async function editPost(req, res){
   }
 }
 router.post('/post',upload, createPost);
-router.get('/postList', returnPosts);
+router.get('/postList/', returnPosts);
+router.get('/friendsPostList/', returnFriendsPosts);
 router.put('/editcaption/:id', editPost);
 router.delete('/delete/:id', deletePost);
 module.exports = router;
