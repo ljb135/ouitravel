@@ -63,10 +63,6 @@ function CollaboratorsDisplay(props){
   )
 }
 
-function AttractionsDisplay(props){
-
-}
-
 function TripInfo(props){
   const [creator, setCreator] = useState(null);
   let startDate = props.trip.start_date;
