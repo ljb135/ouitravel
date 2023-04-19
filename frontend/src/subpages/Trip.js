@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 import HotelsDisplay from './HotelDisplay';
 import FlightsDisplay from './FlightsDisplay';
+import ActivitiesDisplay from './ActivitiesDisplay';
 
 function CollaboratorsDisplay(props){
   const[collaborators, setCollaborators] = useState([]);
@@ -165,7 +166,7 @@ function TripInfo(props){
       <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
       <FlightsDisplay trip={props.trip}/>
       <HotelsDisplay trip={props.trip} update={props.update}/>
-      <AttractionsDisplay activities={props.trip.activity_ids}/>
+      <ActivitiesDisplay activities={props.trip.activity_ids}/>
     </>
   )
 }
