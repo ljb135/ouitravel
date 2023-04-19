@@ -6,7 +6,7 @@ import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 function format_date(date){
-  date = new Date(date);
+  date = new Date(date.slice(0,10).split("-"));
   return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
 }
 
@@ -45,11 +45,8 @@ function TripCard(props) {
   }
 
   let pill;
-  const startDate = new Date(props.trip.start_date);
-  const currentDate = new Date(new Date().getFullYear(),new Date().getMonth(), new Date().getDate());
-  console.log(props.trip.start_date.replaceAll('-','/'));
-  console.log(currentDate);
-  console.log(startDate);
+  const startDate = new Date(props.trip.start_date.slice(0,10).split("-"));
+  const currentDate = new Date();
 
   if(props.trip.status === "Pending" && startDate > currentDate){
     pill = <Badge pill bg="warning" text="dark"> Pending </Badge>; 
