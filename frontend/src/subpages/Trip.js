@@ -67,33 +67,16 @@ function AttractionsDisplay(props){
 }
 
 function TripInfo(props){
-  const [creator, setCreator] = useState(null);
   let startDate = props.trip.start_date;
   let endDate = props.trip.end_date;
-  const [visibility, setVisibility] = useState(false);
-  const [destination, setDestination] = useState("");
-  const[show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   const navigate = useNavigate();
 
   function handleDelete(e){
     e.preventDefault();
-  
-    const body = new URLSearchParams({
-      start_date: startDate,
-      end_date: endDate,
-      destination_id: destination,
-      visibility: visibility
-    });
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-  
+
     var requestOptions = {
         method: 'DELETE',
-        headers: myHeaders,
-        body: body,
         redirect: 'follow',
         'credentials': 'include'
     };
@@ -108,19 +91,6 @@ function TripInfo(props){
         }
     });
   }
-
-  useEffect(() => {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow',
-      credentials: "include"
-    };
-    
-    fetch("http://localhost:3001/user/" + props.trip.creator_id, requestOptions)
-    .then(response => response.json())
-    .then(json => setCreator(json.first_name + " " + json.last_name))
-    .catch(() => setCreator(null));
-  }, [props]);
 
   function editDate(){
 
@@ -153,7 +123,7 @@ function TripInfo(props){
   return(
     <>
       <div className="my-3 d-flex justify-content-between">
-        <h2>Trip to {props.trip.destination_id}</h2>
+        <h2>Trip to {props.trip.destination_name}</h2>
         <Button variant='danger' onClick={(e) => handleDelete(e)}>
           Delete
         </Button>
@@ -167,8 +137,8 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.start_date.toString().substring(0,10)}
-                onChange={(e) => {startDate = e.target.value;
-                  console.log(startDate);
+                onChange={(e) => {
+                  startDate = e.target.value;
                   editDate();
                 }}/>
             </Form.Group>
@@ -183,7 +153,8 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.end_date.toString().substring(0,10)}
-                onChange={(e) => {endDate = e.target.value;
+                onChange={(e) => {
+                  endDate = e.target.value;
                   editDate();
                 }}/>
             </Form.Group>

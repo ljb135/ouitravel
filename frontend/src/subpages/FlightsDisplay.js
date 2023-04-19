@@ -72,6 +72,7 @@ function NewFlightModal(props) {
     const [loading, setLoading] = useState(false);
     const [travelClass, setTravelClass] = useState("ECONOMY");
     const [flights, setFlights] = useState([]);
+    const [dict, setDict] = useState([]);
 
     function getFlights(){
         if(!props.show || props.trip.destination_id === "NYC"){
@@ -82,6 +83,7 @@ function NewFlightModal(props) {
         .then((resp) => resp.json())
         .then((flights) => {
           setFlights(flights.data);
+          setDict(flights.dictionaries)
           console.log(flights.data);
           setLoading(false);
         });
@@ -127,7 +129,7 @@ function NewFlightModal(props) {
 
     for(let i = 0; i < flights.length; i++){
       flightItems.push(
-        <FlightItem eventKey={i} flight={flights[i]} update={props.update} close={props.close}/>
+        <FlightItem eventKey={i} flight={flights[i]} dict={dict} update={props.update} close={props.close}/>
       )
     }
 
@@ -175,9 +177,61 @@ function FlightItem(props){
         return departureTime
     }
 
+    function addFlight(e, offer){
+        e.preventDefault();
+    
+        console.log(props.hotel, offer);
+    
+        const body = new URLSearchParams({
+          _id: offer.id,
+          hotel_name: props.hotel.name,
+          room_description: offer.room.description.text,
+          num_rooms: offer.roomQuantity !== undefined ? offer.roomQuantity : 1,
+          price: offer.price.total,
+          check_in: offer.checkInDate,
+          check_out: offer.checkOutDate
+        });
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+    
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: body,
+            redirect: 'follow',
+            'credentials': 'include'
+        };
+    
+        fetch("http://localhost:3001/hotel/", requestOptions)
+        .then(response => {
+            if(response.ok){
+              console.log("OK")
+            }
+            else{
+              alert(response.text());
+            }
+        });
+    
+        requestOptions = {
+          method: 'PUT',
+          'credentials': 'include'
+        };
+    
+        fetch(`http://localhost:3001/hotel/${offer.id}/trip/${props.trip}`, requestOptions)
+        .then(response => {
+            if(response.ok){
+              props.update();
+              props.close();
+            }
+            else{
+              alert(response.text());
+            }
+        });
+    }
+
     return(
         <ListGroup.Item>
-            <h5>{props.flight.validatingAirlineCodes}</h5>
+            <h5>{props.dict.carriers[props.flight.validatingAirlineCodes]}</h5>
             <h6 className='my-1'>Departure:</h6>
             <div>{departureFlight.departure.iataCode} ({departureFlight.departure.at.substring(0, 10)} {formatTime(departureFlight.departure.at)}) → {departureFlight.arrival.iataCode} ({departureFlight.arrival.at.substring(0, 10)} {formatTime(departureFlight.arrival.at)})</div>
             <h6 className='mt-2 mb-1'>Return:</h6>
