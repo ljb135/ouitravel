@@ -49,13 +49,13 @@ function TripCard(props) {
   const currentDate = new Date();
 
   if(props.trip.status === "Pending" && startDate > currentDate){
-    pill = <Badge pill bg="warning" text="dark"> Pending </Badge>; 
+    pill = <Badge pill className='ms-2' bg="warning" text="dark"> Pending </Badge>; 
   }
   else if(props.trip.status === "Paid"){
-    pill = <Badge pill bg="success"> Paid </Badge>; 
+    pill = <Badge pill className='ms-2' bg="success"> Paid </Badge>; 
   }
   else{
-    pill = <Badge pill bg="danger"> Expired </Badge>;
+    pill = <Badge pill className='ms-2' bg="danger"> Expired </Badge>;
   }
 
   const cardStyle = {
@@ -68,7 +68,7 @@ function TripCard(props) {
     <Card tag="a" className={hovered ? 'shadow' : 'shadow'} style={cardStyle} onClick={redirectToTrip} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
       <Card.Body>
         <Card.Title className="d-flex justify-content-between">
-          <div style={{overflow: 'hidden', whiteSpace: "nowrap"}}>Trip to {props.trip.destination_name}</div>
+          <div style={{overflow: 'hidden', whiteSpace: "nowrap", textOverflow: "ellipsis"}}>Trip to {props.trip.destination_name}</div>
           {pill}
           {/* <Badge className="edit-button" as={Button} onClick={redirectToTrip}>🖉</Badge> */}
         </Card.Title>
