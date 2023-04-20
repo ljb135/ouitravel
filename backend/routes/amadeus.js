@@ -27,59 +27,75 @@ router.get(`/${API}/search`, async (req, res) => {
 
 // Querying hotels
 router.get(`/${API}/hotels`, async (req, res) => {
-    const { cityCode } = req.query;
-    const response = await amadeus.shopping.hotelOffers.get({
-      cityCode,
-    });
-    try {
-      await res.json(JSON.parse(response.body));
-    } catch (err) {
-      await res.json(err);
-    }
-  });
+  const { cityCode } = req.query;
+  amadeus.referenceData.locations.hotels.byCity.get({
+    cityCode
+  }).then(response => res.json(JSON.parse(response.body)))
+  .catch(err => res.json(err));
+});
 
 // Querying hotel offers
 router.get(`/${API}/offers`, async (req, res) => {
-    const { hotelId } = req.query;
-    const response = await amadeus.shopping.hotelOffersByHotel.get({
-      hotelId,
-    });
-    try {
-      await res.json(JSON.parse(response.body));
-    } catch (err) {
-      await res.json(err);
-    }
-  });
+  const { hotelIds, checkIn, checkOut, rooms } = req.query;
+  amadeus.shopping.hotelOffersSearch.get({
+    hotelIds: hotelIds,
+    checkInDate: checkIn,
+    checkOutDate: checkOut,
+    roomQuantity: rooms,
+    currency: "USD",
+    bestRateOnly: false
+  }).then(response => res.json(JSON.parse(response.body)))
+  .catch(err => res.json(err));
+});
 
 // Confirming the offer
 router.get(`/${API}/offer`, async (req, res) => {
-    const { offerId } = req.query;
-    const response = await amadeus.shopping.hotelOffer(offerId).get();
-    try {
-      await res.json(JSON.parse(response.body));
-    } catch (err) {
-      await res.json(err);
-    }
-  });
+  const { offerId } = req.query;
+  const response = await amadeus.shopping.hotelOffer(offerId).get();
+  try {
+    res.json(JSON.parse(response.body));
+  } catch (err) {
+    res.json(err);
+  }
+});
 
 // Booking
 router.post(`/${API}/booking`, async (req, res) => {
-    const { offerId } = req.query;
-    const { body } = req;
-    const response = await amadeus.booking.hotelBookings.post(
-      JSON.stringify({
-        data: {
-          offerId,
-          guests: body.guests,
-          payments: body.payments,
-        },
-      })
-    );
-    try {
-      await res.json(JSON.parse(response.body));
-    } catch (err) {
-      await res.json(err);
-    }
+  const { offerId } = req.query;
+  const { body } = req;
+  const response = await amadeus.booking.hotelBookings.post(
+    JSON.stringify({
+      data: {
+        offerId,
+        guests: body.guests,
+        payments: body.payments,
+      },
+    })
+  );
+  try {
+    await res.json(JSON.parse(response.body));
+  } catch (err) {
+    await res.json(err);
+  }
+});
+
+router.get(`/${API}/flights`, async (req, res) => {
+  const { origin, destination, departureDate, returnDate, adults, travelClass } = req.query;
+  const response = await amadeus.shopping.flightOffersSearch.get({
+    originLocationCode: origin,
+    destinationLocationCode: destination,
+    departureDate: departureDate,
+    returnDate: returnDate,
+    adults: adults,
+    nonStop: true,
+    currencyCode: "USD",
+    travelClass: travelClass
   });
+  try {
+    res.json(JSON.parse(response.body));
+  } catch (err) {
+    res.json(err);
+  }
+});
 
 module.exports = router;
