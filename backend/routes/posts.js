@@ -53,6 +53,7 @@ async function returnPosts(req, res){
     res.status(401).send('Not logged in');
   }
 }
+/*
 async function returnFriendsPosts(req, res){
   
   if(req.user){
@@ -82,7 +83,7 @@ async function returnFriendsPosts(req, res){
   }
 }
 
-
+*/
 
 //deletes existing post given post id
 async function deletePost(req, res){
@@ -170,7 +171,7 @@ async function getAllPosts(req, res){
 }
 router.post('/post',upload, createPost);
 router.get('/postList/', returnPosts);
-router.get('/friendsPostList/', returnFriendsPosts);
+//router.get('/friendsPostList/', returnFriendsPosts);
 router.put('/editcaption/:id', editPost);
 router.delete('/delete/:id', deletePost);
 router.get('/returnallposts', getAllPosts);
