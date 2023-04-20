@@ -1,18 +1,21 @@
-import './Home.css';
-import { Card, Container, Row, ListGroup, Badge, Button, Modal, Form } from 'react-bootstrap';
+import './Dashboard.css';
+import { Card, Container, Row, ListGroup, Badge, Button, Modal, Form, Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 function format_date(date){
-  date = new Date(date);
-  return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
+  date = new Date(date.slice(0,10).split("-"));
+  return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
 }
 
 function TripCard(props) {
   const navigate = useNavigate();
   const[creator, setCreator] = useState(null);
+  const [hovered, setHovered] = useState(false);
+  const hoverOn = () => setHovered(true);
+  const hoverOff = () => setHovered(false);
   // const[destination, setDestination] = useState(null);
 
   useEffect(() => {
@@ -41,32 +44,53 @@ function TripCard(props) {
     }
   }
 
+  let pill;
+  const startDate = new Date(props.trip.start_date.slice(0,10).split("-"));
+  const currentDate = new Date();
+
+  if(props.trip.status === "Pending" && startDate > currentDate){
+    pill = <Badge pill className='ms-2' bg="warning" text="dark"> Pending </Badge>; 
+  }
+  else if(props.trip.status === "Paid"){
+    pill = <Badge pill className='ms-2' bg="success"> Paid </Badge>; 
+  }
+  else{
+    pill = <Badge pill className='ms-2' bg="danger"> Expired </Badge>;
+  }
+
+  const cardStyle = {
+    transform: hovered ? 'scale(1.05)' : 'none',
+    transition: 'all 0.3s ease-in-out',
+    'width': 300, cursor: "pointer"
+  };
+
   return(
-    <Card style={{'minWidth': 280}}>
+    <Card tag="a" className={hovered ? 'shadow' : 'shadow'} style={cardStyle} onClick={redirectToTrip} onMouseEnter={hoverOn} onMouseLeave={hoverOff}>
       <Card.Body>
         <Card.Title className="d-flex justify-content-between">
-          Trip to {props.trip.destination_id}
-          <Badge className='ms-2' as={Button} onClick={redirectToTrip}>🖉</Badge>
+          <div style={{overflow: 'hidden', whiteSpace: "nowrap", textOverflow: "ellipsis"}}>Trip to {props.trip.destination_name}</div>
+          {pill}
+          {/* <Badge className="edit-button" as={Button} onClick={redirectToTrip}>🖉</Badge> */}
         </Card.Title>
         <Card.Subtitle className='mb-2 text-muted'>
           {format_date(props.trip.start_date)} - {format_date(props.trip.end_date)}
         </Card.Subtitle>
-        <Card.Subtitle className='mb-2 text-muted'>
+        <Card.Subtitle className='mb-1 text-muted'>
           {countPeople()}
         </Card.Subtitle>
       </Card.Body>
-      <ListGroup className="list-group-flush">
+      <ListGroup className="list-group-flush card-body p-0">
         <ListGroup.Item className="d-flex justify-content-between">
           Flights
-          <Badge bg="success">✓</Badge>
+          {props.trip.flight_ids.length > 0 ? <Badge bg="success">✓</Badge> : <Badge bg="danger">✕</Badge>}
         </ListGroup.Item>
         <ListGroup.Item className="d-flex justify-content-between">
           Hotels
-          <Badge bg="danger">✕</Badge>
+          {props.trip.hotel_ids.length > 0 ? <Badge bg="success">✓</Badge> : <Badge bg="danger">✕</Badge>}
         </ListGroup.Item>
         <ListGroup.Item className="d-flex justify-content-between">
           Activities
-          <Badge bg="secondary">0</Badge>
+          <Badge bg="secondary">{props.trip.activity_ids.length}</Badge>
         </ListGroup.Item>
       </ListGroup>
       <Card.Footer>Created by {creator}</Card.Footer>
@@ -74,11 +98,18 @@ function TripCard(props) {
   );
 }
 
+function toTitleCase(str) {
+  return str.toLowerCase().split(' ').map(function (word) {
+    return (word.charAt(0).toUpperCase() + word.slice(1));
+  }).join(' ');
+}
+
 function NewTripModal(props){
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [destination, setDestination] = useState("");
+  const [name, setName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [visibility, setVisibility] = useState(false);
@@ -88,10 +119,10 @@ function NewTripModal(props){
     fetch(`http://localhost:3001/amadeus/search?keyword=${query}`)
     .then((resp) => resp.json())
     .then((locations) => {
-      console.log(locations.data.map(location => location));
+      console.log(locations.data);
       setLocations(locations.data);
       setIsLoading(false);
-    });
+    }).catch((err) => console.log(err));
   }
 
   function handleSubmit(e){
@@ -101,6 +132,7 @@ function NewTripModal(props){
       start_date: startDate,
       end_date: endDate,
       destination_id: destination,
+      destination_name: toTitleCase(name),
       visibility: visibility
     });
     var myHeaders = new Headers();
@@ -148,21 +180,29 @@ function NewTripModal(props){
           renderMenuItemChildren={(option) => (
             <span>{`${option.name}, ${option.address.countryName}`}</span>
           )}
-          onChange={(selected) => setDestination(selected[0].id)}
+          onChange={(selected) => {setDestination(selected[0].iataCode); setName(selected[0].name)}}
         />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formStartDate">
-        <Form.Label>Start Date</Form.Label>
-        <Form.Control
-          type="date"
-          onChange={(e) => setStartDate(e.target.value)}/>
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="formEndDates">
-        <Form.Label>End Date</Form.Label>
-        <Form.Control
-          type="date"
-          onChange={(e) => setEndDate(e.target.value)}/>
-      </Form.Group>
+
+      <Row>
+        <Col>
+          <Form.Group className="mb-3" controlId="formStartDate">
+            <Form.Label>Start Date</Form.Label>
+            <Form.Control
+              type="date"
+              onChange={(e) => setStartDate(e.target.value)}/>
+          </Form.Group>
+        </Col>
+        <Col>
+          <Form.Group className="mb-3" controlId="formEndDates">
+            <Form.Label>End Date</Form.Label>
+            <Form.Control
+              type="date"
+              onChange={(e) => setEndDate(e.target.value)}/>
+          </Form.Group>
+        </Col>
+      </Row>
+      
       <Form.Group  className="mb-3" controlId="formVisibility">
         <Form.Switch
           label="Set Visible to Friends"

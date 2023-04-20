@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const express = require('express');
-const e = require("express");
 const app = express();
 const port = 3001;
 
@@ -46,6 +45,7 @@ const postRoutes = require("./routes/posts");
 const amadeusRoutes = require("./routes/amadeus");
 const payMethodRoutes = require("./routes/PayMethod");
 const paypalRoutes = require("./routes/paypal-api");
+const hotelRoutes = require("./routes/hotel")
 
 app.use("/", userRoutes);
 app.use("/", tripRoutes);
@@ -56,6 +56,8 @@ app.use("/", payMethodRoutes);
 app.use("/", paypalRoutes);
 app.use("/", postRoutes);
 app.use("/", amadeusRoutes)
+app.use("/", hotelRoutes)
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
