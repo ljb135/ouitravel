@@ -37,7 +37,7 @@ async function createPost(req, res) {
 async function returnPosts(req, res){
   if(req.user){
     try{
-      Post.find({creator_id: req.user._id}, (err, docs) =>{
+      Post.find(req.id, (err, docs) =>{
         if(err){
           console.error(err);
           res.status(500).send(err);
@@ -53,19 +53,11 @@ async function returnPosts(req, res){
     res.status(401).send('Not logged in');
   }
 }
-async function returnFriendsPosts(req, res){
-  
+
+async function returnPostsByID(req, res){
   if(req.user){
-    var myFriend = Friend.find({$and: [{"status": "friends"},  {$or: [{"user1_email": req.user.email}, {"user2_email": req.user.email}] }] });
-    if (myFriend.user1_email == req.user.email){
-      const friendEmail = myFriend.user2_email;
-    }
-    else{
-      const friendEmail = myFriend.user1_email;
-    }
-    myFriend = User.find({"email" : friendEmail});
     try{
-      Post.find({creator_id: myFriend._id}, (err, docs) =>{
+      User.find({creator_id: req.params.id}, (err, docs) =>{
         if(err){
           console.error(err);
           res.status(500).send(err);
@@ -75,12 +67,19 @@ async function returnFriendsPosts(req, res){
           res.json(docs);
         }
       })
+      .then(friendUser => {
+        console.log(friendUser);
+        Post.find({creator_id: friendUser.user._id});
+        return friendUser
+    } )
     }catch{res.send("Error")}
   }
   else{
     res.status(401).send('Not logged in');
   }
 }
+
+
 
 
 
@@ -148,7 +147,7 @@ async function editPost(req, res){
 }
 router.post('/post',upload, createPost);
 router.get('/postList/', returnPosts);
-router.get('/friendsPostList/', returnFriendsPosts);
+router.get('/friendsPostList/:id', returnPostsByID);
 router.put('/editcaption/:id', editPost);
 router.delete('/delete/:id', deletePost);
 module.exports = router;

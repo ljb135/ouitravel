@@ -8,6 +8,7 @@ import Login from './subpages/Login';
 import Register from "./subpages/Register";
 import Explore from "./subpages/Explore";
 import MyPostsContainer from "./subpages/MyPostsContainer";
+import FriendPostList from "./subpages/friendPost";
 
 
 
@@ -51,6 +52,7 @@ function App() {
           <Route path='/' element={(name !== null) ? <Dashboard/> : <Login setName={setName}/>}></Route>
           <Route path="/explore" element={<Explore/>}></Route>
           <Route path="/mypostscontainer" element={<MyPostsContainer/>}></Route>
+          <Route path="/friendsPost" element={<FriendPostList/>}></Route>
           {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
           <Route path="/trip/:id" element={<Trip/>} onEnter={checkAuthentication}></Route>

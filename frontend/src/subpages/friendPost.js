@@ -4,21 +4,45 @@ import { Buffer } from 'buffer';
 
 function FriendPostList() {
   const [posts, setPosts] = useState([]);
+  const[friends, setFriends] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [tripInfo, setTripInfo] = useState({});
 
   useEffect(() => {
-    fetch('http://localhost:3001/friendsPostList', {
+    fetch('http://localhost:3001/friends', { ///friendsPostList/:id
       credentials: 'include'
     })
       .then(res => res.json())
+      .then(data => {
+        setFriends(data);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+      
+  }, []);
+
+  
+    
+  useEffect(() =>{
+  friends.map(friend=> {
+    fetch(`/friendsPostList/${friend.user2_email}`, { ///friendsPostList/:id
+      credentials: 'include'
+    })
+      .then(res => console.log(res))
       .then(data => {
         setPosts(data);
       })
       .catch(err => {
         console.error(err);
       });
-  }, []);
+  })
+}, []);
+  
+  console.log(JSON.stringify(friends));
+  console.log(JSON.stringify(posts));
+  
+  
 
 
   const handleShowModal = async(tripId) => {
@@ -38,13 +62,11 @@ function FriendPostList() {
     <div>
       <h1>Friends Posts</h1>
       <div className="row row-cols-1 row-cols-md-3 g-4">
-        {posts.map(post => (
-          <div key={post._id} className="col">
+        {friends.map(friend => (
+          <div key={friend._id} className="col">
             <Card>
-              {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
-              <Card.Body>
-                <Button variant="primary" onClick={() => handleShowModal(post.trip_id)}>View Trip Info</Button>
-              </Card.Body>
+
+
             </Card>
           </div>
         ))}
