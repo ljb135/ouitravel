@@ -12,9 +12,8 @@ const initialOptions = {
 */
 
 function Paypal(props) {
-    const price = props.trip.price;
-    const value = price.toString();
-    console.log(value);
+    const price = props.trip.price.toString();
+    console.log(price);
     //const [price, setPrice] = useState(null)
     //const [loading, setLoading] = useState(true);
     //const [error, setError] = useState(null);
@@ -48,7 +47,7 @@ function Paypal(props) {
             purchase_units: [
                 {
                     amount: {
-                        value: ,
+                        value: '30',
                     }
                 },
             ]
