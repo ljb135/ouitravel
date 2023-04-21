@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({storage: storage}).single('image');    
+
 
 const express = require('express');
 const app = express();
@@ -18,7 +22,6 @@ app.use(cors({
   credentials: true
 }))
 
-const PayMethod = require('./models/paymethods');
 
 mongoose.connect(
   `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`, 

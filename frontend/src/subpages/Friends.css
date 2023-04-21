@@ -1,0 +1,16 @@
+.friends{
+    background-color: skyblue;
+    max-width: 700px;
+    margin: auto;
+    padding: 30px;
+    border-radius: 20px;
+    background-image: radial-gradient(white, skyblue);
+    box-shadow: 2px 2px 10px lightgray;
+}
+h1 {
+    text-align: center;
+}
+button {
+    background-color: lightgray;
+    text-align: center;
+}
