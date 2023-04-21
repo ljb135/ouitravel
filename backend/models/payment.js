@@ -9,4 +9,4 @@ const PaySchema = new mongoose.Schema({
 
 module.exports = mongoose.model('Payment', PaySchema);
 
-//extremely barebones on purpose, will be fleshed out later by other team members.
+

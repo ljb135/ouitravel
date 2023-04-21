@@ -41,7 +41,7 @@ function Navigation(props){
                     <NavDropdown title={"Hi, " + props.name}>
                         <NavDropdown.Item href="#account">Profile</NavDropdown.Item>
                         <NavDropdown.Item href="#account">Friends</NavDropdown.Item>
-                        <NavDropdown.Item href="#account">Payment</NavDropdown.Item>
+                        <NavDropdown.Item href="/Payments">Payment History</NavDropdown.Item>
                         <NavDropdown.Item onClick={signOut}>Sign out</NavDropdown.Item>
                     </NavDropdown>
                 </Nav>
