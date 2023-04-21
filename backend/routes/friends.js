@@ -10,7 +10,7 @@ router.get('/friends', async (req, res) => {
     Friends.find({ $and: [{ "status": "friends" }, { $or: [{ "user1_email": email }, { "user2_email": email }] }] })
       .then(data => {
         data = data.map(friend => {
-          friend.user2_email = (friend.user1_email === email ? friend.user2_email : friend.user1_email);
+          friend.user2_email = friend.user1_email === email ? friend.user2_email : friend.user1_email;
           friend.user1_email = email;
           return friend
         })
@@ -25,7 +25,7 @@ router.get('/friends', async (req, res) => {
 });
   
 //Add a new pending friend request between user and entered friend
-router.post('/friend', async (req, res) => {
+router.post('/friends', async (req, res) => {
   if (req.user) {
     const user1_email = req.user.email;
     const user2_email = req.body.friend_email;
@@ -48,7 +48,7 @@ router.post('/friend', async (req, res) => {
 });
 
 //Update status of friend request to "friends" given objectId
-router.put('/friend/:id', async (req, res) => {
+router.put('/friends/:id', async (req, res) => {
   if (req.user) {
     const friends_id = req.params.id;
     Friends.findByIdAndUpdate(
@@ -69,7 +69,7 @@ router.put('/friend/:id', async (req, res) => {
 });
 
 //Delete corresponding friends document given objectId
-router.delete('/friend/:id', async (req, res) => {
+router.delete('/friends/:id', async (req, res) => {
   if (req.user) {
     const friends_id = req.params.id;
     Friends.findByIdAndDelete(
