@@ -127,9 +127,6 @@ function Friends(props) {
 
 
             <h2>Pending</h2>
-            {/* <ListGroup>
-                
-            </ListGroup> */}
             <button>Accept All</button>
         </Container>
     );
@@ -142,8 +139,6 @@ function FriendItem({friend}){
         </ListGroup.Item>
     )
 }
-
-// function PendingItem({friend})
 
 export default Friends;
 

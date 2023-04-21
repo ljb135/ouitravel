@@ -32,7 +32,7 @@ function Register(props) {
             'credentials': 'include'
         };
 
-        fetch("http://localhost:3001/register", requestOptions)
+        fetch("http://localhost:3001/user", requestOptions)
         .then(response => {
             if(response.ok){
                 response.text().then(name => props.setName(name));
