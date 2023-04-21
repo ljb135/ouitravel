@@ -4,18 +4,26 @@ const Friends = require('../models/friends');
 //FRIEND SYSTEM API CALLS
 
 //Show list of friends of user
-router.get('/friend', async (req, res) => {
+router.get('/friends', async (req, res) => {
   if (req.user) {
     const email = req.user.email;
     Friends.find({ $and: [{ "status": "friends" }, { $or: [{ "user1_email": email }, { "user2_email": email }] }] })
-      .then(data => res.json(data))
+      .then(data => {
+        data = data.map(friend => {
+          friend.user2_email = (friend.user1_email === email ? friend.user2_email : friend.user1_email);
+          friend.user1_email = email;
+          return friend
+        })
+        console.log(data)
+        res.json(data);
+      })
       .catch(error => res.json(error))
   }
   else {
     res.status(401).send('Not logged in');
   }
 });
-
+  
 //Add a new pending friend request between user and entered friend
 router.post('/friend', async (req, res) => {
   if (req.user) {

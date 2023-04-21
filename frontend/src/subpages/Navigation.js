@@ -34,6 +34,8 @@ function Navigation(props){
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="/explore">Explore</Nav.Link>
                     <Nav.Link as={Link} to="/history">History</Nav.Link>
+                    <Nav.Link as ={Link} to="/friendPost">Friends</Nav.Link>
+                    <Nav.Link as={Link} to="/mypostscontainer">My Posts</Nav.Link>
                 </Nav>
                 <Nav>
                     <NavDropdown title={"Hi, " + props.name}>

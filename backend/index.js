@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({storage: storage}).single('image');    
+
 
 const express = require('express');
 const app = express();
