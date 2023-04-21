@@ -108,10 +108,10 @@ function NewTripModal(props){
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [destination, setDestination] = useState("");
-  const [name, setName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [destination, setDestination] = useState();
+  const [name, setName] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [visibility, setVisibility] = useState(false);
 
   function updateLocations(query){
@@ -127,6 +127,11 @@ function NewTripModal(props){
 
   function handleSubmit(e){
     e.preventDefault();
+
+    if(!destination || !startDate || !endDate ){
+      alert("Please fill out all fields.");
+      return;
+    }
 
     const body = new URLSearchParams({
       start_date: startDate,
