@@ -6,9 +6,15 @@ import Dashboard from './subpages/Dashboard';
 import Trip from './subpages/Trip';
 import Login from './subpages/Login';
 import Register from "./subpages/Register";
+import PaymentList from "./subpages/Payments";
+import History from './subpages/History';
+import Explore from "./subpages/Explore";
+import MyPostsContainer from "./subpages/MyPostsContainer";
+import FriendPostList from "./subpages/friendPost";
 import Paypal from "./subpages/Paypal";
 
 // const name = window.localStorage.getItem("Name");
+
 
 function isloggedIn(setName){
   var requestOptions = {
@@ -40,19 +46,26 @@ function App() {
   useEffect(() => {
     isloggedIn(setName);
   }, []);
-
+  
   return (
     <BrowserRouter>
       <Navigation name={name}/>
         <Routes>
           <Route path='/' element={(name !== null) ? <Dashboard/> : <Login setName={setName}/>}></Route>
+          <Route path="/explore" element={<Explore/>}></Route>
+          <Route path="/mypostscontainer" element={<MyPostsContainer/>}></Route>
+          <Route path="/friendsPost" element={<FriendPostList/>}></Route>
           {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
           <Route path="/paypal" element={<Paypal/>} onEnter={checkAuthentication}></Route>
+          <Route path="/Payments" element={<PaymentList/>} onEnter={checkAuthentication}></Route>
           <Route path="/trip/:id" element={<Trip/>} onEnter={checkAuthentication}></Route>
+          <Route path="/history" element={<History />} />
         </Routes>
     </BrowserRouter>
   );
 }
+
+
 
 export default App;
