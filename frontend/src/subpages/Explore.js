@@ -56,7 +56,7 @@ function PostList() {
 
   return (
     <div>
-      <h1>My Posts</h1>
+      <h1>Search Post by Location</h1>
       <div>
         <label htmlFor="location-filter">Filter by location:</label>
         <select id="location-filter" value={selectedLocation} onChange={handleLocationSelect}>
