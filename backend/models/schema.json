@@ -16,11 +16,11 @@
     },
     "credit_card": {
         "_id": "object_id",
-        "card_number": "integer",
+        "card_number": "number",
         "card_holder_name": "string",
 		"owner_email": "string",
-		"expiration_date": "integer",
-		"cvv" : "integer"
+		"expiration_date": "date",
+		"cvv" : "number"
     },
     "flight": {
 		"_id": "object_id",

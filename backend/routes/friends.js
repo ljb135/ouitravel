@@ -26,65 +26,65 @@ router.get('/friends', async (req, res) => {
   
 //Add a new pending friend request between user and entered friend
 router.post('/friend', async (req, res) => {
-    if(req.user) {
-      const user1_email = req.user.email;
-      const user2_email = req.body.friend_email;
-      const status = "pending";
-      try{
-        Friends.create({
-          user1_email,
-          user2_email,
-          status
-        })
-      } catch(error){
-          console.log(error)
-          return res.json({ status: 'error' })
-      }
+  if (req.user) {
+    const user1_email = req.user.email;
+    const user2_email = req.body.friend_email;
+    const status = "pending";
+    try {
+      Friends.create({
+        user1_email,
+        user2_email,
+        status
+      });
       res.send("Friend request sent");
+    } catch (error) {
+      console.log(error)
+      return res.json({ status: 'error' })
     }
-    else{
-      res.status(401).send('Not logged in');
-    }
-  });
-  
+  }
+  else {
+    res.status(401).send('Not logged in');
+  }
+});
+
 //Update status of friend request to "friends" given objectId
 router.put('/friend/:id', async (req, res) => {
-    if(req.user) { 
-      const friends_id = req.params.id;   
-      Friends.findByIdAndUpdate(
-        friends_id,
-        {$set: {status: "friends"} }, 
-        {new: true},
-        (err,data) => {
-          if(data==null){
-              res.send("nothing found") ; 
-          } else{
-              res.send("Friend request accepted") ; 
-          }
+  if (req.user) {
+    const friends_id = req.params.id;
+    Friends.findByIdAndUpdate(
+      friends_id,
+      { $set: { status: "friends" } },
+      { new: true },
+      (err, data) => {
+        if (data == null) {
+          res.send("nothing found");
+        } else {
+          res.send("Friend request accepted");
+        }
       })
-    }  
-    else{
-      res.status(401).send('Not logged in');
-    }
-  });
-  
+  }
+  else {
+    res.status(401).send('Not logged in');
+  }
+});
+
 //Delete corresponding friends document given objectId
 router.delete('/friend/:id', async (req, res) => {
-    if(req.user) { 
-      const friends_id = req.params.id;   
-      Friends.findByIdAndDelete(
-        friends_id,
-        (err,data) => {
-          if(data==null){
-            res.send("nothing found") ; 
-          } else{
-            res.send("Friend removed") ; 
-          }
-      }); 
-    }
-    else{
-      res.status(401).send('Not logged in');
-    }
-  });
+  if (req.user) {
+    const friends_id = req.params.id;
+    Friends.findByIdAndDelete(
+      friends_id,
+      (err, data) => {
+        if (data == null) {
+          res.send("nothing found");
+        } else {
+          res.send("Friend removed");
+        }
+      });
+  }
+  else {
+    res.status(401).send('Not logged in');
+  }
+});
 
 module.exports = router;
