@@ -11,6 +11,7 @@ function Friends(props) {
     const [user1Email, setUser1Email] = useState("");
     const [user2Email, setUser2Email] = useState("");
     const [stat, setStatus] = useState();
+    const [target_email, setTargetEmail] = useState("");
 
     
     function getFriends() {
@@ -116,10 +117,49 @@ function Friends(props) {
         // items = [<FriendItem/>, <FriendItem/>, ...]
     }
 
+    // Send Friend Request
+    function handleSubmit(e) {
+        // Prevent the browser from reloading the page
+        e.preventDefault();
+
+        // Set body using inputted target_email
+        const body = new URLSearchParams({
+            friend_email: target_email
+          });
+
+        // Use body in fetch 'POST' call to /friends:
+        fetch('http://localhost:3001/friends', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body,
+            redirect: 'follow',
+            'credentials': 'include'
+        }).then(response => {
+            if(response.ok){
+                alert(`Friends request sent to ${target_email}`);
+            }
+            else{
+                alert(`Could not send friend request`);
+            }
+        });
+    }
+
     return (
         <Container>
             <h1>Friends list</h1>
             <h2>Friends</h2>
+            
+            <form method="POST" onSubmit={handleSubmit}>
+                <label>Friend's email: 
+                    <input 
+                        type="text" 
+                        value={target_email}
+                        onChange={(e) => setTargetEmail(e.target.value)}
+                    />
+                </label>
+                <button type="submit">Send friend request</button>
+            </form>
+
             <ListGroup>
                 {items}
             </ListGroup>
