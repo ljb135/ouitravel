@@ -25,7 +25,7 @@ function TripCard(props) {
       credentials: "include"
     };
     
-    fetch("http://localhost:3001/user/" + props.trip.creator_id, requestOptions)
+    fetch("http://localhost:3001/user/id/" + props.trip.creator_id, requestOptions)
     .then(response => response.json())
     .then(json => setCreator(json.first_name + " " + json.last_name))
     .catch(() => setCreator(null));

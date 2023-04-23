@@ -120,7 +120,7 @@ function TripInfo(props){
           </Card>
         </Col>
       </Row>
-      <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
+      <CollaboratorsDisplay trip={props.trip} update={props.update}/>
       <FlightsDisplay trip={props.trip} update={props.update}/>
       <HotelsDisplay trip={props.trip} update={props.update}/>
       <ActivitiesDisplay activities={props.trip.activity_ids}/>

@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 function format_date(date){
-    date = new Date(date);
-    return (date.getMonth()+1) + "/" + (date.getDate()+1) + "/" + date.getFullYear();
+    date = new Date(date.slice(0,10).split("-"));
+    return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
 }
 
 function formatTime(str){
@@ -235,9 +235,9 @@ function FlightItem(props){
         <ListGroup.Item key={props.eventKey}>
             <h5>{props.dict.carriers[props.flight.validatingAirlineCodes]}</h5>
             <h6 className='my-1'>Departure:</h6>
-            <div>{departureFlight.departure.iataCode} ({departureFlight.departure.at.substring(0, 10)} {formatTime(departureFlight.departure.at)}) → {departureFlight.arrival.iataCode} ({departureFlight.arrival.at.substring(0, 10)} {formatTime(departureFlight.arrival.at)})</div>
+            <div>{departureFlight.departure.iataCode} ({format_date(departureFlight.departure.at)} {formatTime(departureFlight.departure.at)}) → {departureFlight.arrival.iataCode} ({format_date(departureFlight.arrival.at)} {formatTime(departureFlight.arrival.at)})</div>
             <h6 className='mt-2 mb-1'>Return:</h6>
-            <div>{returnFlight.departure.iataCode} ({returnFlight.departure.at.substring(0, 10)} {formatTime(returnFlight.departure.at)}) → {returnFlight.arrival.iataCode} ({returnFlight.arrival.at.substring(0, 10)} {formatTime(returnFlight.arrival.at)})</div>
+            <div>{returnFlight.departure.iataCode} ({format_date(returnFlight.departure.at)} {formatTime(returnFlight.departure.at)}) → {returnFlight.arrival.iataCode} ({format_date(returnFlight.arrival.at)} {formatTime(returnFlight.arrival.at)})</div>
             <Button className='mt-2' onClick={(e) => addFlight(e)}>{props.flight.price.total} {props.flight.price.currency}</Button>
         </ListGroup.Item>
     )

@@ -2,8 +2,11 @@ import { Form, Card, Button, Col, Row, Badge, Modal, Accordion, ListGroup, Close
 import { useState, useEffect } from 'react';
 
 function format_date(date){
-  date = new Date(date);
-  return (date.getMonth()+1) + "/" + (date.getDate()+1) + "/" + date.getFullYear();
+  if(date === null){
+    return;
+  }
+  date = new Date(date.slice(0,10).split("-"));
+  return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
 }
 
 function NewHotelModal(props){
