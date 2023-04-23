@@ -14,9 +14,6 @@ function CollaboratorsDisplay(props){
                 credentials: "include"
             })
             const jsonRes = await response.json();
-
-            console.log(jsonRes)
-
             setFriends(jsonRes)
         }
         fetchData();

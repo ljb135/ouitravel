@@ -11,6 +11,8 @@ function createTrip(req, res){
             end_date: req.body.end_date,
             destination_id: req.body.destination_id,
             destination_name: req.body.destination_name,
+            longitude: req.body.longitude,
+            latitude: req.body.latitude,
             creator_id: req.user._id,
             price: 0
         })

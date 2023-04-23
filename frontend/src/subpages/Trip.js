@@ -6,6 +6,7 @@ import HotelsDisplay from './HotelDisplay';
 import FlightsDisplay from './FlightsDisplay';
 import ActivitiesDisplay from './ActivitiesDisplay';
 import CollaboratorsDisplay from './CollaboratorsDisplay';
+import MapContainer from './MapContainer';
 import Paypal from './Paypal';
 
 function TripInfo(props){
@@ -78,10 +79,12 @@ function TripInfo(props){
             <Paypal trip={props.trip}/>
           </Modal.Body>
         </Modal>
-        <Button onClick={handleShow}></Button>
-        <Button variant='danger' onClick={(e) => handleDelete(e)}>
-          Delete
-        </Button>
+        <div>
+          <Button onClick={handleShow}>Pay Now</Button>
+          <Button className="ms-2" variant='danger' onClick={(e) => handleDelete(e)}>
+            Delete
+          </Button>
+        </div>
       </div>
       <Row>
         <Col>
@@ -118,9 +121,10 @@ function TripInfo(props){
         </Col>
       </Row>
       <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
-      <FlightsDisplay trip={props.trip}/>
+      <FlightsDisplay trip={props.trip} update={props.update}/>
       <HotelsDisplay trip={props.trip} update={props.update}/>
       <ActivitiesDisplay activities={props.trip.activity_ids}/>
+      <MapContainer trip={props.trip}/>
     </>
   )
 }

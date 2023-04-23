@@ -48,7 +48,7 @@ function Paypal(props) {
             purchase_units: [
                 {
                     amount: {
-                        value: ,
+                        value: 0,
                     }
                 },
             ]
