@@ -1,4 +1,4 @@
-import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row} from 'react-bootstrap';
+import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Modal} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -6,14 +6,21 @@ import HotelsDisplay from './HotelDisplay';
 import FlightsDisplay from './FlightsDisplay';
 import ActivitiesDisplay from './ActivitiesDisplay';
 import CollaboratorsDisplay from './CollaboratorsDisplay';
+import Paypal from './Paypal';
 
 function TripInfo(props){
   let startDate = props.trip.start_date;
   let endDate = props.trip.end_date;
 
+  const[show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const navigate = useNavigate();
 
   function handleDelete(e){
+
     e.preventDefault();
 
     var requestOptions = {
@@ -65,6 +72,13 @@ function TripInfo(props){
     <>
       <div className="my-3 d-flex justify-content-between">
         <h2>Trip to {props.trip.destination_name}</h2>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton/>
+          <Modal.Body>
+            <Paypal trip={props.trip}/>
+          </Modal.Body>
+        </Modal>
+        <Button onClick={handleShow}></Button>
         <Button variant='danger' onClick={(e) => handleDelete(e)}>
           Delete
         </Button>
