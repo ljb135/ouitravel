@@ -50,6 +50,7 @@ const amadeusRoutes = require("./routes/amadeus");
 const payMethodRoutes = require("./routes/PayMethod");
 const paypalRoutes = require("./routes/paypal-api");
 const hotelRoutes = require("./routes/hotel")
+const flightRoutes = require("./routes/flights")
 
 app.use("/", userRoutes);
 app.use("/", tripRoutes);
@@ -61,6 +62,7 @@ app.use("/", paypalRoutes);
 app.use("/", postRoutes);
 app.use("/", amadeusRoutes)
 app.use("/", hotelRoutes)
+app.use("/", flightRoutes)
 
 
 app.listen(port, () => {

@@ -110,6 +110,8 @@ function NewTripModal(props){
 
   const [destination, setDestination] = useState();
   const [name, setName] = useState();
+  const [longitude, setLongitude] = useState();
+  const [latitude, setLatitude] = useState();
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [visibility, setVisibility] = useState(false);
@@ -138,6 +140,8 @@ function NewTripModal(props){
       end_date: endDate,
       destination_id: destination,
       destination_name: toTitleCase(name),
+      longitude: longitude,
+      latitude: latitude,
       visibility: visibility
     });
     var myHeaders = new Headers();
@@ -185,7 +189,12 @@ function NewTripModal(props){
           renderMenuItemChildren={(option) => (
             <span>{`${option.name}, ${option.address.countryName}`}</span>
           )}
-          onChange={(selected) => {setDestination(selected[0].iataCode); setName(selected[0].name)}}
+          onChange={(selected) => {
+            setDestination(selected[0].iataCode);
+            setName(selected[0].name);
+            setLongitude(selected[0].geoCode.longitude);
+            setLatitude(selected[0].geoCode.latitude);
+          }}
         />
       </Form.Group>
 
