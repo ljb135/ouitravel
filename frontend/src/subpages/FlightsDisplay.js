@@ -170,8 +170,11 @@ function FlightItem(props){
         let departureTime = str.substring(11,16);
         let departureHour = Number(departureTime.substring(0,2));
 
-        if(departureHour > 12){
+        if(departureHour > 12 && departureHour < 24){
             departureTime = departureHour - 12 + departureTime.substring(2) + " PM";
+        }
+        else if(departureHour === 12){
+            departureTime = departureHour + departureTime.substring(2) + " PM";
         }
         else departureTime = departureHour + departureTime.substring(2) + " AM";
         return departureTime
