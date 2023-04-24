@@ -27,13 +27,15 @@ function getTripHistory(setData, userName) {
   fetch('http://localhost:3001/trip-history', requestOptions)
     .then(response => response.json())
     .then(json => {
-      const newData = json.map(trip => ({
-        key: trip._id,
-        tripId: trip._id,
-        userName: userName,
-        start_date: trip.start_date,
-        price: trip.price
-      }));
+      const newData = json
+        .filter(trip => trip.status === 'Paid') // filter trips with 'Paid' status
+        .map(trip => ({
+          key: trip._id,
+          tripId: trip.destination_name,
+          userName: userName,
+          start_date: trip.start_date,
+          price: trip.price
+        }));
       setData(newData);
     })
     .catch(() => setData(null));
@@ -56,7 +58,7 @@ const PaymentList = () => {
 
   const columns = [
     {
-      title: 'Trip ID',
+      title: 'Destination',
       dataIndex: 'tripId',
       key: 'tripId'
     },

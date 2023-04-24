@@ -210,6 +210,7 @@ async function createPost(req, res) {
 }
 
 
+
 //returns list of posts given the creator's id
 async function returnPosts(req, res){
   if(req.user){
