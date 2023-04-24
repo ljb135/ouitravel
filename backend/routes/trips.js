@@ -126,6 +126,15 @@ function getAllTrips(req, res){
     });
 }
 
+function getTripbytripID(req, res){
+    if(req.user){
+        Trip.findOne({_id: req.params.id}).then(trip => res.status(200).json(trip));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
+
 router.get('/trip/id/:id', getTripbyID);
 router.get('/trip/user', getTripbyUser);
 router.get('/trip/user/:id', getTripbyUserID);
@@ -133,6 +142,7 @@ router.delete('/trip/id/:id', deleteTrip);
 router.put('/trip/id/:id', editTrip);
 router.post('/trip', createTrip);
 router.get('/trip/returntrips', getAllTrips);
+router.get('/trip/tripbytripid/:id', getTripbytripID);
 
 
 module.exports = router;

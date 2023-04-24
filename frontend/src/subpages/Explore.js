@@ -40,7 +40,7 @@ function Explore() {
   }, []);
 
   const handleShowModal = async(tripId) => {
-    const res = await fetch(`http://localhost:3001/trip/id/${tripId}`, {
+    const res = await fetch(`http://localhost:3001/trip/tripbytripid/${tripId}`, {
       credentials: 'include'
     });
     if(res.ok){
