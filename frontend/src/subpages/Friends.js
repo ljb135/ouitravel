@@ -188,7 +188,6 @@ function Friends(props) {
     return (
         <Container>
             <h1>Friends list</h1>
-            
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <form method="POST" onSubmit={handleFriendRequest}>
                     <input 
@@ -199,19 +198,22 @@ function Friends(props) {
                     <button type="submit">Send friend request</button>
                 </form>
             </div>
-
+            
+            <hr/>
             <h2>Friends</h2>
             <ListGroup>
                 {items}
             </ListGroup>
             <button> Delete All</button>
 
+            <hr/>
             <h2>Received Requests</h2>
             <ListGroup>
                 {receivedItems}
             </ListGroup>
             <button>Accept All</button>
 
+            <hr/>
             <h2>Sent Requests</h2>
             <ListGroup>
                 {sentItems}

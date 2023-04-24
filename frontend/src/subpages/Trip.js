@@ -135,7 +135,7 @@ function TripInfo(props){
             <Paypal trip={props.trip}/>
           </Modal.Body>
         </Modal>
-        <Button onClick={handleShow}></Button>
+        <Button onClick={handleShow}> Pay </Button>
         <Button variant='danger' onClick={(e) => handleDelete(e)}>
           Delete
         </Button>
