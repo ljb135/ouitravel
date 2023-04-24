@@ -1,4 +1,4 @@
-import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Modal} from 'react-bootstrap';
+import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Modal, Alert} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -123,15 +123,16 @@ function TripInfo(props){
       <CollaboratorsDisplay trip={props.trip} update={props.update}/>
       <FlightsDisplay trip={props.trip} update={props.update}/>
       <HotelsDisplay trip={props.trip} update={props.update}/>
-      <ActivitiesDisplay activities={props.trip.activity_ids}/>
-      <MapContainer trip={props.trip}/>
+      <ActivitiesDisplay trip={props.trip}/>
+      <MapContainer trip={props.trip} update={props.update}/>
     </>
   )
 }
 
 function Trip() {
   const tripParams = useParams();
-  const[trip, setTrip] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [trip, setTrip] = useState(null);
 
   function updateTrip(){
     var requestOptions = {
@@ -144,6 +145,8 @@ function Trip() {
     .then(response => response.json())
     .then(json => setTrip(json))
     .catch(() => setTrip(null));
+
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -159,7 +162,7 @@ function Trip() {
 
   return (
     <Container>
-      {body}
+      {!loading ? body : <Alert className='mt-4'>You do not have permission accessing this trip.</Alert>}
     </Container>
   );
 }

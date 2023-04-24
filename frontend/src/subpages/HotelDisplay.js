@@ -263,12 +263,12 @@ function HotelsDisplay(props){
     return(
         <Card className='mt-4 shadow'>
         <Card.Body>
-          <h4 className='d-flex align-items-center card-title'>Hotels
+          <h4 className='d-flex align-items-center card-title my-0'>Hotels
               <Badge className='ms-2 mt-1 add-button' as={Button} onClick={handleShow}>+</Badge>
           </h4>
           <NewHotelModal show={show} handleClose={handleClose} trip={props.trip} update={props.update} close={handleClose}/>
           <ListGroup variant='flush'>
-            <hr className='my-0'/>
+            {props.trip.hotel_ids.length !== 0 ? <hr className='mb-0 mt-2'/>  : null}
             {props.trip.hotel_ids.map(id => <HotelListItem hotel={id} trip={props.trip} update={props.update}/>)}
           </ListGroup>
         </Card.Body>

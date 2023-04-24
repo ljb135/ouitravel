@@ -28,12 +28,12 @@ function FlightsDisplay(props) {
     return (
         <Card className='mt-4 shadow'>
             <Card.Body>
-                <h4 className='d-flex align-items-center card-title'>Flights
+                <h4 className='d-flex align-items-center card-title my-0'>Flights
                     <Badge className='ms-2 add-button' as={Button} onClick={handleShow}>+</Badge>
                     <NewFlightModal show={show} handleClose={handleClose} trip={props.trip} update={props.update}/>
                 </h4>
                 <ListGroup variant='flush'>
-                    <hr className='my-0' />
+                    {props.trip.flight_ids.length !== 0 ? <hr className='mb-0 mt-2'/>  : null}
                     {props.trip.flight_ids.map(id => <FlightListItem flight={id} trip={props.trip} update={props.update}/>)}
                 </ListGroup>
             </Card.Body>

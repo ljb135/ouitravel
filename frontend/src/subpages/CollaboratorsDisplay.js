@@ -30,6 +30,7 @@ function CollaboratorsDisplay(props){
             })
             const jsonRes = await response.json();
             setFriends(jsonRes)
+            setSelectedFriend(jsonRes[0].user2_email);
         }
         fetchData();
     }, [props]);
@@ -134,7 +135,7 @@ function CollaboratorsDisplay(props){
               <Form.Select
                 placeholder="Friend"
                 onChange={(e) => setSelectedFriend(e.target.value)}>
-                    {friends.map((friend) => <option value={friend.user2_email}>{friend.user2_email}</option>)}
+                  {friends.map((friend) => <option value={friend.user2_email}>{friend.user2_email}</option>)}
               </Form.Select>
               <Button id="button-addon2" onClick={(e) => addCollaborator(e, selectedFriend)}>
                 Add Collaborator
