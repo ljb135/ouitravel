@@ -30,6 +30,7 @@ function Explore() {
         
         setLocations(uniqueLocations);
         setPosts(postsData);
+        
         setTripsData(tripsData);
       } catch (error) {
         console.error(error);
@@ -111,7 +112,6 @@ function Explore() {
     setModalType('addComment')
   }
   
-
   return (
     <div>
       <h1>Search Post by Location</h1>
@@ -122,22 +122,26 @@ function Explore() {
           {locations.map(location => <option key={location} value={location}>{location}</option>)}
         </select>
       </div>
-      <div className="row row-cols-1 row-cols-md-3 g-4">
-        {filteredPosts.map(post => (
-          <div key={post._id} className="col">
-            <Card>
-              {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
-              <Card.Body>
-                <Card.Title>{post.creator_name}</Card.Title>
-                <Card.Text>{post.comment}</Card.Text>
-                <Button variant="primary" onClick={() => handleShowModal(post.trip_id)}>View Trip Info</Button>
-                <Button variant = "secondary" onClick ={() => handleShowComments(post._id)}>Comments</Button>
-                <Button variant = "success" onClick={() => handleAddComment(post)}>Add Comment</Button>
-              </Card.Body>
-            </Card>
-          </div>
-        ))}
-      </div>
+      {filteredPosts.length === 0 ? (
+        <p>No posts with corresponding destination</p>
+      ) : (
+        <div className="row row-cols-1 row-cols-md-3 g-4">
+          {filteredPosts.map(post => (
+            <div key={post._id} className="col">
+              <Card>
+                {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
+                <Card.Body>
+                  <Card.Title>{post.creator_name}</Card.Title>
+                  <Card.Text>{post.comment}</Card.Text>
+                  <Button variant="primary" onClick={() => handleShowModal(post.trip_id)}>View Trip Info</Button>
+                  <Button variant = "secondary" onClick ={() => handleShowComments(post._id)}>Comments</Button>
+                  <Button variant = "success" onClick={() => handleAddComment(post)}>Add Comment</Button>
+                </Card.Body>
+              </Card>
+            </div>
+          ))}
+        </div>
+      )}
       <Modal show={showModal} onHide={() => {
         setShowModal(false)
         setComments([]);
@@ -187,6 +191,7 @@ function Explore() {
       
     </div>
   );
+  
 }
 
 export default Explore;
