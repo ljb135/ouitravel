@@ -3,7 +3,7 @@ import GoogleMapReact from 'google-map-react';
 import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
 
-function HotelMarker(props){
+function Marker(props){
   return(
     <div>
       <Icon className="h1 m-0" style={{transform: "translate(-20px, -40px)"}} icon="mdi:map-marker"/>
@@ -14,6 +14,7 @@ function HotelMarker(props){
 
 export default function MapContainer(props){
   const [hotelInfo, setHotelInfo] = useState([]);
+  const [activitiesInfo, setActivitiesInfo] = useState([]);
 
   useEffect(() => {
     var requestOptions = {
@@ -35,6 +36,26 @@ export default function MapContainer(props){
     fetchInfo();
   }, [props])
 
+  useEffect(() => {
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow',
+      'credentials': 'include'
+    };
+    
+    const fetchInfo = async () =>{
+      let pins = await Promise.all(props.trip.activity_ids.map(async (id) => {
+        let res = await fetch("http://localhost:3001/activity/" + id, requestOptions);
+        let json = await res.json();
+        return {name: json.name, lat: json.latitude, lng: json.longitude};
+      }));
+
+      setActivitiesInfo(pins)
+    }
+
+    fetchInfo();
+  }, [props])
+
   const defaultProps = {
     center: {
       lat: props.trip.latitude,
@@ -43,7 +64,6 @@ export default function MapContainer(props){
     zoom: 10
   };
 
-  let markers = hotelInfo.map(hotel => <HotelMarker name={hotel.name} lat={hotel.lat} lng={hotel.lng}/>);
   // console.log(hotelInfo);
 
   return (
@@ -54,7 +74,8 @@ export default function MapContainer(props){
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
       > 
-      {markers}
+      {hotelInfo.map(hotel => <Marker name={hotel.name} lat={hotel.lat} lng={hotel.lng}/>)}
+      {activitiesInfo.map(activity => <Marker name={activity.name} lat={activity.lat} lng={activity.lng}/>)}
       </GoogleMapReact>
     </div>
   );

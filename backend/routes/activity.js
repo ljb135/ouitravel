@@ -1,5 +1,27 @@
 const express = require('express'), router = express.Router();
 const Trip = require("../models/trip");
+const Activity = require("../models/activity");
+
+// Create Activity
+function createActivity(req, res){
+    if(req.user){
+        Activity.create(req.body, function(err,activity) {
+            res.status(201).send("Created");
+        });
+    }
+    else{
+        res.status(401).send('Not logged in');
+    }
+}
+
+function getActivityByID(req, res){
+    if(req.user){
+        Activity.findOne({_id: req.params.id,}).then(activity => res.status(200).json(activity));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
 
 // Add Activity to Trip
 function addActivitytoTrip(req, res){
@@ -12,7 +34,7 @@ function addActivitytoTrip(req, res){
             $or: [{creator_id: req.user._id}, {collaborator_ids: req.user._id}]
         },
         // Filter request body to remove irrelevant fields
-        { "$push": { "activity_ids": req.params.activity_id } },
+        { "$addToSet": { "activity_ids": req.params.activity_id } },
         (err, data)=>{
             if(err){
                 res.status(400).send(err);
@@ -30,6 +52,8 @@ function addActivitytoTrip(req, res){
     }
 }
 
+router.get('/activity/:id', getActivityByID);
+router.post('/activity', createActivity);
 router.put('/activity/:activity_id/trip/:trip_id', addActivitytoTrip);
 // router.delete('/flight/:flight_id/trip/:trip_id', removeFlightfromTrip);
 

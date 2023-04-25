@@ -61,7 +61,7 @@ function TripCard(props) {
   const cardStyle = {
     transform: hovered ? 'scale(1.05)' : 'none',
     transition: 'all 0.3s ease-in-out',
-    'width': 300, cursor: "pointer"
+    'min-width': 300, cursor: "pointer"
   };
 
   return(
