@@ -1,5 +1,6 @@
 const express = require('express'), router = express.Router();
 const Friends = require('../models/friends');
+const Trip = require('../models/trip');
 const User = require('../models/user');
 
 //FRIEND SYSTEM API CALLS
@@ -87,19 +88,31 @@ router.post('/friends', async (req, res) => {
     let user2_email = req.body.friend_email;
     const status = "pending";
     
-    //Check if inputed friend email is an existing user
-    try {
-      let existingUser = await User.findOne({ 'email': req.body.friend_email });
-      if (existingUser) {
-        Friends.create({
-          user1_email,
-          user2_email,
-          status
-        });
-        res.send("Friend request sent");
-      }
-    } catch (error) {
-      return res.status(400).send(error); //res.status(401).send('Nonexisting user');
+    //Check if inputted email is not user's email
+    if (user1_email == user2_email) {
+      return res.status(400).send({error: "Cannot add yourself"});
+    }
+
+    //Check if inputted friend email is an existing user
+    let existingUser = await User.findOne({ 'email': user2_email });
+    //Check if there is already an identical friend document
+    let existingFriends = await Friends.findOne({ $and: [
+                                                          { $or: [{ "user1_email": user1_email }, { "user1_email": user2_email }] }, 
+                                                          { $or: [{ "user2_email": user2_email }, { "user2_email": user1_email }] }
+                                                        ] });
+    if (existingUser && !existingFriends) {
+      Friends.create({
+        user1_email,
+        user2_email,
+        status
+      });
+      res.send("Friend request sent");
+    }
+    else if (!existingUser){
+      return res.status(400).send({error: "User does not exist"});
+    }
+    else if (existingFriends){
+      return res.status(400).send({error: "User already added"});
     }
     
     /*
@@ -181,5 +194,66 @@ router.delete('/friends/:id', async (req, res) => {
     res.status(401).send('Not logged in');
   }
 });
+
+// Add Friend to Trip
+function addFriendtoTrip(req, res){
+  // Fields which can be changed
+  if(req.user){
+      // Update fields only if user is the creator or a collaborator
+      Trip.findOneAndUpdate({
+          _id: req.params.trip_id,
+          status: "Pending",
+          $or: [{creator_id: req.user._id}, {collaborator_ids: req.user._id}]
+      },
+      // Filter request body to remove irrelevant fields
+      { "$addToSet": { "collaborator_ids": req.params.friend_id } },
+      (err, data)=>{
+          if(err){
+              res.status(400).send(err);
+          }
+          else if(data === null){
+              res.status(200).send("Trip not found");
+          }
+          else{
+              res.status(201).send("Successful");
+          }
+      });
+  }
+  else{
+      res.status(401).send('Not logged in');
+  }
+}
+
+// Remove Friend from Trip
+function removeFriendfromTrip(req, res){
+  // Fields which can be changed
+  if(req.user){
+      // Update fields only if user is the creator or a collaborator
+      Trip.findOneAndUpdate({
+          _id: req.params.trip_id,
+          status: "Pending",
+          $or: [{creator_id: req.user._id}, {collaborator_ids: req.user._id}]
+      },
+      // Filter request body to remove irrelevant fields
+      { "$pull": { "collaborator_ids": req.params.friend_id } },
+      (err, data)=>{
+          if(err){
+              res.status(400).send(err);
+          }
+          else if(data === null){
+              res.status(200).send("Trip not found");
+          }
+          else{
+              res.status(201).send("Successful");
+          }
+      });
+  }
+  else{
+      res.status(401).send('Not logged in');
+  }
+}
+
+router.put('/collaborator/:friend_id/trip/:trip_id', addFriendtoTrip);
+router.delete('/collaborator/:friend_id/trip/:trip_id', removeFriendfromTrip);
 
 module.exports = router;

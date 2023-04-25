@@ -48,6 +48,15 @@ function getUserInfo(req, res){
     }
 }
 
+function getUserInfoByEmail(req, res){
+    if(req.user){
+        User.find({email: req.params.email}).then(user => res.status(200).json(user));
+    }
+    else{
+        res.redirect(401, "Not logged in");
+    }
+}
+
 function getUserInfoByID(req, res){
     if(req.user){
         User.findById(req.params.id).then(user => {
@@ -109,7 +118,8 @@ function redirect(req, res){
 }
 
 router.get('/user', getUserInfo);
-router.get('/user/:id', getUserInfoByID);
+router.get('/user/id/:id', getUserInfoByID);
+router.get('/user/email/:email', getUserInfoByEmail);
 router.post('/user', registerUser);
 router.put('/user', editUser);
 router.post('/session', passport.authenticate('local'), login);

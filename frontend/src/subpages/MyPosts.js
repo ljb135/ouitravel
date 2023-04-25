@@ -31,7 +31,7 @@ function CreatePost() {
     event.preventDefault();
     const formData = new FormData();
     formData.append('trip_id', selectedTripId);
-    formData.append('comment', caption);
+    formData.append('caption', caption);
     formData.append('image', picture);
     
     try {

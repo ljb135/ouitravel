@@ -133,46 +133,6 @@ function Friends(props) {
         getFriends();
     }
 
-    function handleDelete(e) {
-
-        e.preventDefault();
-    
-        // Set body using inputted target_email
-        const body = new URLSearchParams({
-            friend_email: target_email
-        });
-    
-        var requestOptions = {
-            method: 'Delete',
-            redirect: 'follow',
-            body: body,
-            'credentials': 'include'
-        };
-    
-        fetch("http://localhost:3001/friend/" + props.friend._id, requestOptions)
-        .then(response => {
-            if(response.ok) {
-                alert(`${target_email} Successfully deleted`);
-            }
-        }).catch(error => {
-            alert(`Could not delete friend: ${target_email}`);
-        });
-    }
-    
-    
-    function FriendItem({ friend }){
-        return(
-            <ListGroup.Item>
-                {friend.user2_email}
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button onClick={handleDelete}>
-                        Delete
-                    </Button>
-                </div>
-            </ListGroup.Item>
-        )
-    }
-
     // useEffect(() => {
     //     deleteFriends();
     // }, []);
@@ -197,12 +157,16 @@ function Friends(props) {
         }).then(response => {
             if(response.ok){
                 alert(`Friends request sent to ${target_email}`);
+                getSent();
             }
+            // if(!response.ok){
+            //     alert(`Could not send friend request: ${target_email}`);
+            // }
             else{
-                //alert(`Could not send friend request: ${target_email}`);
+                return response.json();
             }
-        }).catch(error => {
-            alert(`Could not send friend request: ${target_email}`);
+        }).then(parsedData => {
+            alert(parsedData.error);
         });
     }
 
@@ -228,7 +192,6 @@ function Friends(props) {
     return (
         <Container>
             <h1>Friends list</h1>
-            
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <form method="POST" onSubmit={handleFriendRequest}>
                     <input 
@@ -239,50 +202,149 @@ function Friends(props) {
                     <button type="submit">Send friend request</button>
                 </form>
             </div>
-
+            
+            <hr/>
             <h2>Friends</h2>
             <ListGroup>
                 {items}
             </ListGroup>
             <button> Delete All</button>
 
+            <hr/>
             <h2>Received Requests</h2>
             <ListGroup>
                 {receivedItems}
             </ListGroup>
             <button>Accept All</button>
 
+            <hr/>
             <h2>Sent Requests</h2>
             <ListGroup>
                 {sentItems}
             </ListGroup>
         </Container>
     );
-}
 
-function handleAccept(){
+    function handleDelete(e, id) {
+
+        e.preventDefault();
     
-}
+        // Set body using inputted target_email
+        const body = new URLSearchParams({
+            friend_email: target_email
+        });
+    
+        var requestOptions = {
+            method: 'Delete',
+            redirect: 'follow',
+            body: body,
+            'credentials': 'include'
+        };
+    
+        fetch("http://localhost:3001/friends/" + id, requestOptions)
+        .then(response => {
+            if(response.ok) {
+                alert(`${target_email} Successfully Removed`);
+                getFriends();
+                getReceived();
+                getSent();
+            }
+        }).catch(error => {
+            alert(`Could not remove friend: ${target_email}`);
+        });
+    }
 
-function ReceivedItem({friend}){
-    return(
-        <ListGroup.Item>
-            {friend.user2_email}
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button onClick={handleAccept}>
-                delete
-                </button>
-            </div>
-        </ListGroup.Item>
-    )
-}
+    function FriendItem({friend}){
+        return(
+            <ListGroup.Item>
+                {friend.user2_email}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button onClick={(e) => handleDelete(e, friend._id)}>
+                    Remove
+                    </button>
+                </div>
+            </ListGroup.Item>
+        )
+    }
 
-function SentItem({friend}){
-    return(
-        <ListGroup.Item>
-            {friend.user2_email}
-        </ListGroup.Item>
-    )
+    function handleAccept(e, id){
+        e.preventDefault();
+
+        var requestOptions = {
+            method: 'PUT',
+            redirect: 'follow',
+            'credentials': 'include'
+        };
+
+        fetch("http://localhost:3001/friends/" + id, requestOptions)
+        .then(response => {
+            if(response.ok){
+                alert(`Friends request accepted`);
+                getFriends();
+                getReceived();
+            }
+            else{
+                alert(response.text());
+            }
+        });
+    }
+
+    function ReceivedItem({friend}){
+        return(
+            <ListGroup.Item>
+                {friend.user2_email}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button onClick={(e) => handleAccept(e, friend._id)}>
+                    Accept
+                    </button>
+                    <button onClick={(e) => handleDelete(e, friend._id)}>
+                    Decline
+                    </button>
+                </div>
+            </ListGroup.Item>
+        )
+    }
+
+    function SentItem({friend}){
+        return(
+            <ListGroup.Item>
+                {friend.user2_email}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button onClick={(e) => handleDelete(e, friend._id)}>
+                    Cancel
+                    </button>
+                </div>
+            </ListGroup.Item>
+        )
+    }
 }
 
 export default Friends;
+
+
+
+// function ReceivedItem({friend}){
+//     return(
+//         <ListGroup.Item>
+//             {friend.user2_email}
+//             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+//                 <button onClick={handleAccept}>
+//                 delete
+//                 </button>
+//             </div>
+//         </ListGroup.Item>
+//     )
+// }
+
+
+// function FriendItem({ friend }){
+//     return(
+//         <ListGroup.Item>
+//             {friend.user2_email}
+//             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+//                 <Button onClick={(e) => handleDelete(e, friend._id)}>
+//                     Delete
+//                 </Button>
+//             </div>
+//         </ListGroup.Item>
+//     )

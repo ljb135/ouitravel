@@ -13,6 +13,7 @@ import MyPostsContainer from "./subpages/MyPostsContainer";
 import FriendPostList from "./subpages/friendPost";
 import Paypal from "./subpages/Paypal";
 import Friends from "./subpages/Friends"
+import FriendPost from "./subpages/FriendPostko";
 
 // const name = window.localStorage.getItem("Name");
 
@@ -56,6 +57,7 @@ function App() {
           <Route path="/explore" element={<Explore/>}></Route>
           <Route path="/mypostscontainer" element={<MyPostsContainer/>}></Route>
           <Route path="/friendsPost" element={<FriendPostList/>}></Route>
+          <Route path="/friendpostko" element={<FriendPost/>}></Route>
           {/* <Route path='/login' element={<Login setName={setName}/>}></Route> */}
           <Route path="/register" element={<Register setName={setName}/>}></Route>
           <Route path="/friends" element={<Friends/>}></Route>

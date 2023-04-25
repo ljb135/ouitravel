@@ -11,6 +11,8 @@ function createTrip(req, res){
             end_date: req.body.end_date,
             destination_id: req.body.destination_id,
             destination_name: req.body.destination_name,
+            longitude: req.body.longitude,
+            latitude: req.body.latitude,
             creator_id: req.user._id,
             price: 0
         })
@@ -23,7 +25,7 @@ function createTrip(req, res){
 
 function getTripbyUser(req, res){
     if(req.user){
-        Trip.find({creator_id: req.user._id}).then(trip => res.status(200).json(trip));
+        Trip.find({$or: [{creator_id: req.user._id}, {collaborator_ids: req.user._id}]}).then(trip => res.status(200).json(trip));
     }
     else{
         res.redirect(401, "http://localhost:3000/login");
@@ -33,7 +35,7 @@ function getTripbyUser(req, res){
 // Get Trip by Trip ID
 function getTripbyID(req, res){
     if(req.user){
-        Trip.findOne({_id: req.params.id, creator_id: req.user._id}).then(trip => res.status(200).json(trip));
+        Trip.findOne({_id: req.params.id, $or: [{creator_id: req.user._id}, {collaborator_ids: req.user._id}]}).then(trip => res.status(200).json(trip));
     }
     else{
         res.redirect(401, "http://localhost:3000/login");
@@ -105,11 +107,44 @@ function deleteTrip(req, res){
     }
 }
 
+function getAllTrips(req, res){
+    if (!req.user) {
+      return res.status(401).send('Not logged in');
+    }
+  
+    // Query the database for all posts
+    Trip.find({}, (err, trips) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
+  
+      // Set CORS headers to allow cross-origin requests
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+      // Return the posts as a JSON response
+      return res.json(trips);
+    });
+}
+
+function getTripbytripID(req, res){
+    if(req.user){
+        Trip.findOne({_id: req.params.id}).then(trip => res.status(200).json(trip));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
+
 router.get('/trip/id/:id', getTripbyID);
 router.get('/trip/user', getTripbyUser);
 router.get('/trip/user/:id', getTripbyUserID);
 router.delete('/trip/id/:id', deleteTrip);
 router.put('/trip/id/:id', editTrip);
 router.post('/trip', createTrip);
+router.get('/trip/returntrips', getAllTrips);
+router.get('/trip/tripbytripid/:id', getTripbytripID);
+
 
 module.exports = router;
