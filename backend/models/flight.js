@@ -1,14 +1,16 @@
 const mongoose = require('mongoose');
 
 const flightSchema = new mongoose.Schema({
-    _id: mongoose.Types.ObjectId,
-    duration: Number,
-    airline_Rating: Number,
+    airline: String,
+    travelClass: String,
     price: Number,
-    class: String,
-    num_of_stops: Number,
-    start_location: mongoose.Types.ObjectId,
-    destination_location: mongoose.Types.ObjectId
+    start_location: String,
+    destination_location: String,
+    departure_departure_time: Date,
+    departure_arrival_time: Date,
+    return_departure_time: Date,
+    return_arrival_time: Date,
+    flight_offer: Object
 });
 
 module.exports = mongoose.model('Flight', flightSchema);

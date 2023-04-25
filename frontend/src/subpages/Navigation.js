@@ -53,7 +53,7 @@ function Navigation(props){
         return(
             <Navbar bg="light" variant="light">
                 <Container>
-                <Navbar.Brand as={Link} to="/">OuiTravel</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/" className='title'>OuiTravel</Navbar.Brand>
                 {/* <Nav>
                     <Nav.Link as={Link} to="/login">Login</Nav.Link>
                 </Nav> */}

@@ -98,4 +98,32 @@ router.get(`/${API}/flights`, async (req, res) => {
   }
 });
 
+router.get(`/${API}/activities`, async (req, res) => {
+  const { longitude, latitude } = req.query;
+  const response = await amadeus.shopping.activities.get({
+    longitude: longitude,
+    latitude: latitude,
+    radius: 20
+  });
+  try {
+    res.json(JSON.parse(response.body));
+  } catch (err) {
+    res.json(err);
+  }
+});
+
+router.get(`/${API}/pois`, async (req, res) => {
+  const { longitude, latitude } = req.query;
+  const response = await amadeus.referenceData.locations.pointsOfInterest.get({
+    longitude: longitude,
+    latitude: latitude,
+    radius: 20
+  });
+  try {
+    res.json(JSON.parse(response.body));
+  } catch (err) {
+    res.json(err);
+  }
+});
+
 module.exports = router;
