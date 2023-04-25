@@ -62,7 +62,7 @@ function CollaboratorsDisplay(props){
     items = collaborators.map(collaborator =>
       <ListGroup.Item className="d-flex justify-content-between">
         {collaborator.name}
-        <button type="button" className="btn-close" aria-label="Close" onClick={(e) => removeCollaborator(e, collaborator.id)}></button>
+        {props.trip.status !== "Paid" ? <button type="button" className="btn-close" aria-label="Close" onClick={(e) => removeCollaborator(e, collaborator.id)}></button> : null}
       </ListGroup.Item>
     );
   }
@@ -121,6 +121,23 @@ function CollaboratorsDisplay(props){
     });
   }
 
+  let input;
+
+  if(props.trip.status !== "Paid"){
+    input = 
+    <InputGroup className='mt-3'>
+      <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
+      <Form.Select
+        placeholder="Friend"
+        onChange={(e) => setSelectedFriend(e.target.value)}>
+          {friends.map((friend) => <option value={friend.user2_email}>{friend.user2_email}</option>)}
+      </Form.Select>
+      <Button id="button-addon2" onClick={(e) => addCollaborator(e, selectedFriend)}>
+        Add Collaborator
+      </Button>
+    </InputGroup>
+  }
+
   return(
     <Card className="shadow mt-4">
       <Card.Body>
@@ -133,17 +150,7 @@ function CollaboratorsDisplay(props){
           </ListGroup.Item>
           {items}
         </ListGroup>
-        <InputGroup className='mt-3'>
-            <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
-            <Form.Select
-              placeholder="Friend"
-              onChange={(e) => setSelectedFriend(e.target.value)}>
-                {friends.map((friend) => <option value={friend.user2_email}>{friend.user2_email}</option>)}
-            </Form.Select>
-            <Button id="button-addon2" onClick={(e) => addCollaborator(e, selectedFriend)}>
-              Add Collaborator
-            </Button>
-          </InputGroup>
+        {input}
       </Card.Body>
     </Card>
   )

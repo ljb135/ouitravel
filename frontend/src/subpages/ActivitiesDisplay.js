@@ -8,7 +8,7 @@ function ActivityItem(props){
         const body = new URLSearchParams({
             _id: props.activity.id,
             name: props.activity.name,
-            rating: props.activity.rating,
+            rating: props.activity.rating !== undefined ? props.activity.rating : 0,
             longitude: props.activity.geoCode.longitude,
             latitude: props.activity.geoCode.latitude,
         });
@@ -122,14 +122,33 @@ function ActivityDisplayItem(props){
         .then(response => response.json())
         .then(json => {
           setName(json.name);
-          setRating(json.rating)
+          setRating(json.rating);
         });
       }, [props]);
 
+      function removeActivity(e){
+        e.preventDefault();
+    
+        const requestOptions = {
+          method: 'DELETE',
+          'credentials': 'include'
+        };
+    
+        fetch(`http://localhost:3001/activity/${props.activity_id}/trip/${props.trip._id}`, requestOptions)
+        .then(response => {
+            if(response.ok){
+              props.update();
+            }
+            else{
+              alert(response.text());
+            }
+        });
+      }
+
     return(
         <ListGroup.Item className='d-flex justify-content-between'>
-            <div>{name} {rating ? `(${rating}⭐)` : null}</div>
-            <CloseButton/>
+            <div>{name} {rating !== 0 ? `(${rating}⭐)` : null}</div>
+            <CloseButton onClick={(e) => removeActivity(e)}/>
         </ListGroup.Item>
     );
 }

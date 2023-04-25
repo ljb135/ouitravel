@@ -25,12 +25,20 @@ function FlightsDisplay(props) {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    let modal;
+
+    if(props.trip.status !== "Paid"){
+        modal = <>
+            <Badge className='ms-2 add-button' as={Button} onClick={handleShow}>+</Badge>
+            <NewFlightModal show={show} handleClose={handleClose} trip={props.trip} update={props.update}/>
+        </>
+    }
+
     return (
         <Card className='mt-4 shadow'>
             <Card.Body>
                 <h4 className='d-flex align-items-center card-title my-0'>Flights
-                    <Badge className='ms-2 add-button' as={Button} onClick={handleShow}>+</Badge>
-                    <NewFlightModal show={show} handleClose={handleClose} trip={props.trip} update={props.update}/>
+                    {modal}
                 </h4>
                 <ListGroup variant='flush'>
                     {props.trip.flight_ids.length !== 0 ? <hr className='mb-0 mt-2'/>  : null}
@@ -44,7 +52,7 @@ function FlightsDisplay(props) {
 function FlightListItem(props) {
     const [airline, setAirline] = useState(null);
     const [travelClass, setTravelClass] = useState(null);
-    const [price, setPrice] = useState(null);
+    const [price, setPrice] = useState(0);
     const [startLocation, setStartLocation] = useState(null);
     const [destinationLocation, setDestinationLocation] = useState(null);
     const [departureDepartureTime, setDepartureDepartureTime] = useState(new Date());
@@ -98,7 +106,8 @@ function FlightListItem(props) {
     return (
         <ListGroup.Item className='my-1'>
             <div className='d-flex justify-content-between'>
-                <h5 className='mb-1'>{`${airline} - ${travelClass}`}</h5><CloseButton className='ms-2' onClick={(e) => removeFlight(e)}></CloseButton>
+                <h5 className='mb-1'>{`${airline} - ${travelClass}`}</h5>
+                {props.trip.status !== "Paid" ? <CloseButton className='ms-2' onClick={(e) => removeFlight(e)}></CloseButton> : null}
             </div>
             <div>
                 {`${startLocation} (${departureDepartureTime.toLocaleDateString()} ${departureDepartureTime.toLocaleTimeString()}) →  
@@ -109,7 +118,7 @@ function FlightListItem(props) {
                 ${startLocation} (${returnArrivalTime.toLocaleDateString()} ${returnArrivalTime.toLocaleTimeString()})`}
             </div>
             {/* <div>{description}</div> */}
-            <Badge className='mt-2' bg="success"><h6 className='m-0'>${price}</h6></Badge>
+            <Badge className='mt-2' bg="success"><h6 className='m-0'>${price.toFixed(2)}</h6></Badge>
         </ListGroup.Item>
     )
 }
