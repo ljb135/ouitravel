@@ -163,10 +163,10 @@ function Friends(props) {
             //     alert(`Could not send friend request: ${target_email}`);
             // }
             else{
-                //(`Could not send friend request: ${target_email}`);
+                return response.json();
             }
-        }).catch(error => {
-            alert(`User does not exist: ${target_email}`);
+        }).then(parsedData => {
+            alert(parsedData.error);
         });
     }
 
