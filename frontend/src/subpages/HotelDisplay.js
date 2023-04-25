@@ -245,11 +245,12 @@ function HotelListItem(props){
   return(
     <ListGroup.Item className='my-1'>
       <div className='d-flex justify-content-between'>
-        <h5 className='my-0'>{hotelName}</h5><CloseButton className='ms-2' onClick={(e) => removeHotel(e)}></CloseButton>
+        <h5 className='my-0'>{hotelName}</h5>
+        {props.trip.status !== "Paid" ? <CloseButton className='ms-2' onClick={(e) => removeHotel(e)}></CloseButton> : null}
       </div>
       <div className='mb-1'>{format_date(checkInDate)} - {format_date(checkOutDate)} • {numRooms} Rooms</div>
       <div>{description}</div>
-      <Badge className='mt-2' bg="success"><h6 className='m-0'>${price}</h6></Badge>
+      <Badge className='mt-2' bg="success"><h6 className='m-0'>${price.toFixed(2)}</h6></Badge>
     </ListGroup.Item>
   )
 }
@@ -260,13 +261,21 @@ function HotelsDisplay(props){
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    let modal;
+
+    if(props.trip.status !== "Paid"){
+      modal = <>
+        <Badge className='ms-2 mt-1 add-button' as={Button} onClick={handleShow}>+</Badge>
+        <NewHotelModal show={show} handleClose={handleClose} trip={props.trip} update={props.update} close={handleClose}/>
+      </>
+    }
+
     return(
         <Card className='mt-4 shadow'>
         <Card.Body>
           <h4 className='d-flex align-items-center card-title my-0'>Hotels
-              <Badge className='ms-2 mt-1 add-button' as={Button} onClick={handleShow}>+</Badge>
+            {modal}
           </h4>
-          <NewHotelModal show={show} handleClose={handleClose} trip={props.trip} update={props.update} close={handleClose}/>
           <ListGroup variant='flush'>
             {props.trip.hotel_ids.length !== 0 ? <hr className='mb-0 mt-2'/>  : null}
             {props.trip.hotel_ids.map(id => <HotelListItem hotel={id} trip={props.trip} update={props.update}/>)}

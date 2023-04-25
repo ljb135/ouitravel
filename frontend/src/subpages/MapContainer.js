@@ -30,7 +30,7 @@ export default function MapContainer(props){
         return {name: json.hotel_name, lat: json.latitude, lng: json.longitude};
       }));
 
-      setHotelInfo(pins)
+      setHotelInfo(pins);
     }
 
     fetchInfo();

@@ -1,4 +1,4 @@
-import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row, Modal, Alert} from 'react-bootstrap';
+import { Form, Container, Card, Button, Col, Row, Modal, Alert, Badge} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -13,7 +13,8 @@ function TripInfo(props){
   let startDate = props.trip.start_date;
   let endDate = props.trip.end_date;
 
-  const[show, setShow] = useState(false);
+  const [show, setShow] = useState(false);
+  const [price, setPrice] = useState(0);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -39,6 +40,64 @@ function TripInfo(props){
           alert(response.text());
         }
     });
+  }
+  
+  useEffect(() => {
+    const fetchInfo = async () =>{
+      var requestOptions = {
+        method: 'GET',
+        redirect: 'follow',
+        'credentials': 'include'
+      };
+
+      let subtotal = await props.trip.hotel_ids.reduce(async (acc, id) => {
+        let res = await fetch("http://localhost:3001/hotel/" + id, requestOptions);
+        let json = await res.json();
+        console.log(json)
+        return acc + json.price;
+      }, 0);
+
+      subtotal += await props.trip.flight_ids.reduce(async (acc, id) => {
+        let res = await fetch("http://localhost:3001/flight/" + id, requestOptions);
+        let json = await res.json();
+        console.log(json)
+        return await acc + json.price;
+      }, 0);
+
+      console.log(subtotal)
+
+      setPrice(subtotal);
+    }
+
+    fetchInfo();
+  }, [props]);
+
+  function payTrip(){
+    let body = new URLSearchParams({
+      price: price,
+      status: "Paid"
+    });
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    let requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      body: body,
+      'credentials': 'include'
+    };
+
+    fetch(`http://localhost:3001/trip/id/${props.trip._id}`, requestOptions)
+    .then(response => {
+        if(response.ok){
+          props.update();
+        }
+        else{
+          alert(response.text());
+        }
+    });
+
+    handleShow();
   }
 
   function editDate(){
@@ -80,10 +139,9 @@ function TripInfo(props){
           </Modal.Body>
         </Modal>
         <div>
-          <Button onClick={handleShow}>Pay Now</Button>
-          <Button className="ms-2" variant='danger' onClick={(e) => handleDelete(e)}>
-            Delete
-          </Button>
+          <Badge bg='success' variant='success'><h6 className='m-0'>Total: ${price.toFixed(2)}</h6></Badge>
+          {props.trip.status === "Pending" ? <Button className="ms-2" onClick={payTrip}>Pay Now</Button> : null}
+          {props.trip.status !== "Paid" ? <Button className="ms-2" variant='danger' onClick={(e) => handleDelete(e)}>Delete</Button> : null}
         </div>
       </div>
       <Row>
@@ -95,6 +153,7 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.start_date.toString().substring(0,10)}
+                disabled={props.trip.status === "Paid"}
                 onChange={(e) => {
                   startDate = e.target.value;
                   editDate();
@@ -111,6 +170,7 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.end_date.toString().substring(0,10)}
+                disabled={props.trip.status === "Paid"}
                 onChange={(e) => {
                   endDate = e.target.value;
                   editDate();
