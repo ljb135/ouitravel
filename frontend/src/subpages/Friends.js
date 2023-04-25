@@ -220,44 +220,57 @@ function Friends(props) {
             </ListGroup>
         </Container>
     );
-}
 
-function FriendItem({friend}){
-    return(
-        <ListGroup.Item>
-            {friend.user2_email}
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button>
-                Remove
-                </button>
-            </div>
-        </ListGroup.Item>
-    )
-}
 
-function handleAccept(){
-    
-}
+    function FriendItem({friend}){
+        return(
+            <ListGroup.Item>
+                {friend.user2_email}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button>
+                    Remove
+                    </button>
+                </div>
+            </ListGroup.Item>
+        )
+    }
 
-function ReceivedItem({friend}){
-    return(
-        <ListGroup.Item>
-            {friend.user2_email}
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button onClick={handleAccept}>
-                Delete
-                </button>
-            </div>
-        </ListGroup.Item>
-    )
-}
+    function handleAccept(){
+        
+    }
 
-function SentItem({friend}){
-    return(
-        <ListGroup.Item>
-            {friend.user2_email}
-        </ListGroup.Item>
-    )
+    function deleteItem(){
+        
+    }
+
+    function ReceivedItem({friend}){
+        return(
+            <ListGroup.Item>
+                {friend.user2_email}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button onClick={handleAccept}>
+                    Accept
+                    </button>
+                    <button>
+                    Decline
+                    </button>
+                </div>
+            </ListGroup.Item>
+        )
+    }
+
+    function SentItem({friend}){
+        return(
+            <ListGroup.Item>
+                {friend.user2_email}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button>
+                    Cancel
+                    </button>
+                </div>
+            </ListGroup.Item>
+        )
+    }
 }
 
 export default Friends;
