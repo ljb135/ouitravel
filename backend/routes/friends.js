@@ -88,23 +88,32 @@ router.post('/friends', async (req, res) => {
     let user2_email = req.body.friend_email;
     const status = "pending";
     
-    //Check if inputed friend email is an existing user
-    //try {
-      let existingUser = await User.findOne({ 'email': req.body.friend_email });
-      if (existingUser) {
-        Friends.create({
-          user1_email,
-          user2_email,
-          status
-        });
-        res.send("Friend request sent");
-      }
-      else if (!existingUser){
-        return res.status(400).send(error);
-      }
-    // } catch (error) {
-    //   return res.status(400).send(error); //res.status(401).send('Nonexisting user');
-    // }
+    //Check if inputted email is not user's email
+    if (user1_email == user2_email) {
+      return res.status(400).send({error: "Cannot add yourself"});
+    }
+
+    //Check if inputted friend email is an existing user
+    let existingUser = await User.findOne({ 'email': user2_email });
+    //Check if there is already an identical friend document
+    let existingFriends = await Friends.findOne({ $and: [
+                                                          { $or: [{ "user1_email": user1_email }, { "user1_email": user2_email }] }, 
+                                                          { $or: [{ "user2_email": user2_email }, { "user2_email": user1_email }] }
+                                                        ] });
+    if (existingUser && !existingFriends) {
+      Friends.create({
+        user1_email,
+        user2_email,
+        status
+      });
+      res.send("Friend request sent");
+    }
+    else if (!existingUser){
+      return res.status(400).send({error: "User does not exist"});
+    }
+    else if (existingFriends){
+      return res.status(400).send({error: "User already added"});
+    }
     
     /*
     try {

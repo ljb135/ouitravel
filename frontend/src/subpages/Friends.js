@@ -1,4 +1,4 @@
-import { Container, ListGroup } from 'react-bootstrap';
+import { Container, ListGroup, Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 // import './Friends.css';
@@ -163,10 +163,10 @@ function Friends(props) {
             //     alert(`Could not send friend request: ${target_email}`);
             // }
             else{
-                //(`Could not send friend request: ${target_email}`);
+                return response.json();
             }
-        }).catch(error => {
-            alert(`User does not exist: ${target_email}`);
+        }).then(parsedData => {
+            alert(parsedData.error);
         });
     }
 
@@ -225,12 +225,41 @@ function Friends(props) {
         </Container>
     );
 
+    function handleDelete(e, id) {
+
+        e.preventDefault();
+    
+        // Set body using inputted target_email
+        const body = new URLSearchParams({
+            friend_email: target_email
+        });
+    
+        var requestOptions = {
+            method: 'Delete',
+            redirect: 'follow',
+            body: body,
+            'credentials': 'include'
+        };
+    
+        fetch("http://localhost:3001/friends/" + id, requestOptions)
+        .then(response => {
+            if(response.ok) {
+                alert(`${target_email} Successfully Removed`);
+                getFriends();
+                getReceived();
+                getSent();
+            }
+        }).catch(error => {
+            alert(`Could not remove friend: ${target_email}`);
+        });
+    }
+
     function FriendItem({friend}){
         return(
             <ListGroup.Item>
                 {friend.user2_email}
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <button>
+                    <button onClick={(e) => handleDelete(e, friend._id)}>
                     Remove
                     </button>
                 </div>
@@ -260,10 +289,6 @@ function Friends(props) {
         });
     }
 
-    function handleDelete(){
-        
-    }
-
     function ReceivedItem({friend}){
         return(
             <ListGroup.Item>
@@ -272,7 +297,7 @@ function Friends(props) {
                     <button onClick={(e) => handleAccept(e, friend._id)}>
                     Accept
                     </button>
-                    <button>
+                    <button onClick={(e) => handleDelete(e, friend._id)}>
                     Decline
                     </button>
                 </div>
@@ -285,7 +310,7 @@ function Friends(props) {
             <ListGroup.Item>
                 {friend.user2_email}
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <button>
+                    <button onClick={(e) => handleDelete(e, friend._id)}>
                     Cancel
                     </button>
                 </div>
@@ -296,39 +321,30 @@ function Friends(props) {
 
 export default Friends;
 
-    // functions we need for the Friends (search bar, list ...)
-    // const[friends, setFriends] = useState(exampleList)
 
-    // useEffect(() => {
-    //         const fetchData = async() => {
-    //         const result = await fetch('http://localhost:3001/friends')
-    //         const jsonResult = await result.json(); // convert result to Json form
 
-    //         setFriends(jsonResult)
-    //     }
-    //     fetchData()
-    
-    // }, [])
-    
-
-//     const submitFriend = async() => {
-//         const myData = {
-//             id: 2,
-//             name: 'Chris',
-//             email: 'jcl@scarletmail.rutgers.edu'
-//         }
-        
-//         const result = await fetch('http://localhost:3001/friends', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(myData)
-//         })
-
-//         const resultInJson = await result.json()
-//         setFriends(prev =>[...prev, resultInJson])
-
+// function ReceivedItem({friend}){
+//     return(
+//         <ListGroup.Item>
+//             {friend.user2_email}
+//             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+//                 <button onClick={handleAccept}>
+//                 delete
+//                 </button>
+//             </div>
+//         </ListGroup.Item>
+//     )
 // }
 
-    // look on to react boots trap
+
+// function FriendItem({ friend }){
+//     return(
+//         <ListGroup.Item>
+//             {friend.user2_email}
+//             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+//                 <Button onClick={(e) => handleDelete(e, friend._id)}>
+//                     Delete
+//                 </Button>
+//             </div>
+//         </ListGroup.Item>
+//     )
