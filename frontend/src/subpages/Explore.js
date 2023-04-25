@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Modal } from 'react-bootstrap';
+import { Card, Button, Modal, Container } from 'react-bootstrap';
 import { Buffer } from 'buffer';
 
 function Explore() {
@@ -113,15 +113,16 @@ function Explore() {
   }
   
   return (
-    <div>
-      <h1>Search Post by Location</h1>
+    <Container>
+      <h2 className='my-3'>Search Post by Location</h2>
       <div>
         <label htmlFor="location-filter">Filter by location:</label>
-        <select id="location-filter" value={selectedLocation} onChange={handleLocationSelect}>
+        <select className='ms-2' id="location-filter" value={selectedLocation} onChange={handleLocationSelect}>
           <option value="">All locations</option>
           {locations.map(location => <option key={location} value={location}>{location}</option>)}
         </select>
       </div>
+      <hr/>
       {filteredPosts.length === 0 ? (
         <p>No posts with corresponding destination</p>
       ) : (
@@ -189,7 +190,7 @@ function Explore() {
         </Modal.Footer>
       </Modal>
       
-    </div>
+    </Container>
   );
   
 }

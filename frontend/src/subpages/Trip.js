@@ -123,7 +123,7 @@ function TripInfo(props){
       <CollaboratorsDisplay trip={props.trip} update={props.update}/>
       <FlightsDisplay trip={props.trip} update={props.update}/>
       <HotelsDisplay trip={props.trip} update={props.update}/>
-      <ActivitiesDisplay trip={props.trip}/>
+      <ActivitiesDisplay trip={props.trip} update={props.update}/>
       <MapContainer trip={props.trip} update={props.update}/>
     </>
   )
