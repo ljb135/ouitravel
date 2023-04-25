@@ -33,7 +33,7 @@ function getTripHistory(setData, userName) {
     .then(response => response.json())
     .then(json => {
       const newData = json
-        .filter(trip => trip.status === 'Paid') // filter trips with 'paid' status
+        .filter(trip => trip.status === 'Paid') // filter trips with 'Paid' status
         .map(trip => ({
           key: trip._id,
           tripId: trip.destination_name,
