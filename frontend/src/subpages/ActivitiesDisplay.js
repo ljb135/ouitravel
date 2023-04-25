@@ -1,12 +1,39 @@
-import { Card, Button, ListGroup, Badge, Modal, Spinner } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { Card, Button, ListGroup, Badge, Modal, Spinner, CloseButton } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 function ActivityItem(props){
     function addActivity(e){
         e.preventDefault();
-        
-        const requestOptions = {
+
+        const body = new URLSearchParams({
+            _id: props.activity.id,
+            name: props.activity.name,
+            rating: props.activity.rating,
+            longitude: props.activity.geoCode.longitude,
+            latitude: props.activity.geoCode.latitude,
+        });
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: body,
+            'credentials': 'include'
+        };
+
+        fetch("http://localhost:3001/activity/", requestOptions)
+        .then(response => {
+            if(response.ok){
+                console.log("OK")
+            }
+            else{
+                alert(response.text());
+            }
+        });
+
+        requestOptions = {
             method: 'PUT',
             'credentials': 'include'
         };
@@ -34,19 +61,23 @@ function NewActivityModal(props) {
     const [loading, setLoading] = useState(false);
     const [activities, setActivities] = useState([]);
 
-    function getActivities(){
-        setLoading(true);
-        fetch(`http://localhost:3001/amadeus/activities?longitude=${props.trip.longitude}&latitude=${props.trip.latitude}`)
-        .then((resp) => resp.json())
-        .then((activityList) => {
-            setActivities(activityList.data);
-            console.log(activityList)
-        //   console.log(flights.data);
-            setLoading(false);
-        });
-    }
-
     useEffect(() => {
+        function getActivities(){
+            if(props.show === false){
+                return;
+            }
+    
+            setLoading(true);
+            fetch(`http://localhost:3001/amadeus/activities?longitude=${props.trip.longitude}&latitude=${props.trip.latitude}`)
+            .then((resp) => resp.json())
+            .then((activityList) => {
+                setActivities(activityList.data);
+                console.log(activityList)
+            //   console.log(flights.data);
+                setLoading(false);
+            });
+        }
+
         getActivities();
       }, [props]);
 
@@ -76,6 +107,33 @@ function NewActivityModal(props) {
     )
 }
 
+function ActivityDisplayItem(props){
+    const [name, setName] = useState();
+    const [rating, setRating] = useState();
+
+    useEffect(() => {
+        var requestOptions = {
+          method: 'GET',
+          redirect: 'follow',
+          'credentials': 'include'
+        };
+    
+        fetch("http://localhost:3001/activity/" + props.activity_id, requestOptions)
+        .then(response => response.json())
+        .then(json => {
+          setName(json.name);
+          setRating(json.rating)
+        });
+      }, [props]);
+
+    return(
+        <ListGroup.Item className='d-flex justify-content-between'>
+            <div>{name} {rating ? `(${rating}⭐)` : null}</div>
+            <CloseButton/>
+        </ListGroup.Item>
+    );
+}
+
 function ActivitiesDisplay(props) {
     const [show, setShow] = useState(false);
 
@@ -91,6 +149,7 @@ function ActivitiesDisplay(props) {
                 </h4>
                 <ListGroup variant='flush'>
                     {props.trip.activity_ids.length !== 0 ? <hr className='mb-0 mt-2'/>  : null}
+                    {props.trip.activity_ids.map(activity_id => <ActivityDisplayItem activity_id={activity_id} trip={props.trip} update={props.update}/>)}
                 </ListGroup>
             </Card.Body>
         </Card>

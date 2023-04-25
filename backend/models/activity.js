@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 
 const activitySchema = new mongoose.Schema({
-    _id: mongoose.Types.ObjectId,
+    _id: String,
     name: String,
     rating: Number,
-    price: Number,
-    is_indoor: Boolean,
-    location: mongoose.Types.ObjectId
+    longitude: Number,
+    latitude: Number
 });
 
 module.exports = mongoose.model('Activity', activitySchema);
