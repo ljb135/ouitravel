@@ -91,13 +91,12 @@ function TripInfo(props){
     .then(response => {
         if(response.ok){
           props.update();
+          handleShow();
         }
         else{
           alert(response.text());
         }
     });
-
-    handleShow();
   }
 
   function editDate(){
