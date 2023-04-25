@@ -88,7 +88,7 @@ router.post('/friends', async (req, res) => {
     const status = "pending";
     
     //Check if inputed friend email is an existing user
-    try {
+    //try {
       let existingUser = await User.findOne({ 'email': req.body.friend_email });
       if (existingUser) {
         Friends.create({
@@ -98,9 +98,12 @@ router.post('/friends', async (req, res) => {
         });
         res.send("Friend request sent");
       }
-    } catch (error) {
-      return res.status(400).send(error); //res.status(401).send('Nonexisting user');
-    }
+      else if (!existingUser){
+        return res.status(400).send(error);
+      }
+    // } catch (error) {
+    //   return res.status(400).send(error); //res.status(401).send('Nonexisting user');
+    // }
     
     /*
     try {

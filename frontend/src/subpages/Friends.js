@@ -157,12 +157,16 @@ function Friends(props) {
         }).then(response => {
             if(response.ok){
                 alert(`Friends request sent to ${target_email}`);
+                getSent();
             }
+            // if(!response.ok){
+            //     alert(`Could not send friend request: ${target_email}`);
+            // }
             else{
-                //alert(`Could not send friend request: ${target_email}`);
+                //(`Could not send friend request: ${target_email}`);
             }
         }).catch(error => {
-            alert(`Could not send friend request: ${target_email}`);
+            alert(`User does not exist: ${target_email}`);
         });
     }
 
@@ -221,7 +225,6 @@ function Friends(props) {
         </Container>
     );
 
-
     function FriendItem({friend}){
         return(
             <ListGroup.Item>
@@ -235,11 +238,29 @@ function Friends(props) {
         )
     }
 
-    function handleAccept(){
-        
+    function handleAccept(e, id){
+        e.preventDefault();
+
+        var requestOptions = {
+            method: 'PUT',
+            redirect: 'follow',
+            'credentials': 'include'
+        };
+
+        fetch("http://localhost:3001/friends/" + id, requestOptions)
+        .then(response => {
+            if(response.ok){
+                alert(`Friends request accepted`);
+                getFriends();
+                getReceived();
+            }
+            else{
+                alert(response.text());
+            }
+        });
     }
 
-    function deleteItem(){
+    function handleDelete(){
         
     }
 
@@ -248,7 +269,7 @@ function Friends(props) {
             <ListGroup.Item>
                 {friend.user2_email}
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <button onClick={handleAccept}>
+                    <button onClick={(e) => handleAccept(e, friend._id)}>
                     Accept
                     </button>
                     <button>
