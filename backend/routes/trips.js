@@ -55,7 +55,7 @@ function getTripbyUserID(req, res){
 // Edit Trip
 function editTrip(req, res){
     // Fields which can be changed
-    const keys = ["visibility", "start_date", "end_date", "destination_id", "flight_ids", "hotel_ids", "activity_ids", "collaborator_ids"]
+    const keys = ["visibility", "start_date", "end_date", "destination_id", "flight_ids", "hotel_ids", "activity_ids", "collaborator_ids", "price", "status"]
 
     if(req.user){
         // Update fields only if user is the creator or a collaborator

@@ -28,6 +28,10 @@ code {
   font-family: 'Lobster', cursive;
 }
 
+.form-control:disabled{
+  background-color: #fff !important;
+}
+
 /* .nav-link:hover {
   transform: scale(1.05);
   color: black;
