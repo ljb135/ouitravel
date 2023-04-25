@@ -13,42 +13,14 @@ const initialOptions = {
 
 function Paypal(props) {
     const price = props.trip.price;
-    const value = price.toString();
-    console.log(value);
-    //const [price, setPrice] = useState(null)
-    //const [loading, setLoading] = useState(true);
-    //const [error, setError] = useState(null);
-    /*
-    useEffect(() => {
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow',
-            'credentials': 'include'
-        };
-    
-        fetch("http://localhost:3001/trip", requestOptions)
-        .then(response => then((res) => res.json()))
-        .then((actualData) => {
-            setPrice(actualData);
-            setError(null);
-          })
-          .catch((err) => {
-            setError(err.message);
-            setData(null);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-       }, []);
-    */
-    const createOrder = async (data, actions) => {
 
+    const createOrder = async (data, actions) => {
         const request = {
             intent: 'capture',
             purchase_units: [
                 {
                     amount: {
-                        value: 0,
+                        value: price,
                     }
                 },
             ]
