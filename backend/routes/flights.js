@@ -1,40 +1,30 @@
 const express = require('express'), router = express.Router();
-const Hotel = require('../models/hotel');
-const Trip = require("../models/trip")
-const { create } = require('../models/trip');
+const Flight = require('../models/flight');
+const Trip = require("../models/trip");
 
-// Create Hotel
-function createHotel(req, res){
+// Create Flight
+function createFlight(req, res){
     if(req.user){
-        Hotel.create({
-            _id: req.body._id,
-            hotel_name: req.body.hotel_name,
-            room_description: req.body.room_description,
-            longitude: req.body.longitude,
-            latitude: req.body.latitude,
-            num_rooms: req.body.num_rooms,
-            price: req.body.price,
-            check_in: req.body.check_in,
-            check_out: req.body.check_out
-        })
-        res.status(201).send("Successful");
+        Flight.create(req.body, function(err,flight) {
+            res.status(201).send(flight._id);
+        });
     }
     else{
         res.status(401).send('Not logged in');
     }
 }
 
-function getHotelByID(req, res){
+function getFlightByID(req, res){
     if(req.user){
-        Hotel.findOne({_id: req.params.id,}).then(hotel => res.status(200).json(hotel));
+        Flight.findOne({_id: req.params.id,}).then(flight => res.status(200).json(flight));
     }
     else{
         res.redirect(401, "http://localhost:3000/login");
     }
 }
 
-// Add Hotel to Trip
-function addHoteltoTrip(req, res){
+// Add Flight to Trip
+function addFlighttoTrip(req, res){
     // Fields which can be changed
     if(req.user){
         // Update fields only if user is the creator or a collaborator
@@ -44,7 +34,7 @@ function addHoteltoTrip(req, res){
             $or: [{creator_id: req.user._id}, {collaborator_ids: req.user._id}]
         },
         // Filter request body to remove irrelevant fields
-        { "$push": { "hotel_ids": req.params.hotel_id } },
+        { "$push": { "flight_ids": req.params.flight_id } },
         (err, data)=>{
             if(err){
                 res.status(400).send(err);
@@ -62,8 +52,8 @@ function addHoteltoTrip(req, res){
     }
 }
 
-// Remove Hotel from Trip
-function removeHotelfromTrip(req, res){
+// Remove Flight from Trip
+function removeFlightfromTrip(req, res){
     // Fields which can be changed
     if(req.user){
         // Update fields only if user is the creator or a collaborator
@@ -73,7 +63,7 @@ function removeHotelfromTrip(req, res){
             $or: [{creator_id: req.user._id}, {collaborator_ids: req.user._id}]
         },
         // Filter request body to remove irrelevant fields
-        { "$pull": { "hotel_ids": req.params.hotel_id } },
+        { "$pull": { "flight_ids": req.params.flight_id } },
         (err, data)=>{
             if(err){
                 res.status(400).send(err);
@@ -91,9 +81,9 @@ function removeHotelfromTrip(req, res){
     }
 }
 
-router.get('/hotel/:id', getHotelByID);
-router.post('/hotel', createHotel);
-router.put('/hotel/:hotel_id/trip/:trip_id', addHoteltoTrip);
-router.delete('/hotel/:hotel_id/trip/:trip_id', removeHotelfromTrip);
+router.get('/flight/:id', getFlightByID);
+router.post('/flight', createFlight);
+router.put('/flight/:flight_id/trip/:trip_id', addFlighttoTrip);
+router.delete('/flight/:flight_id/trip/:trip_id', removeFlightfromTrip);
 
 module.exports = router;

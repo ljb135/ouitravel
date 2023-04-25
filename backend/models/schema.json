@@ -52,22 +52,25 @@
         "creator_id": "object_id",
         "collaborator_ids": "object_id array"
 	},	
-    "photos": {
-        "_id": "object_id",
-        "creator_id": "object_id",
-		"photo_data": "binarydata",
-        "trip_id": "integer"
-	},
 
     "post": {
         "_id": "object_id",
         "creator_id": "object_id",
         "trip_id": "object_id",
-        "photo_id": "object_id",
-        "caption": "string"
+        "image": "buffer",
+        "caption": "string",
+        "creator_name": "string",
+        "creator_email": "string"
     },
 
-    
+    "comment": {
+        "_id":"object_id",
+        "post_id":"object_id",
+        "creator_id":"object_id",
+        "comment":"string",
+        "creator_name": "string"
+    },
+
 
     "hotel": {
 		"_id": "object_id",
