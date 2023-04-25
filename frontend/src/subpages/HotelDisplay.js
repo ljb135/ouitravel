@@ -2,8 +2,11 @@ import { Form, Card, Button, Col, Row, Badge, Modal, Accordion, ListGroup, Close
 import { useState, useEffect } from 'react';
 
 function format_date(date){
-  date = new Date(date);
-  return (date.getMonth()+1) + "/" + (date.getDate()+1) + "/" + date.getFullYear();
+  if(date === null){
+    return;
+  }
+  date = new Date(date.slice(0,10).split("-"));
+  return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear();
 }
 
 function NewHotelModal(props){
@@ -133,6 +136,8 @@ function HotelOffers(props){
       _id: offer.id,
       hotel_name: props.hotel.name,
       room_description: offer.room.description.text,
+      longitude: props.hotel.longitude,
+      latitude: props.hotel.latitude,
       num_rooms: offer.roomQuantity !== undefined ? offer.roomQuantity : 1,
       price: offer.price.total,
       check_in: offer.checkInDate,
@@ -190,7 +195,8 @@ function HotelOffers(props){
 }
 
 function HotelListItem(props){
-  const [hotelName, setHotelName] = useState(null)
+  const [hotelID, setHotelID] = useState(null);
+  const [hotelName, setHotelName] = useState(null);
   const [description, setDescription] = useState(null);
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
@@ -207,6 +213,7 @@ function HotelListItem(props){
     fetch("http://localhost:3001/hotel/" + props.hotel, requestOptions)
     .then(response => response.json())
     .then(json => {
+      setHotelID(json._id);
       setDescription(json.room_description);
       setCheckInDate(json.check_in);
       setCheckOutDate(json.check_out);
@@ -214,16 +221,36 @@ function HotelListItem(props){
       setNumRooms(json.num_rooms);
       setPrice(json.price);
     });
-  });
+  }, [props]);
+
+  function removeHotel(e){
+    e.preventDefault();
+
+    const requestOptions = {
+      method: 'DELETE',
+      'credentials': 'include'
+    };
+
+    fetch(`http://localhost:3001/hotel/${hotelID}/trip/${props.trip._id}`, requestOptions)
+    .then(response => {
+        if(response.ok){
+          props.update();
+        }
+        else{
+          alert(response.text());
+        }
+    });
+  }
 
   return(
     <ListGroup.Item className='my-1'>
       <div className='d-flex justify-content-between'>
-        <h5 className='my-0'>{hotelName}</h5><CloseButton className='ms-2'></CloseButton>
+        <h5 className='my-0'>{hotelName}</h5>
+        {props.trip.status !== "Paid" ? <CloseButton className='ms-2' onClick={(e) => removeHotel(e)}></CloseButton> : null}
       </div>
       <div className='mb-1'>{format_date(checkInDate)} - {format_date(checkOutDate)} • {numRooms} Rooms</div>
       <div>{description}</div>
-      <Badge className='mt-2' bg="success"><h6 className='m-0'>${price}</h6></Badge>
+      <Badge className='mt-2' bg="success"><h6 className='m-0'>${price.toFixed(2)}</h6></Badge>
     </ListGroup.Item>
   )
 }
@@ -234,16 +261,24 @@ function HotelsDisplay(props){
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    let modal;
+
+    if(props.trip.status !== "Paid"){
+      modal = <>
+        <Badge className='ms-2 mt-1 add-button' as={Button} onClick={handleShow}>+</Badge>
+        <NewHotelModal show={show} handleClose={handleClose} trip={props.trip} update={props.update} close={handleClose}/>
+      </>
+    }
+
     return(
         <Card className='mt-4 shadow'>
         <Card.Body>
-          <h4 className='d-flex align-items-center card-title'>Hotels
-              <Badge className='ms-2 mt-1 add-button' as={Button} onClick={handleShow}>+</Badge>
+          <h4 className='d-flex align-items-center card-title my-0'>Hotels
+            {modal}
           </h4>
-          <NewHotelModal show={show} handleClose={handleClose} trip={props.trip} update={props.update} close={handleClose}/>
           <ListGroup variant='flush'>
-            <hr className='my-0'/>
-            {props.trip.hotel_ids.map(id => <HotelListItem hotel={id}/>)}
+            {props.trip.hotel_ids.length !== 0 ? <hr className='mb-0 mt-2'/>  : null}
+            {props.trip.hotel_ids.map(id => <HotelListItem hotel={id} trip={props.trip} update={props.update}/>)}
           </ListGroup>
         </Card.Body>
         </Card>

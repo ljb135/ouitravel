@@ -25,7 +25,7 @@ function TripCard(props) {
       credentials: "include"
     };
     
-    fetch("http://localhost:3001/user/" + props.trip.creator_id, requestOptions)
+    fetch("http://localhost:3001/user/id/" + props.trip.creator_id, requestOptions)
     .then(response => response.json())
     .then(json => setCreator(json.first_name + " " + json.last_name))
     .catch(() => setCreator(null));
@@ -61,7 +61,7 @@ function TripCard(props) {
   const cardStyle = {
     transform: hovered ? 'scale(1.05)' : 'none',
     transition: 'all 0.3s ease-in-out',
-    'width': 300, cursor: "pointer"
+    'min-width': 300, cursor: "pointer"
   };
 
   return(
@@ -108,10 +108,12 @@ function NewTripModal(props){
   const [locations, setLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [destination, setDestination] = useState("");
-  const [name, setName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [destination, setDestination] = useState();
+  const [name, setName] = useState();
+  const [longitude, setLongitude] = useState();
+  const [latitude, setLatitude] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [visibility, setVisibility] = useState(false);
 
   function updateLocations(query){
@@ -128,11 +130,18 @@ function NewTripModal(props){
   function handleSubmit(e){
     e.preventDefault();
 
+    if(!destination || !startDate || !endDate ){
+      alert("Please fill out all fields.");
+      return;
+    }
+
     const body = new URLSearchParams({
       start_date: startDate,
       end_date: endDate,
       destination_id: destination,
       destination_name: toTitleCase(name),
+      longitude: longitude,
+      latitude: latitude,
       visibility: visibility
     });
     var myHeaders = new Headers();
@@ -180,7 +189,12 @@ function NewTripModal(props){
           renderMenuItemChildren={(option) => (
             <span>{`${option.name}, ${option.address.countryName}`}</span>
           )}
-          onChange={(selected) => {setDestination(selected[0].iataCode); setName(selected[0].name)}}
+          onChange={(selected) => {
+            setDestination(selected[0].iataCode);
+            setName(selected[0].name);
+            setLongitude(selected[0].geoCode.longitude);
+            setLatitude(selected[0].geoCode.latitude);
+          }}
         />
       </Form.Group>
 

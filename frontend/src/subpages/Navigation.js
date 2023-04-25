@@ -32,17 +32,17 @@ function Navigation(props){
                 <Navbar.Brand as={Link} to="/" className='title'>OuiTravel</Navbar.Brand>
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
-                    <Nav.Link as={Link} to="/explore">Explore</Nav.Link>
+                    <NavDropdown title="Media">
+                        <NavDropdown.Item as={Link} to="/explore">Explore</NavDropdown.Item>
+                        <NavDropdown.Item as={Link} to="/mypostscontainer">My Posts</NavDropdown.Item>
+                        <NavDropdown.Item as={Link} to="/friendpostko">Friends</NavDropdown.Item>
+                    </NavDropdown>
                     <Nav.Link as={Link} to="/history">History</Nav.Link>
-                    <Nav.Link as ={Link} to="/friendPost">Friends</Nav.Link>
-                    <Nav.Link as={Link} to="/mypostscontainer">My Posts</Nav.Link>
                 </Nav>
                 <Nav>
                     <NavDropdown title={"Hi, " + props.name}>
-                        <NavDropdown.Item href="#account">Profile</NavDropdown.Item>
                         <NavDropdown.Item as={Link} to="/friends">Friends</NavDropdown.Item>
                         <NavDropdown.Item href="/Payments">Payment History</NavDropdown.Item>
-                        <NavDropdown.Item href="#account">Payment</NavDropdown.Item>
                         <NavDropdown.Item onClick={signOut}>Sign out</NavDropdown.Item>
                     </NavDropdown>
                 </Nav>
@@ -53,7 +53,7 @@ function Navigation(props){
         return(
             <Navbar bg="light" variant="light">
                 <Container>
-                <Navbar.Brand as={Link} to="/">OuiTravel</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/" className='title'>OuiTravel</Navbar.Brand>
                 {/* <Nav>
                     <Nav.Link as={Link} to="/login">Login</Nav.Link>
                 </Nav> */}

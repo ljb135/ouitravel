@@ -8,6 +8,8 @@ const tripSchema = new mongoose.Schema({
     start_date: {type: Date, required: true},
     end_date: {type: Date, required: true},
     destination_id: {type: String,  required: true},
+    longitude: {type: Number, required: true},
+    latitude: {type: Number, required: true},
     destination_name: {type: String,  required: true},
     flight_ids: [String],
     hotel_ids: [String],

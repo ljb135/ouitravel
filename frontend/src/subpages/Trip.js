@@ -1,75 +1,28 @@
-import { Form, Container, Card, Button, ListGroup, InputGroup, Col, Row} from 'react-bootstrap';
+import { Form, Container, Card, Button, Col, Row, Modal, Alert, Badge} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import HotelsDisplay from './HotelDisplay';
 import FlightsDisplay from './FlightsDisplay';
 import ActivitiesDisplay from './ActivitiesDisplay';
-
-function CollaboratorsDisplay(props){
-  const[collaborators, setCollaborators] = useState([]);
-
-  useEffect(() => {
-    var requestOptions = {
-      method: 'GET',
-      redirect: 'follow',
-      credentials: "include"
-    };
-
-    let collabs = [];
-
-    props.collaborators.forEach(collaborator => {
-      fetch("http://localhost:3001/user/" + collaborator, requestOptions)
-      .then(response => response.json())
-      .then(json => collabs = [...collabs, json.first_name + " " + json.last_name])
-      .catch(() => setCollaborators([]));
-    });
-
-    setTimeout(() => setCollaborators(collabs), 200);
-  }, [props]);
-
-  let items;
-  if(collaborators && collaborators.length !== 0){
-    items = collaborators.map(collaborator =>
-      <ListGroup.Item className="d-flex justify-content-between">
-        {collaborator}
-        <button type="button" className="btn-close" aria-label="Close"></button>
-      </ListGroup.Item>
-    );
-  }
-
-  return(
-    <Card className="shadow mt-4">
-      <Card.Body>
-        <h4 className='d-flex align-items-center card-title'>
-          Collaborators
-        </h4>
-        <ListGroup>
-          {items}
-        </ListGroup>
-        <InputGroup className='mt-3'>
-            <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
-            <Form.Control
-              placeholder="Email"
-              aria-label="Email"
-              aria-describedby="basic-addon1"
-            />
-            <Button id="button-addon2">
-              Add Collaborator
-            </Button>
-          </InputGroup>
-      </Card.Body>
-    </Card>
-  )
-}
+import CollaboratorsDisplay from './CollaboratorsDisplay';
+import MapContainer from './MapContainer';
+import Paypal from './Paypal';
 
 function TripInfo(props){
   let startDate = props.trip.start_date;
   let endDate = props.trip.end_date;
 
+  const [show, setShow] = useState(false);
+  const [price, setPrice] = useState(0);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   const navigate = useNavigate();
 
   function handleDelete(e){
+
     e.preventDefault();
 
     var requestOptions = {
@@ -82,6 +35,62 @@ function TripInfo(props){
     .then(response => {
         if(response.ok){
           navigate("/");
+        }
+        else{
+          alert(response.text());
+        }
+    });
+  }
+  
+  useEffect(() => {
+    const fetchInfo = async () =>{
+      var requestOptions = {
+        method: 'GET',
+        redirect: 'follow',
+        'credentials': 'include'
+      };
+
+      let subtotal = await props.trip.hotel_ids.reduce(async (acc, id) => {
+        let res = await fetch("http://localhost:3001/hotel/" + id, requestOptions);
+        let json = await res.json();
+        console.log(json)
+        return acc + json.price;
+      }, 0);
+
+      subtotal += await props.trip.flight_ids.reduce(async (acc, id) => {
+        let res = await fetch("http://localhost:3001/flight/" + id, requestOptions);
+        let json = await res.json();
+        console.log(json)
+        return await acc + json.price;
+      }, 0);
+
+      console.log(subtotal)
+
+      setPrice(subtotal);
+    }
+
+    fetchInfo();
+  }, [props]);
+
+  function payTrip(){
+    let body = new URLSearchParams({
+      price: price
+    });
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    let requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      body: body,
+      'credentials': 'include'
+    };
+
+    fetch(`http://localhost:3001/trip/id/${props.trip._id}`, requestOptions)
+    .then(response => {
+        if(response.ok){
+          props.update();
+          handleShow();
         }
         else{
           alert(response.text());
@@ -121,9 +130,17 @@ function TripInfo(props){
     <>
       <div className="my-3 d-flex justify-content-between">
         <h2>Trip to {props.trip.destination_name}</h2>
-        <Button variant='danger' onClick={(e) => handleDelete(e)}>
-          Delete
-        </Button>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton/>
+          <Modal.Body>
+            <Paypal trip={props.trip} update={props.update} close={handleClose}/>
+          </Modal.Body>
+        </Modal>
+        <div>
+          <Badge bg='success' variant='success'><h6 className='m-0'>Total: ${price.toFixed(2)}</h6></Badge>
+          {props.trip.status === "Pending" ? <Button className="ms-2" onClick={payTrip}>Pay Now</Button> : null}
+          {props.trip.status !== "Paid" ? <Button className="ms-2" variant='danger' onClick={(e) => handleDelete(e)}>Delete</Button> : null}
+        </div>
       </div>
       <Row>
         <Col>
@@ -134,6 +151,7 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.start_date.toString().substring(0,10)}
+                disabled={props.trip.status === "Paid"}
                 onChange={(e) => {
                   startDate = e.target.value;
                   editDate();
@@ -150,6 +168,7 @@ function TripInfo(props){
               <Form.Control
                 type="date"
                 defaultValue={props.trip.end_date.toString().substring(0,10)}
+                disabled={props.trip.status === "Paid"}
                 onChange={(e) => {
                   endDate = e.target.value;
                   editDate();
@@ -159,17 +178,19 @@ function TripInfo(props){
           </Card>
         </Col>
       </Row>
-      <CollaboratorsDisplay collaborators={props.trip.collaborator_ids}/>
-      <FlightsDisplay trip={props.trip}/>
+      <CollaboratorsDisplay trip={props.trip} update={props.update}/>
+      <FlightsDisplay trip={props.trip} update={props.update}/>
       <HotelsDisplay trip={props.trip} update={props.update}/>
-      <ActivitiesDisplay activities={props.trip.activity_ids}/>
+      <ActivitiesDisplay trip={props.trip} update={props.update}/>
+      <MapContainer trip={props.trip} update={props.update}/>
     </>
   )
 }
 
 function Trip() {
   const tripParams = useParams();
-  const[trip, setTrip] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [trip, setTrip] = useState(null);
 
   function updateTrip(){
     var requestOptions = {
@@ -182,6 +203,8 @@ function Trip() {
     .then(response => response.json())
     .then(json => setTrip(json))
     .catch(() => setTrip(null));
+
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -197,7 +220,7 @@ function Trip() {
 
   return (
     <Container>
-      {body}
+      {!loading ? body : <Alert className='mt-4'>You do not have permission accessing this trip.</Alert>}
     </Container>
   );
 }

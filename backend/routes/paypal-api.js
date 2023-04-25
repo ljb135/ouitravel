@@ -1,7 +1,7 @@
 var express = require('express'), router = express.Router();
 router.use(express.json());
 
-const { CLIENT_ID, APP_SECRET } = process.env;
+const { PAYPAL_CLIENT_ID, PAYPAL_APP_SECRET } = process.env;
 const base = "https://api-m.sandbox.paypal.com";
 
 //create a new order
@@ -72,7 +72,7 @@ async function capturePayment(orderId) {
   
 //generate an access token using cliend id and app secret
 async function generateAccessToken() {
-    const auth = Buffer.from(CLIENT_ID + ":" + APP_SECRET).toString("base64");
+    const auth = Buffer.from(PAYPAL_CLIENT_ID + ":" + PAYPAL_APP_SECRET).toString("base64");
     const response = await fetch(`${base}/v1/oauth2/token`, {
       method: "post",
       body: "grant_type=client_credentials",
