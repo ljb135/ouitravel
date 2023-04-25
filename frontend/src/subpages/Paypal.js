@@ -31,7 +31,32 @@ function Paypal(props) {
     const onApprove = async (data, actions) => {
         return actions.order.capture().then((details) => {
             const name = details.payer.name.given_name;
-            alert(`Transaction completed by ${name}`);
+
+            let body = new URLSearchParams({
+                status: "Paid"
+              });
+              var myHeaders = new Headers();
+              myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+          
+              let requestOptions = {
+                method: 'PUT',
+                headers: myHeaders,
+                body: body,
+                'credentials': 'include'
+              };
+          
+              fetch(`http://localhost:3001/trip/id/${props.trip._id}`, requestOptions)
+              .then(response => {
+                  if(response.ok){
+                    alert(`Transaction completed by ${name}`);
+                    props.update();
+                    props.close();
+                  }
+                  else{
+                    alert(response.text());
+                  }
+              });
+            
         });
     }
 

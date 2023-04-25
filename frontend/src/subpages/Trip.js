@@ -74,8 +74,7 @@ function TripInfo(props){
 
   function payTrip(){
     let body = new URLSearchParams({
-      price: price,
-      status: "Paid"
+      price: price
     });
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -134,7 +133,7 @@ function TripInfo(props){
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton/>
           <Modal.Body>
-            <Paypal trip={props.trip}/>
+            <Paypal trip={props.trip} update={props.update} close={handleClose}/>
           </Modal.Body>
         </Modal>
         <div>
