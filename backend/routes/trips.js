@@ -107,11 +107,44 @@ function deleteTrip(req, res){
     }
 }
 
+function getAllTrips(req, res){
+    if (!req.user) {
+      return res.status(401).send('Not logged in');
+    }
+  
+    // Query the database for all posts
+    Trip.find({}, (err, trips) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
+  
+      // Set CORS headers to allow cross-origin requests
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+      // Return the posts as a JSON response
+      return res.json(trips);
+    });
+}
+
+function getTripbytripID(req, res){
+    if(req.user){
+        Trip.findOne({_id: req.params.id}).then(trip => res.status(200).json(trip));
+    }
+    else{
+        res.redirect(401, "http://localhost:3000/login");
+    }
+}
+
 router.get('/trip/id/:id', getTripbyID);
 router.get('/trip/user', getTripbyUser);
 router.get('/trip/user/:id', getTripbyUserID);
 router.delete('/trip/id/:id', deleteTrip);
 router.put('/trip/id/:id', editTrip);
 router.post('/trip', createTrip);
+router.get('/trip/returntrips', getAllTrips);
+router.get('/trip/tripbytripid/:id', getTripbytripID);
+
 
 module.exports = router;

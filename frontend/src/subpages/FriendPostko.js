@@ -2,61 +2,75 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Modal } from 'react-bootstrap';
 import { Buffer } from 'buffer';
 
-function Explore() {
+
+function FriendPost() {
   const [posts, setPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [tripInfo, setTripInfo] = useState({});
-  const [locations, setLocations] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [tripsData, setTripsData] = useState([]);
-  const [comments, setComments] = useState([]);
+  const [friends, setFriends] = useState([]);
   const [modalType, setModalType] = useState('tripInfo');
+  const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
 
 
-  useEffect(() => {
-    const fetchPostsAndTrips = async () => {
-      try {
-        const [postsRes, tripsRes] = await Promise.all([
-          fetch('http://localhost:3001/returnallposts', { credentials: 'include' }),
-          fetch('http://localhost:3001/trip/returntrips', { credentials: 'include' }),
-        ]);
-        
-        const [postsData, tripsData] = await Promise.all([postsRes.json(), tripsRes.json()]);
+  
 
-        
-        const uniqueLocations = [...new Set([...tripsData.map(trip => trip.destination_id)])];
-        
-        setLocations(uniqueLocations);
-        setPosts(postsData);
-        
-        setTripsData(tripsData);
+
+
+  useEffect(() => {
+    const fetchFriends = async() => {
+      try{
+        const response = await fetch('http://localhost:3001/friends', {
+          credentials: 'include'
+        });
+        const data = await response.json();
+        const friendEmails = data.map(friend => friend.user2_email);
+        console.log(friendEmails);
+        setFriends(friendEmails);
       } catch (error) {
         console.error(error);
       }
     };
-
-    fetchPostsAndTrips();
+    fetchFriends();
   }, []);
 
+
+  useEffect(() => {
+    const fetchPosts = async() => {
+      try{
+        const allPosts = [];
+        for(const friend of friends){
+          const response = await fetch(`http://localhost:3001/postbyemail/${friend}`,{
+            credentials: 'include'
+          });
+          const data = await response.json();
+          allPosts.push(...data);
+        }
+        setPosts(allPosts);
+      }catch (error) {
+        console.error(error);
+      }
+    };
+    fetchPosts();
+  }, [friends]);
+
   const handleShowModal = async(tripId) => {
+    console.log(tripId);
     const res = await fetch(`http://localhost:3001/trip/tripbytripid/${tripId}`, {
       credentials: 'include'
     });
     if(res.ok){
       const data = await res.json();
+      console.log(data);
       setTripInfo(data);
       setShowModal(true);
+      setModalType('tripInfo');
     } else {
       console.error(`Failed to get trip info with ID ${tripId}`);
     }
   };
-
-  const handleLocationSelect = (event) => {
-    setSelectedLocation(event.target.value);
-  };
-
+  
   const handleShowComments = async (postId) => {
     const res = await fetch(`http://localhost:3001/return_comments/${postId}`);
     if (res.ok) {
@@ -68,14 +82,6 @@ function Explore() {
       console.error(`Failed to get comments for post with ID ${postId}`);
     }
   };
-
-  const filteredPosts = selectedLocation ? posts.map(post => ({
-    ...post, 
-    trip: tripsData.find(trip => trip._id === post.trip_id)
-  })).filter(post => post.trip?.destination_id === selectedLocation) : posts.map(post => ({
-    ...post,
-    trip:tripsData.find(trip => trip._id === post.trip_id)
-  }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,41 +117,34 @@ function Explore() {
     setShowModal(true);
     setModalType('addComment')
   }
+
+
   
+
   return (
     <div>
-      <h1>Search Post by Location</h1>
-      <div>
-        <label htmlFor="location-filter">Filter by location:</label>
-        <select id="location-filter" value={selectedLocation} onChange={handleLocationSelect}>
-          <option value="">All locations</option>
-          {locations.map(location => <option key={location} value={location}>{location}</option>)}
-        </select>
+      <h1>Posts from Friends</h1>
+      <div className="row row-cols-1 row-cols-md-3 g-4">
+        {posts.map(post => (
+          <div key={post._id} className="col">
+            <Card>
+              {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
+              <Card.Body>
+                <Card.Title>{post.creator_name}</Card.Title>
+                <Card.Text>{post.caption}</Card.Text>
+                <Button variant="primary" onClick={() => handleShowModal(post.trip_id)}>View Trip Info</Button>
+                <Button variant="secondary" onClick = {() => handleShowComments(post._id)}>Comments</Button>
+                <Button variant="success" onClick={() =>handleAddComment(post)}>Add Comment</Button>
+              </Card.Body>
+            </Card>
+          </div>
+        ))}
       </div>
-      {filteredPosts.length === 0 ? (
-        <p>No posts with corresponding destination</p>
-      ) : (
-        <div className="row row-cols-1 row-cols-md-3 g-4">
-          {filteredPosts.map(post => (
-            <div key={post._id} className="col">
-              <Card>
-                {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
-                <Card.Body>
-                  <Card.Title>{post.creator_name}</Card.Title>
-                  <Card.Text>{post.comment}</Card.Text>
-                  <Button variant="primary" onClick={() => handleShowModal(post.trip_id)}>View Trip Info</Button>
-                  <Button variant = "secondary" onClick ={() => handleShowComments(post._id)}>Comments</Button>
-                  <Button variant = "success" onClick={() => handleAddComment(post)}>Add Comment</Button>
-                </Card.Body>
-              </Card>
-            </div>
-          ))}
-        </div>
-      )}
       <Modal show={showModal} onHide={() => {
-        setShowModal(false)
+        setShowModal(false);
         setComments([]);
       }}>
+        
         <Modal.Header closeButton>
         <Modal.Title>
           {modalType === 'comments'
@@ -183,15 +182,19 @@ function Explore() {
               </form>
               
           )}
+
+          
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
         </Modal.Footer>
       </Modal>
+
       
     </div>
   );
-  
 }
 
-export default Explore;
+
+export default FriendPost;
