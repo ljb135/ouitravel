@@ -12,7 +12,7 @@ const initialOptions = {
 */
 
 function Paypal(props) {
-    const price = props.trip.price;
+    const price = props.trip.price.toFixed(2);
 
     const createOrder = async (data, actions) => {
         const request = {

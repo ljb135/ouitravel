@@ -53,6 +53,9 @@ const PaymentList = () => {
   const [sortOrder, setSortOrder] = useState(null);
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  
 
 
   useEffect(() => {
@@ -102,25 +105,32 @@ const PaymentList = () => {
 
   return (
     <Table
-      dataSource={data}
-      columns={columns.map(column => ({
-        ...column,
-        sortOrder: sortOrder === column.dataIndex && sortOrder,
-        sorter: sortOrder === column.dataIndex && column.sorter,
-        title: (
-          <div onClick={() => setSortOrder(column.dataIndex)}>
-            {column.title}
-            {sortOrder === column.dataIndex &&
-              (sortOrder === 'ascend' ? (
-                <ArrowUpOutlined />
-              ) : (
-                <ArrowDownOutlined />
-              ))}
-          </div>
-        )
-      }))}
-      onChange={handleTableChange}
-    />
+  dataSource={data}
+  columns={columns.map(column => ({
+    ...column,
+    sortOrder: sortOrder === column.dataIndex && sortOrder,
+    sorter: sortOrder === column.dataIndex && column.sorter,
+    title: (
+      <div onClick={() => setSortOrder(column.dataIndex)}>
+        {column.title}
+        {sortOrder === column.dataIndex &&
+          (sortOrder === 'ascend' ? (
+            <ArrowUpOutlined />
+          ) : (
+            <ArrowDownOutlined />
+          ))}
+      </div>
+    )
+  }))}
+  onChange={handleTableChange}
+  pagination={{
+    current: currentPage,
+    pageSize: itemsPerPage,
+    total: data.length,
+    onChange: page => setCurrentPage(page)
+  }}
+/>
+
   );
 };
 

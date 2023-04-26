@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
@@ -8,12 +6,12 @@ import { Buffer } from 'buffer';
 
 
 
-
 function History() {
  const [trips, setTrips] = useState([]);
  const [showModal, setShowModal] = useState(false);
  const [tripInfo, setTripInfo] = useState({});
  const [chartData, setChartData] = useState(null);
+ const [posts, setPosts] = useState([]);
 
 
 
@@ -23,8 +21,6 @@ function History() {
    redirect: 'follow',
    credentials: 'include'
  };
-
-
 
 
  useEffect(() => {
@@ -38,7 +34,7 @@ function History() {
      setTrips(null);
    });
  }, []);
- const handleShowModal = async(tripId) => {
+  const handleShowModal = async(tripId) => {
    try {
      const res = await fetch(`http://localhost:3001/trip/id/${tripId}`, {
        credentials: 'include',
@@ -92,7 +88,7 @@ function History() {
        ])
          .then(() => {
            const chartData = {
-             labels: ['Hotel', 'Flight', 'Activity'],
+             labels: ['Hotels', 'Flights', 'Activities'],
              datasets: [
                {
                  data: [
@@ -114,71 +110,76 @@ function History() {
    }
 
 
-
-
    setShowModal(true);
- };
-  {chartData && (
+   fetch('http://localhost:3001/postList', {
+     credentials: 'include'
+   })
+     .then(res => res.json())
+     .then(posts => {
+       // filter posts based on specific trip ID
+       const filteredPosts = posts.filter(post => post.trip_id === tripId);
+       setPosts(filteredPosts);
+     })
+     .catch(err => {
+       console.error(err);
+     });
+
+
+  };
+ 
+
+
+ {chartData && (
    <Pie data={chartData} />
  )}
  return (
-  <div>
-    <h1 className="text-center">My Trip History</h1>
-    <div className="row">
-      {trips.map((trip, index) => (
-        <div key={trip._id} className="col-md-4 mb-4 d-flex align-items-stretch" style={{order: index % 3}}>
-          <Card style={{width: "100%"}}>
-            {trip.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(trip.image).toString('base64')}`} />}
-            <Card.Body className="d-flex flex-column justify-content-between">
-              <div>
-                <Card.Text>{trip.destination_name}</Card.Text>
-                <div>
-                <Button variant="primary" onClick={() => handleShowModal(trip._id)} className="mr-5">View Trip Info</Button>
-                <Button variant="primary" onClick={() => handleShowModal(trip._id)} className="mr-5">View Photos</Button>
-                </div>
-              </div>
-              <small className="text-muted">{trip.date}</small>
-            </Card.Body>
-          </Card>
-        </div>
-      ))}
-    </div>
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
-      <Modal.Header closeButton>
-        <Modal.Title>Trip Info</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <p><strong>Location:</strong> {tripInfo.destination_name}</p>
-        {chartData && <Pie data={chartData} />}
-        <div style={{textAlign: 'center'}}>
-          <p style={{textAlignVertical: "bottom",}}></p>
-          <p style={{fontWeight: 'bold'}}>Photos from Trip:</p>
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-      </Modal.Footer>
-    </Modal>
-  </div>
-);
-
-
-    }
-
-
-
-
+   <div>
+     <h1>My Trip History</h1>
+     <div className="row row-cols-1 row-cols-md-3 g-4">
+       {trips.map(trip => (
+         <div key={trip._id} className="col">
+           <Card>
+             {trip.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(trip.image).toString('base64')}`} />}
+             <Card.Body>
+               <Card.Text>{trip.destination_name}</Card.Text>
+               <Button variant="primary" onClick={() => handleShowModal(trip._id)}>View Trip Info</Button>
+             </Card.Body>
+           </Card>
+         </div>
+       ))}
+     </div>
+     <Modal show={showModal} onHide={() => setShowModal(false)}>
+ <Modal.Header closeButton>
+   <Modal.Title>Trip Info</Modal.Title>
+ </Modal.Header>
+<Modal.Body>
+ <p><strong>Location:</strong> {tripInfo.destination_name}</p>
+ <p><strong>Total Price:</strong> {tripInfo.price}</p>
+ {chartData && <Pie data={chartData} />}
+ Photos From The Trip:
+ {posts.map(post => {
+ // Check if the post belongs to the current trip
+ if (post.trip_id === tripInfo._id) {
+   return (
+     <div key={post._id} className="col">
+       {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
+     </div>
+   );
+ }
+})}
+</Modal.Body>
+ <Modal.Footer>
+   <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
+ </Modal.Footer>
+</Modal>
+   </div>
+ );
+}
 
 
 
 
 export default History;
-
-
-
-
-
-
 
 
 
