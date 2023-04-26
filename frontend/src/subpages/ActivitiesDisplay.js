@@ -10,7 +10,7 @@ function ActivityItem(props){
             name: props.activity.name,
             rating: props.activity.rating !== undefined ? props.activity.rating : 0,
             description: props.activity.description !== undefined ? props.activity.description.replaceAll(/<[^>]+>/g,'') : "",
-            price: props.activity.price.amount !== undefined ? props.activity.price.amount : 0,
+            price: props.activity.price !== undefined ? props.activity.price.amount : 0,
             longitude: props.activity.geoCode.longitude,
             latitude: props.activity.geoCode.latitude,
         });
@@ -161,7 +161,7 @@ function ActivityDisplayItem(props){
                 <CloseButton onClick={(e) => removeActivity(e)}/>
             </div>
             {/* <div>{description}</div> */}
-            <Badge className='mt-2' bg="success"><h6 className='m-0'>${price.toFixed(2)}</h6></Badge>
+            <Badge className='mt-2' bg="success"><h6 className='m-0'>${price === 0 ? "Free" : price}</h6></Badge>
         </ListGroup.Item>
     );
 }
