@@ -12,6 +12,9 @@ function FriendPost() {
   const [comments, setComments] = useState([]);
   const [commentInput, setCommentInput] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
+  const [flightInfo, setFlightInfo] = useState([]);
+  const [hotelInfo, setHotelInfo] = useState([]);
+  const [activityInfo, setActivityInfo] = useState([]);
 
 
   
@@ -19,9 +22,14 @@ function FriendPost() {
 
 
   useEffect(() => {
-    const fetchFriends = async() => {
+     const fetchFriends = async() => {
+      
       try{
-        const response = await fetch('http://localhost:3001/friends', {
+        const query = new URLSearchParams({
+          status: "friends"
+        });
+
+        const response = await fetch('http://localhost:3001/friends?' + query, {
           credentials: 'include'
         });
         const data = await response.json();
@@ -66,10 +74,57 @@ function FriendPost() {
       setTripInfo(data);
       setShowModal(true);
       setModalType('tripInfo');
+      handleflightModal(data.flight_ids);
+      handleHotelModal(data.hotel_ids);
+      handleActivityModal(data.activity_ids);
     } else {
       console.error(`Failed to get trip info with ID ${tripId}`);
     }
   };
+
+  const handleflightModal = async(flightId) => {
+    const res = await fetch(`http://localhost:3001/flight/${flightId}`, {
+      credentials: 'include'
+    });
+    if(res.ok){
+      const data = await res.json();
+      setFlightInfo(data.airline);
+      setShowModal(true);
+      
+    } else {
+      setFlightInfo("No flight");
+    }
+  };
+
+  //hotel
+  const handleHotelModal = async(hotelId) => {
+    const res = await fetch(`http://localhost:3001/hotel/${hotelId}`, {
+      credentials: 'include'
+    });
+    if(res.ok){
+      const data = await res.json();
+      setHotelInfo(data.hotel_name);
+      setShowModal(true);
+      
+    } else {
+      setHotelInfo("No Hotel");
+    }
+  };
+
+   const handleActivityModal = async(activityId) => {
+    const res = await fetch(`http://localhost:3001/activity/${activityId}`, {
+      credentials: 'include'
+    });
+    if(res.ok){
+      const data = await res.json();
+      setActivityInfo(data.name);
+      setShowModal(true);
+      
+    } else {
+      setActivityInfo("No Activity");
+    }
+  };
+
   
   const handleShowComments = async (postId) => {
     const res = await fetch(`http://localhost:3001/return_comments/${postId}`);
@@ -171,6 +226,9 @@ function FriendPost() {
                 <p><strong>Location:</strong> {tripInfo.destination_id}</p>
                 <p><strong>Start Date:</strong> {new Date(tripInfo.start_date).toLocaleDateString()}</p>
                 <p><strong>End Date:</strong> {new Date(tripInfo.end_date).toLocaleDateString()}</p>
+                <p><strong>Hotel:</strong> {hotelInfo}</p>
+                <p><strong>Activity:</strong> {activityInfo}</p>
+                <p><strong>Flight:</strong> {flightInfo}</p>
               </div>
             ):(
               <form onSubmit={handleSubmit}>

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Modal, Container } from 'react-bootstrap';
+import { Card, Button, Modal } from 'react-bootstrap';
 import { Buffer } from 'buffer';
 
 function Explore() {
   const [posts, setPosts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [tripInfo, setTripInfo] = useState({});
+  const [flightInfo, setFlightInfo] = useState([]);
+  const [hotelInfo, setHotelInfo] = useState([]);
+  const [activityInfo, setActivityInfo] = useState([]);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [tripsData, setTripsData] = useState([]);
@@ -46,12 +49,65 @@ function Explore() {
     });
     if(res.ok){
       const data = await res.json();
+      console.log(data);
       setTripInfo(data);
       setShowModal(true);
+      handleflightModal(data.flight_ids);
+      handleHotelModal(data.hotel_ids);
+      handleActivityModal(data.activity_ids);
     } else {
       console.error(`Failed to get trip info with ID ${tripId}`);
     }
   };
+  //flight
+  const handleflightModal = async(flightId) => {
+    const res = await fetch(`http://localhost:3001/flight/${flightId}`, {
+      credentials: 'include'
+    });
+    if(res.ok){
+      const data = await res.json();
+      setFlightInfo(data.airline);
+      setShowModal(true);
+      
+    } else {
+      setFlightInfo("No flight");
+    }
+  };
+
+  //hotel
+  const handleHotelModal = async(hotelId) => {
+    const res = await fetch(`http://localhost:3001/hotel/${hotelId}`, {
+      credentials: 'include'
+    });
+    if(res.ok){
+      const data = await res.json();
+      setHotelInfo(data.hotel_name);
+      setShowModal(true);
+      
+    } else {
+      setHotelInfo("No Hotel");
+    }
+  };
+
+  //activity
+  const handleActivityModal = async(activityId) => {
+    const res = await fetch(`http://localhost:3001/activity/${activityId}`, {
+      credentials: 'include'
+    });
+    if(res.ok){
+
+      const data = await res.json();
+      console.log('activity here:');
+      console.log(data);
+      console.log(data.name);
+
+      setActivityInfo(data.name);
+      setShowModal(true);
+      
+    } else {
+      setActivityInfo("No Activity");
+    }
+  }; 
 
   const handleLocationSelect = (event) => {
     setSelectedLocation(event.target.value);
@@ -113,16 +169,15 @@ function Explore() {
   }
   
   return (
-    <Container>
-      <h2 className='my-3'>Search Post by Location</h2>
+    <div>
+      <h1>Search Post by Location</h1>
       <div>
         <label htmlFor="location-filter">Filter by location:</label>
-        <select className='ms-2' id="location-filter" value={selectedLocation} onChange={handleLocationSelect}>
+        <select id="location-filter" value={selectedLocation} onChange={handleLocationSelect}>
           <option value="">All locations</option>
           {locations.map(location => <option key={location} value={location}>{location}</option>)}
         </select>
       </div>
-      <hr/>
       {filteredPosts.length === 0 ? (
         <p>No posts with corresponding destination</p>
       ) : (
@@ -133,7 +188,7 @@ function Explore() {
                 {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
                 <Card.Body>
                   <Card.Title>{post.creator_name}</Card.Title>
-                  <Card.Text>{post.comment}</Card.Text>
+                  <Card.Text>{post.caption}</Card.Text>
                   <Button variant="primary" onClick={() => handleShowModal(post.trip_id)}>View Trip Info</Button>
                   <Button variant = "secondary" onClick ={() => handleShowComments(post._id)}>Comments</Button>
                   <Button variant = "success" onClick={() => handleAddComment(post)}>Add Comment</Button>
@@ -173,6 +228,9 @@ function Explore() {
                 <p><strong>Location:</strong> {tripInfo.destination_id}</p>
                 <p><strong>Start Date:</strong> {new Date(tripInfo.start_date).toLocaleDateString()}</p>
                 <p><strong>End Date:</strong> {new Date(tripInfo.end_date).toLocaleDateString()}</p>
+                <p><strong>Hotel:</strong> {hotelInfo}</p>
+                <p><strong>Activity:</strong> {activityInfo}</p>
+                <p><strong>Flight:</strong> {flightInfo}</p>
               </div>
             ):(
               <form onSubmit={handleSubmit}>
@@ -190,7 +248,7 @@ function Explore() {
         </Modal.Footer>
       </Modal>
       
-    </Container>
+    </div>
   );
   
 }
