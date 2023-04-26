@@ -64,6 +64,13 @@ function TripInfo(props){
         return await acc + json.price;
       }, 0);
 
+      subtotal += await props.trip.activity_ids.reduce(async (acc, id) => {
+        let res = await fetch("http://localhost:3001/activity/" + id, requestOptions);
+        let json = await res.json();
+        console.log(json)
+        return await acc + json.price;
+      }, 0);
+
       console.log(subtotal)
 
       setPrice(subtotal);

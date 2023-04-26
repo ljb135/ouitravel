@@ -9,6 +9,8 @@ function ActivityItem(props){
             _id: props.activity.id,
             name: props.activity.name,
             rating: props.activity.rating !== undefined ? props.activity.rating : 0,
+            description: props.activity.description !== undefined ? props.activity.description : "",
+            price: props.activity.price.amount !== undefined ? props.activity.price.amount : 0,
             longitude: props.activity.geoCode.longitude,
             latitude: props.activity.geoCode.latitude,
         });
@@ -50,9 +52,10 @@ function ActivityItem(props){
         });
     }
     return(
-        <ListGroup.Item className='d-flex justify-content-between'>
-            <div>{props.activity.name} {props.activity.rating ? `(${props.activity.rating}⭐)` : null}</div>
-            <Button onClick={(e) => addActivity(e)}>+</Button>
+        <ListGroup.Item>
+            <h5>{props.activity.name} {props.activity.rating ? `(${props.activity.rating}⭐)` : null}</h5>
+            <div className='mb-2'>{props.activity.description}</div>
+            <Button onClick={(e) => addActivity(e)}>{Number(props.activity.price.amount) === 0 ? "Free" : `${Number(props.activity.price.amount).toFixed(2)} ${props.activity.price.currencyCode}`}</Button>
         </ListGroup.Item>
     );
 }
@@ -110,6 +113,8 @@ function NewActivityModal(props) {
 function ActivityDisplayItem(props){
     const [name, setName] = useState();
     const [rating, setRating] = useState();
+    const [description, setDescription] = useState();
+    const [price, setPrice] = useState(0);
 
     useEffect(() => {
         var requestOptions = {
@@ -123,6 +128,7 @@ function ActivityDisplayItem(props){
         .then(json => {
           setName(json.name);
           setRating(json.rating);
+          setPrice(json.price);
         });
       }, [props]);
 
@@ -147,7 +153,8 @@ function ActivityDisplayItem(props){
 
     return(
         <ListGroup.Item className='d-flex justify-content-between'>
-            <div>{name} {rating !== 0 ? `(${rating}⭐)` : null}</div>
+            <h5>{name} {rating !== 0 ? `(${rating}⭐)` : null}</h5>
+            <div>{price}</div>
             <CloseButton onClick={(e) => removeActivity(e)}/>
         </ListGroup.Item>
     );
