@@ -170,7 +170,7 @@ function ActivityDisplayItem(props){
                 <CloseButton onClick={(e) => removeActivity(e)}/>
             </div>
             {/* <div>{description}</div> */}
-            <Badge className='mt-2' bg="success"><h6 className='m-0'>${price === 0 ? "Free" : price}</h6></Badge>
+            <Badge className='mt-2' bg="success"><h6 className='m-0'>{price === 0 ? "Free" : `$${price}`}</h6></Badge>
         </ListGroup.Item>
     );
 }
