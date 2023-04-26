@@ -1,4 +1,4 @@
-import { Card, Button, ListGroup, Badge, Modal, Spinner, CloseButton } from 'react-bootstrap';
+import { Card, Button, ListGroup, Badge, Modal, Spinner, CloseButton, Accordion } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 function ActivityItem(props){
@@ -9,8 +9,8 @@ function ActivityItem(props){
             _id: props.activity.id,
             name: props.activity.name,
             rating: props.activity.rating !== undefined ? props.activity.rating : 0,
-            description: props.activity.description !== undefined ? props.activity.description : "",
-            price: props.activity.price.amount !== undefined ? props.activity.price.amount : 0,
+            description: props.activity.description !== undefined ? props.activity.description.replaceAll(/<[^>]+>/g,'') : "",
+            price: props.activity.price !== undefined ? props.activity.price.amount : 0,
             longitude: props.activity.geoCode.longitude,
             latitude: props.activity.geoCode.latitude,
         });
@@ -52,11 +52,13 @@ function ActivityItem(props){
         });
     }
     return(
-        <ListGroup.Item>
-            <h5>{props.activity.name} {props.activity.rating ? `(${props.activity.rating}⭐)` : null}</h5>
-            <div className='mb-2'>{props.activity.description}</div>
-            <Button onClick={(e) => addActivity(e)}>{Number(props.activity.price.amount) === 0 ? "Free" : `${Number(props.activity.price.amount).toFixed(2)} ${props.activity.price.currencyCode}`}</Button>
-        </ListGroup.Item>
+        <Accordion.Item eventKey={props.eventKey}>
+            <Accordion.Header>{props.activity.name} {props.activity.rating ? `(${props.activity.rating}⭐)` : null}</Accordion.Header>
+            <Accordion.Body>
+                <div className='mb-2'>{props.activity.description.replaceAll(/<[^>]+>/g,'')}</div>
+                <Button onClick={(e) => addActivity(e)}>{Number(props.activity.price.amount) === 0 ? "Free" : `${Number(props.activity.price.amount).toFixed(2)} ${props.activity.price.currencyCode}`}</Button>
+            </Accordion.Body>
+        </Accordion.Item>
     );
 }
 
@@ -98,13 +100,13 @@ function NewActivityModal(props) {
                 <Modal.Title>Add an Activity</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <ListGroup>
+                <Accordion>
                     {loading ? <div className='d-flex justify-content-center'>
                                     <Spinner animation="border" role="status">
                                     <span className="visually-hidden">Loading...</span>
                                     </Spinner>
                                 </div> : activityItems}
-                </ListGroup>
+                </Accordion>
             </Modal.Body>
         </Modal>
     )
@@ -129,6 +131,7 @@ function ActivityDisplayItem(props){
           setName(json.name);
           setRating(json.rating);
           setPrice(json.price);
+          setDescription(json.description);
         });
       }, [props]);
 
@@ -152,10 +155,13 @@ function ActivityDisplayItem(props){
       }
 
     return(
-        <ListGroup.Item className='d-flex justify-content-between'>
-            <h5>{name} {rating !== 0 ? `(${rating}⭐)` : null}</h5>
-            <div>{price}</div>
-            <CloseButton onClick={(e) => removeActivity(e)}/>
+        <ListGroup.Item>
+            <div className='d-flex justify-content-between'>
+                <h5>{name} {rating !== 0 ? `(${rating}⭐)` : null}</h5>
+                <CloseButton onClick={(e) => removeActivity(e)}/>
+            </div>
+            {/* <div>{description}</div> */}
+            <Badge className='mt-2' bg="success"><h6 className='m-0'>${price === 0 ? "Free" : price}</h6></Badge>
         </ListGroup.Item>
     );
 }
