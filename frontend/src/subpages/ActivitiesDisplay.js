@@ -51,12 +51,21 @@ function ActivityItem(props){
               }
         });
     }
+
+    let buttonText;
+
+    if(props.activity.price.amount){
+        if(Number(props.activity.price.amount) === 0) buttonText = "free";
+        else buttonText = `${Number(props.activity.price.amount).toFixed(2)} ${props.activity.price.currencyCode}`
+    }
+    else buttonText = "Price Unknown"    
+
     return(
         <Accordion.Item eventKey={props.eventKey}>
             <Accordion.Header>{props.activity.name} {props.activity.rating ? `(${props.activity.rating}⭐)` : null}</Accordion.Header>
             <Accordion.Body>
-                <div className='mb-2'>{props.activity.description.replaceAll(/<[^>]+>/g,'')}</div>
-                <Button onClick={(e) => addActivity(e)}>{Number(props.activity.price.amount) === 0 ? "Free" : `${Number(props.activity.price.amount).toFixed(2)} ${props.activity.price.currencyCode}`}</Button>
+                <div className='mb-2'>{props.activity.description ? props.activity.description.replaceAll(/<[^>]+>/g,'') : null}</div>
+                <Button onClick={(e) => addActivity(e)}>{buttonText}</Button>
             </Accordion.Body>
         </Accordion.Item>
     );
@@ -161,7 +170,7 @@ function ActivityDisplayItem(props){
                 <CloseButton onClick={(e) => removeActivity(e)}/>
             </div>
             {/* <div>{description}</div> */}
-            <Badge className='mt-2' bg="success"><h6 className='m-0'>${price === 0 ? "Free" : price}</h6></Badge>
+            <Badge className='mt-2' bg="success"><h6 className='m-0'>{price === 0 ? "Free" : `$${price}`}</h6></Badge>
         </ListGroup.Item>
     );
 }
