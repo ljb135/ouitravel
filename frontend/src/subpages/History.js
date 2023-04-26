@@ -4,8 +4,6 @@ import { Pie } from 'react-chartjs-2';
 import { Card, Button, Modal } from 'react-bootstrap';
 import { Buffer } from 'buffer';
 
-
-
 function History() {
  const [trips, setTrips] = useState([]);
  const [showModal, setShowModal] = useState(false);
@@ -13,16 +11,11 @@ function History() {
  const [chartData, setChartData] = useState(null);
  const [posts, setPosts] = useState([]);
 
-
-
-
  var requestOptions = {
    method: 'GET',
    redirect: 'follow',
    credentials: 'include'
  };
-
-
  useEffect(() => {
    fetch('http://localhost:3001/trip-history', requestOptions)
    .then(response => response.json())
@@ -86,30 +79,56 @@ function History() {
          Promise.all(flightpromises),
          Promise.all(activitypromises),
        ])
-         .then(() => {
-           const chartData = {
-             labels: ['Hotels', 'Flights', 'Activities'],
-             datasets: [
-               {
-                 data: [
-                   hotelprices.reduce((acc, curr) => acc + curr, 0),
-                   flightprices.reduce((acc, curr) => acc + curr, 0),
-                   activityprices.reduce((acc, curr) => acc + curr, 0),
-                 ],
-                 backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-               },
-             ],
-           };
-           setChartData(chartData);
-         })
+       .then(() => {
+        if (isNaN(hotelprices.reduce((acc, curr) => acc + curr, 0).toFixed(2))) {
+          hotelprices.fill(0.00);
+        }
+      
+        if (isNaN(flightprices.reduce((acc, curr) => acc + curr, 0).toFixed(2))) {
+          flightprices.fill(0.00);
+        }
+      
+        if (isNaN(activityprices.reduce((acc, curr) => acc + curr, 0).toFixed(2))) {
+          activityprices.fill(0.00);
+        }
+        
+        const chartData = {
+          labels: [],
+          datasets: [
+            {
+              data: [],
+              backgroundColor: [],
+            },
+          ],
+        };
+      
+        if (hotelprices.some(price => price > 0)) {
+          chartData.labels.push('Hotels');
+          chartData.datasets[0].data.push(hotelprices.reduce((acc, curr) => acc + curr, 0));
+          chartData.datasets[0].backgroundColor.push('#FF6384');
+        }
+      
+        if (flightprices.some(price => price > 0)) {
+          chartData.labels.push('Flights');
+          chartData.datasets[0].data.push(flightprices.reduce((acc, curr) => acc + curr, 0));
+          chartData.datasets[0].backgroundColor.push('#36A2EB');
+        }
+      
+        if (activityprices.some(price => price > 0)) {
+          chartData.labels.push('Activities');
+          chartData.datasets[0].data.push(activityprices.reduce((acc, curr) => acc + curr, 0));
+          chartData.datasets[0].backgroundColor.push('#FFCE56');
+        }
+      
+        setChartData(chartData);
+      })
+      
      }
    } catch (error) {
      console.error('Error fetching trip data:', error);
      setTripInfo({});
      setChartData(null);
    }
-
-
    setShowModal(true);
    fetch('http://localhost:3001/postList', {
      credentials: 'include'
@@ -123,12 +142,7 @@ function History() {
      .catch(err => {
        console.error(err);
      });
-
-
   };
- 
-
-
  {chartData && (
    <Pie data={chartData} />
  )}
@@ -156,14 +170,14 @@ function History() {
  <p><strong>Location:</strong> {tripInfo.destination_name}</p>
  <p><strong>Total Price:</strong> {tripInfo.price}</p>
  {chartData && <Pie data={chartData} />}
- Photos From The Trip:
  {posts.map(post => {
  // Check if the post belongs to the current trip
  if (post.trip_id === tripInfo._id) {
    return (
-     <div key={post._id} className="col">
-       {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
-     </div>
+    <div key={post._id} className="col">
+    <strong>Photos From The Trip:</strong>
+    {post.image && <Card.Img variant="top" src={`data:image/jpeg;base64,${Buffer.from(post.image).toString('base64')}`} />}
+  </div>
    );
  }
 })}
@@ -175,19 +189,4 @@ function History() {
    </div>
  );
 }
-
-
-
-
 export default History;
-
-
-
-
-
-
-
-
-
-
-
