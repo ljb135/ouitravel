@@ -244,13 +244,13 @@ function Friends(props) {
         fetch("http://localhost:3001/friends/" + id, requestOptions)
         .then(response => {
             if(response.ok) {
-                alert(`${target_email} Successfully Removed`);
+                alert(`Successfully Removed`);
                 getFriends();
                 getReceived();
                 getSent();
             }
         }).catch(error => {
-            alert(`Could not remove friend: ${target_email}`);
+            alert(`Could not remove friend`);
         });
     }
 

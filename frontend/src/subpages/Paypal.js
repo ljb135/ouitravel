@@ -23,7 +23,10 @@ function Paypal(props) {
                         value: price,
                     }
                 },
-            ]
+            ],
+            application_context: {
+                shipping_preference: 'NO_SHIPPING'
+            }
         };
         return actions.order.create(request);
     }
