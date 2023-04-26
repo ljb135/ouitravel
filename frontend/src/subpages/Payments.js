@@ -4,6 +4,8 @@ import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 
+
+
 function getUserName(setData) {
   var requestOptions = {
     method: 'GET',
@@ -17,6 +19,8 @@ function getUserName(setData) {
 }
 
 
+
+
 function getTripHistory(setData, userName) {
   var requestOptions = {
     method: 'GET',
@@ -24,39 +28,50 @@ function getTripHistory(setData, userName) {
     credentials: 'include'
   };
 
+
   fetch('http://localhost:3001/trip-history', requestOptions)
     .then(response => response.json())
     .then(json => {
-      const newData = json.map(trip => ({
-        key: trip._id,
-        tripId: trip._id,
-        userName: userName,
-        start_date: trip.start_date,
-        price: trip.price
-      }));
+      const newData = json
+        .filter(trip => trip.status === 'Paid') // filter trips with 'Paid' status
+        .map(trip => ({
+          key: trip._id,
+          tripId: trip.destination_name,
+          userName: userName,
+          start_date: trip.start_date,
+          price: trip.price
+        }));
       setData(newData);
     })
     .catch(() => setData(null));
 }
 
 
+
+
 const PaymentList = () => {
   const [sortOrder, setSortOrder] = useState(null);
   const [data, setData] = useState([]);
   const [userName, setUserName] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  
+
 
   useEffect(() => {
     getUserName(setUserName);
     getTripHistory(setData, userName);
   }, [userName]);
 
+
   const handleTableChange = (pagination, filters, sorter) => {
     setSortOrder(sorter.order);
   };
 
+
   const columns = [
     {
-      title: 'Trip ID',
+      title: 'Destination',
       dataIndex: 'tripId',
       key: 'tripId'
     },
@@ -87,28 +102,37 @@ const PaymentList = () => {
     }
   ];
 
+
   return (
     <Table
-      dataSource={data}
-      columns={columns.map(column => ({
-        ...column,
-        sortOrder: sortOrder === column.dataIndex && sortOrder,
-        sorter: sortOrder === column.dataIndex && column.sorter,
-        title: (
-          <div onClick={() => setSortOrder(column.dataIndex)}>
-            {column.title}
-            {sortOrder === column.dataIndex &&
-              (sortOrder === 'ascend' ? (
-                <ArrowUpOutlined />
-              ) : (
-                <ArrowDownOutlined />
-              ))}
-          </div>
-        )
-      }))}
-      onChange={handleTableChange}
-    />
+  dataSource={data}
+  columns={columns.map(column => ({
+    ...column,
+    sortOrder: sortOrder === column.dataIndex && sortOrder,
+    sorter: sortOrder === column.dataIndex && column.sorter,
+    title: (
+      <div onClick={() => setSortOrder(column.dataIndex)}>
+        {column.title}
+        {sortOrder === column.dataIndex &&
+          (sortOrder === 'ascend' ? (
+            <ArrowUpOutlined />
+          ) : (
+            <ArrowDownOutlined />
+          ))}
+      </div>
+    )
+  }))}
+  onChange={handleTableChange}
+  pagination={{
+    current: currentPage,
+    pageSize: itemsPerPage,
+    total: data.length,
+    onChange: page => setCurrentPage(page)
+  }}
+/>
+
   );
 };
+
 
 export default PaymentList;

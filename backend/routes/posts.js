@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const fs = require('fs')
 const path = require('path')
 const Post = require('../models/post');
-const Comment = require('../models/comment');
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({storage: storage}).single('image');    
@@ -18,10 +17,8 @@ async function createPost(req, res) {
         _id: new mongoose.Types.ObjectId(),
         trip_id: mongoose.Types.ObjectId(req.body.trip_id),
         creator_id: mongoose.Types.ObjectId(req.user._id),
-        caption: req.body.caption,
-        image: req.file.buffer,
-        creator_name: req.user.first_name + req.user.last_name,
-        creator_email: req.user.email
+        comment: req.body.comment,
+        image: req.file.buffer
       });
       res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
       res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -32,6 +29,7 @@ async function createPost(req, res) {
       res.status(401).send('Not logged in');
     }
 }
+
 
 
 //returns list of posts given the creator's id
