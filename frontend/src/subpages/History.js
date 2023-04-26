@@ -17,16 +17,18 @@ function History() {
    credentials: 'include'
  };
  useEffect(() => {
-   fetch('http://localhost:3001/trip-history', requestOptions)
-   .then(response => response.json())
-   .then(json => {
-     setTrips(json);
-   })
-   .catch(error => {
-     console.error('Error fetching trip data:', error);
-     setTrips(null);
-   });
- }, []);
+  fetch('http://localhost:3001/trip-history', requestOptions)
+    .then(response => response.json())
+    .then(json => {
+      const paidTrips = json.filter(trip => trip.status === "Paid");
+      setTrips(paidTrips);
+    })
+    .catch(error => {
+      console.error('Error fetching trip data:', error);
+      setTrips(null);
+    });
+}, []);
+
   const handleShowModal = async(tripId) => {
    try {
      const res = await fetch(`http://localhost:3001/trip/id/${tripId}`, {
