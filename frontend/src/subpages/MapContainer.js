@@ -70,7 +70,7 @@ export default function MapContainer(props){
     // Important! Always set the container height explicitly
     <div style={{ height: '80vh', maxHeight: '1000px', width: '100%' }} className="card shadow mb-4">
       <GoogleMapReact
-        bootstrapURLKeys={{ key: "AIzaSyDRSrRqfB6rbE-Ty2c_Ah9-E47FoJVHQ74" }}
+        bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY }}
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
       > 
